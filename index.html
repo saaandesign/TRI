@@ -968,11 +968,11 @@ document.addEventListener('pointermove',e=>{
   if(!drag.active){
     if(drag.touch){
       const dx=drag.x-drag.sx,dy=drag.y-drag.sy;
-      if(!drag.swipe&&dx>12&&dx>Math.abs(dy)*1.4){drag.swipe=true;clearTimeout(drag.timer);drag.el.classList.add('swiping');}
+      if(!drag.swipe&&dx<-12&&-dx>Math.abs(dy)*1.4){drag.swipe=true;clearTimeout(drag.timer);drag.el.classList.add('swiping');}
       if(drag.swipe){
-        const c=Math.max(0,Math.min(130,dx)),w=drag.el.closest('.sw');
+        const c=Math.min(0,Math.max(-130,dx)),w=drag.el.closest('.sw');
         drag.el.style.transform='translateX('+c+'px)';
-        if(w){if(c>6){w.dataset.dir='r';w.dataset.rev='✓ FAIT';}else delete w.dataset.dir;}
+        if(w){if(c<-6){w.dataset.dir='l';w.dataset.rev='✓ FAIT';}else delete w.dataset.dir;}
         return;
       }
       if(dist>10)dragCleanup();return;   // le doigt bouge avant l'appui long : c'est un défilement
@@ -988,7 +988,7 @@ function endDrag(cancel){
   if(drag.swipe){
     const dx=drag.x-drag.sx,id=drag.id;
     dragCleanup();blockClickUntil=performance.now()+400;
-    if(!cancel&&dx>=72)setDone(id,true);
+    if(!cancel&&dx<=-72)setDone(id,true);
     return;
   }
   const was=drag.active,id=drag.id,target=drag.target;
