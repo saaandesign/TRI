@@ -142,7 +142,7 @@ dialog::backdrop{background:rgba(0,0,0,.72)}
 .row{display:flex;gap:10px;flex-wrap:wrap}
 .field{display:flex;flex-direction:column;gap:7px;margin-top:18px;flex:1;min-width:120px}
 .field label,.lbl{font-family:var(--display);font-weight:800;font-size:9px;letter-spacing:.16em;color:var(--muted)}
-input[type=text],input[type=date],input[type=time],textarea{background:var(--bg);border:1px solid var(--line);color:var(--text);font:inherit;font-size:16px;padding:12px;width:100%;border-radius:0;color-scheme:dark}
+input[type=text],input[type=date],input[type=time],select,textarea{background:var(--bg);border:1px solid var(--line);color:var(--text);font:inherit;font-size:16px;padding:12px;width:100%;border-radius:0;color-scheme:dark}
 textarea{resize:vertical;min-height:84px;line-height:1.4}
 .types{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:8px}
 .types input{position:absolute;opacity:0;pointer-events:none}
@@ -163,6 +163,20 @@ textarea{resize:vertical;min-height:84px;line-height:1.4}
 .menu-list{display:flex;flex-direction:column;gap:10px;margin-top:20px}
 .hint{font-size:13px;color:var(--muted);line-height:1.5;margin-top:16px}
 
+/* ---------- glisser-déposer ---------- */
+.sess{cursor:grab;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent}
+.sess.dragging{opacity:.28}
+.drag-ghost{position:fixed;left:0;top:0;z-index:9999;pointer-events:none;background:var(--panel2);border:1px solid var(--c,var(--text));padding:12px 14px;box-shadow:0 12px 40px rgba(0,0,0,.6);opacity:.96;transform:translate(0,0)}
+.drag-ghost .sub{display:none}
+body.is-dragging{cursor:grabbing;-webkit-user-select:none;user-select:none}
+body.is-dragging .sess{cursor:grabbing}
+.day.drop{background:rgba(255,255,255,.07);box-shadow:inset 0 0 0 2px var(--text)}
+.dh .hb{font-family:var(--display);font-weight:800;font-size:8px;letter-spacing:.14em;color:var(--faint);margin-top:8px}
+.day.today .dh .hb{color:#666}
+.tag .wh{color:var(--muted);font-weight:500}
+#toast{position:fixed;left:50%;bottom:calc(18px + env(safe-area-inset-bottom));transform:translate(-50%,24px);opacity:0;pointer-events:none;z-index:10000;background:var(--text);color:var(--bg);display:flex;gap:14px;align-items:center;padding:12px 16px;font-size:14px;max-width:calc(100vw - 24px);transition:opacity .2s,transform .2s}
+#toast.show{opacity:1;transform:translate(-50%,0);pointer-events:auto}
+#toast button{font-family:var(--display);font-weight:800;font-size:10px;letter-spacing:.1em;text-decoration:underline;text-underline-offset:4px;padding:4px 2px}
 /* ---------- responsive ---------- */
 @media (max-width:1100px){
   .sess .big{font-size:22px}
@@ -231,9 +245,10 @@ textarea{resize:vertical;min-height:84px;line-height:1.4}
   <main id="view"></main>
 </div>
 <dialog id="dlg"></dialog>
+<div id="toast" role="status" aria-live="polite"></div>
 
 <script>
-const SEED = {"settings": {"raceName": "Corrida de Rambouillet", "raceDate": "2026-12-19", "raceKm": 11, "raceTime": "Course nocturne", "raceGoal": "47:00 / 48:00"}, "sessions": [{"id": "p-001", "date": "2026-11-16", "type": "swim", "title": "Natation club", "km": null, "min": 60, "notes": "Séance du club.", "done": false}, {"id": "p-002", "date": "2026-11-17", "type": "bike", "title": "HT qualité — sweet spot", "km": null, "min": 60, "notes": "2×15' à 88-93 % FTP, récup 5'. Échauffement et retour au calme faciles.", "done": false}, {"id": "p-003", "date": "2026-11-18", "type": "run", "title": "Seuil 2×8'", "km": 7.5, "min": 39, "notes": "10' échauffement + 2×8' à 4:22 (récup 2') + 8' retour au calme.", "done": false}, {"id": "p-004", "date": "2026-11-19", "type": "bike", "title": "HT endurance Z2", "km": null, "min": 60, "notes": "Facile, cadence fluide.", "done": false}, {"id": "p-005", "date": "2026-11-21", "type": "run", "title": "EF", "km": 9, "min": 46, "notes": "Sans montre ou à deux si possible. Facile (≈5:20-5:40/km).", "done": false}, {"id": "p-006", "date": "2026-11-22", "type": "bike", "title": "Sortie Z2", "km": null, "min": 60, "notes": "Libre et facile.", "done": false}, {"id": "p-007", "date": "2026-11-23", "type": "swim", "title": "Natation club", "km": null, "min": 60, "notes": "Séance du club.", "done": false}, {"id": "p-008", "date": "2026-11-24", "type": "bike", "title": "HT qualité — VO2 ou sweet spot", "km": null, "min": 60, "notes": "Au choix selon la forme.", "done": false}, {"id": "p-009", "date": "2026-11-25", "type": "run", "title": "Seuil 2×10'", "km": 8.5, "min": 44, "notes": "10' échauffement + 2×10' à 4:20 (récup 2') + 10' retour au calme.", "done": false}, {"id": "p-010", "date": "2026-11-26", "type": "bike", "title": "HT endurance Z2", "km": null, "min": 60, "notes": "Facile.", "done": false}, {"id": "p-011", "date": "2026-11-28", "type": "run", "title": "EF", "km": 11, "min": 57, "notes": "Facile.", "done": false}, {"id": "p-012", "date": "2026-11-29", "type": "bike", "title": "Sortie Z2", "km": null, "min": 90, "notes": "Libre et facile.", "done": false}, {"id": "p-013", "date": "2026-11-30", "type": "swim", "title": "Natation club", "km": null, "min": 60, "notes": "Séance du club.", "done": false}, {"id": "p-014", "date": "2026-12-01", "type": "bike", "title": "HT qualité", "km": null, "min": 60, "notes": "Sweet spot ou VO2.", "done": false}, {"id": "p-015", "date": "2026-12-02", "type": "run", "title": "TEST 3 km", "km": 8.5, "min": 44, "notes": "20' échauffement progressif + 3 km chrono + retour au calme. Cible ≈ 11:50 (obj. 47:00) / ≈ 12:10 (obj. 48:00). Indication, pas un verdict.", "done": false}, {"id": "p-016", "date": "2026-12-03", "type": "bike", "title": "HT endurance Z2", "km": null, "min": 60, "notes": "Facile.", "done": false}, {"id": "p-017", "date": "2026-12-05", "type": "run", "title": "EF", "km": 12, "min": 62, "notes": "Facile.", "done": false}, {"id": "p-018", "date": "2026-12-06", "type": "bike", "title": "Sortie Z2", "km": null, "min": 90, "notes": "Libre et facile.", "done": false}, {"id": "p-019", "date": "2026-12-07", "type": "swim", "title": "Natation club", "km": null, "min": 60, "notes": "Séance du club.", "done": false}, {"id": "p-020", "date": "2026-12-08", "type": "bike", "title": "HT qualité", "km": null, "min": 60, "notes": "Sweet spot.", "done": false}, {"id": "p-021", "date": "2026-12-09", "type": "run", "title": "Spécifique", "km": 9.5, "min": 49, "notes": "Allure choisie après le test — à détailler début décembre.", "done": false}, {"id": "p-022", "date": "2026-12-10", "type": "bike", "title": "HT endurance Z2", "km": null, "min": 60, "notes": "Facile.", "done": false}, {"id": "p-023", "date": "2026-12-12", "type": "run", "title": "EF", "km": 12, "min": 62, "notes": "Facile.", "done": false}, {"id": "p-024", "date": "2026-12-13", "type": "bike", "title": "Sortie Z2", "km": null, "min": 60, "notes": "Libre et facile.", "done": false}, {"id": "p-025", "date": "2026-12-14", "type": "swim", "title": "Natation club", "km": null, "min": 60, "notes": "Séance du club.", "done": false}, {"id": "p-026", "date": "2026-12-15", "type": "run", "title": "Touches allure course", "km": 7, "min": 36, "notes": "Échauffement + 2-3×3' à allure course + retour au calme.", "done": false}, {"id": "p-027", "date": "2026-12-16", "type": "bike", "title": "HT endurance Z2", "km": null, "min": 60, "notes": "Facile.", "done": false}, {"id": "p-028", "date": "2026-12-17", "type": "run", "title": "EF", "km": 6, "min": 31, "notes": "Très facile.", "done": false}, {"id": "p-029", "date": "2026-12-18", "type": "bike", "title": "Activation", "km": null, "min": 30, "notes": "Facile, jambes fraîches.", "done": false}]};
+const SEED = {"version": 2, "settings": {"raceName": "Corrida de Rambouillet", "raceDate": "2026-12-19", "raceKm": 11, "raceTime": "Course nocturne", "raceGoal": "47:00 / 48:00"}, "sessions": [{"id": "p2-001", "date": "2026-11-16", "type": "bike", "title": "HT qualité — sweet spot", "km": null, "min": 60, "when": "", "notes": "2×15' à 88-93 % FTP, récup 5'. Échauffement et retour au calme faciles.", "done": false}, {"id": "p2-002", "date": "2026-11-17", "type": "run", "title": "Fractionné club", "km": 8, "min": 50, "when": "soir", "notes": "Fractionné du club, au feeling. Si tu ne peux pas y aller, déplace-le.", "done": false}, {"id": "p2-003", "date": "2026-11-18", "type": "bike", "title": "HT endurance Z2", "km": null, "min": 60, "when": "", "notes": "Facile, cadence fluide.", "done": false}, {"id": "p2-004", "date": "2026-11-19", "type": "swim", "title": "Natation club", "km": null, "min": 60, "when": "", "notes": "Séance du club.", "done": false}, {"id": "p2-005", "date": "2026-11-20", "type": "run", "title": "Seuil 2×8'", "km": 7.5, "min": 39, "when": "", "notes": "10' échauffement + 2×8' à 4:22 (récup 2') + 8' retour au calme. Trop chargé ? Remplace par une EF.", "done": false}, {"id": "p2-006", "date": "2026-11-21", "type": "run", "title": "EF", "km": 9, "min": 46, "when": "", "notes": "Facile (≈5:20-5:40/km). Sans montre ou à deux si possible.", "done": false}, {"id": "p2-007", "date": "2026-11-22", "type": "bike", "title": "Sortie Z2", "km": null, "min": 60, "when": "", "notes": "Libre et facile.", "done": false}, {"id": "p2-008", "date": "2026-11-23", "type": "bike", "title": "HT qualité — VO2 ou sweet spot", "km": null, "min": 60, "when": "", "notes": "Au choix selon la forme.", "done": false}, {"id": "p2-009", "date": "2026-11-24", "type": "run", "title": "Fractionné club", "km": 8, "min": 50, "when": "soir", "notes": "Fractionné du club, au feeling. Si tu ne peux pas y aller, déplace-le.", "done": false}, {"id": "p2-010", "date": "2026-11-25", "type": "bike", "title": "HT endurance Z2", "km": null, "min": 60, "when": "", "notes": "Facile, cadence fluide.", "done": false}, {"id": "p2-011", "date": "2026-11-26", "type": "swim", "title": "Natation club", "km": null, "min": 60, "when": "", "notes": "Séance du club.", "done": false}, {"id": "p2-012", "date": "2026-11-27", "type": "run", "title": "Seuil 2×10'", "km": 8.5, "min": 44, "when": "", "notes": "10' échauffement + 2×10' à 4:20 (récup 2') + 10' retour au calme.", "done": false}, {"id": "p2-013", "date": "2026-11-28", "type": "run", "title": "EF", "km": 11, "min": 57, "when": "", "notes": "Facile.", "done": false}, {"id": "p2-014", "date": "2026-11-29", "type": "bike", "title": "Sortie Z2", "km": null, "min": 90, "when": "", "notes": "Libre et facile.", "done": false}, {"id": "p2-015", "date": "2026-11-30", "type": "bike", "title": "HT qualité", "km": null, "min": 60, "when": "", "notes": "Sweet spot ou VO2.", "done": false}, {"id": "p2-016", "date": "2026-12-01", "type": "run", "title": "Fractionné club", "km": 8, "min": 50, "when": "soir", "notes": "Fractionné du club, au feeling. Si tu ne peux pas y aller, déplace-le.", "done": false}, {"id": "p2-017", "date": "2026-12-02", "type": "bike", "title": "HT endurance Z2", "km": null, "min": 60, "when": "", "notes": "Facile, cadence fluide.", "done": false}, {"id": "p2-018", "date": "2026-12-03", "type": "swim", "title": "Natation club", "km": null, "min": 60, "when": "", "notes": "Séance du club.", "done": false}, {"id": "p2-019", "date": "2026-12-04", "type": "run", "title": "TEST 3 km", "km": 8.5, "min": 44, "when": "", "notes": "20' échauffement progressif + 3 km chrono + retour au calme. Cible ≈ 11:50 (obj. 47:00) / ≈ 12:10 (obj. 48:00). Indication, pas un verdict.", "done": false}, {"id": "p2-020", "date": "2026-12-05", "type": "run", "title": "EF", "km": 12, "min": 62, "when": "", "notes": "Facile.", "done": false}, {"id": "p2-021", "date": "2026-12-06", "type": "bike", "title": "Sortie Z2", "km": null, "min": 90, "when": "", "notes": "Libre et facile.", "done": false}, {"id": "p2-022", "date": "2026-12-07", "type": "bike", "title": "HT qualité", "km": null, "min": 60, "when": "", "notes": "Sweet spot.", "done": false}, {"id": "p2-023", "date": "2026-12-08", "type": "run", "title": "Fractionné club", "km": 8, "min": 50, "when": "soir", "notes": "Fractionné du club, au feeling. Si tu ne peux pas y aller, déplace-le.", "done": false}, {"id": "p2-024", "date": "2026-12-09", "type": "bike", "title": "HT endurance Z2", "km": null, "min": 60, "when": "", "notes": "Facile, cadence fluide.", "done": false}, {"id": "p2-025", "date": "2026-12-10", "type": "swim", "title": "Natation club", "km": null, "min": 60, "when": "", "notes": "Séance du club.", "done": false}, {"id": "p2-026", "date": "2026-12-11", "type": "run", "title": "Spécifique", "km": 9.5, "min": 49, "when": "", "notes": "Allure choisie après le test — à détailler début décembre.", "done": false}, {"id": "p2-027", "date": "2026-12-12", "type": "run", "title": "EF", "km": 12, "min": 62, "when": "", "notes": "Facile.", "done": false}, {"id": "p2-028", "date": "2026-12-13", "type": "bike", "title": "Sortie Z2", "km": null, "min": 60, "when": "", "notes": "Libre et facile.", "done": false}, {"id": "p2-029", "date": "2026-12-14", "type": "bike", "title": "HT endurance Z2", "km": null, "min": 45, "when": "", "notes": "Facile.", "done": false}, {"id": "p2-030", "date": "2026-12-15", "type": "run", "title": "Touches allure course", "km": 7, "min": 36, "when": "soir", "notes": "Échauffement + 2-3×3' à allure course + retour au calme. À la place du fractionné club si tu es fatigué.", "done": false}, {"id": "p2-031", "date": "2026-12-16", "type": "bike", "title": "HT endurance Z2", "km": null, "min": 60, "when": "", "notes": "Facile.", "done": false}, {"id": "p2-032", "date": "2026-12-17", "type": "swim", "title": "Natation club", "km": null, "min": 60, "when": "", "notes": "Séance du club.", "done": false}, {"id": "p2-033", "date": "2026-12-18", "type": "bike", "title": "Activation", "km": null, "min": 30, "when": "", "notes": "Facile, jambes fraîches.", "done": false}]};
 </script>
 <script>
 (function(){
@@ -268,17 +283,31 @@ const uid=()=>'u-'+Date.now().toString(36)+Math.random().toString(36).slice(2,6)
 
 /* ---------- state ---------- */
 function clone(o){return JSON.parse(JSON.stringify(o));}
+const fresh=()=>Object.assign(clone(SEED),{seedVersion:SEED.version});
 function load(){
-  try{const s=JSON.parse(localStorage.getItem(STORE));if(s&&Array.isArray(s.sessions)&&s.settings)return s;}catch(e){}
-  return clone(SEED);
+  let s=null;
+  try{s=JSON.parse(localStorage.getItem(STORE));}catch(e){}
+  if(!(s&&Array.isArray(s.sessions)&&s.settings))return fresh();
+  if(s.seedVersion!==SEED.version){      // nouvelle version du plan : on garde tes séances faites, modifiées ou créées
+    const keep=s.sessions.filter(x=>!/^p\d*-/.test(String(x.id))||x.done||x.edited);
+    s.sessions=keep.concat(clone(SEED.sessions));
+    s.settings=Object.assign({},SEED.settings,s.settings);
+    s.seedVersion=SEED.version;
+  }
+  return s;
 }
 let state=load();
+const WHEN=['','matin','midi','après-midi','soir'];
+const WHEN_ORDER={'matin':1,'midi':2,'après-midi':3,'soir':4,'':5};
+const HABITS={1:{type:'run',title:'Fractionné club',km:8,min:50,when:'soir',label:'FRACTIONNÉ · SOIR'},
+              3:{type:'swim',title:'Natation club',km:'',min:60,when:'',label:'PISCINE'}};
 function save(){try{localStorage.setItem(STORE,JSON.stringify(state));}catch(e){}}
+save();
 const today=()=>dayStart(new Date());
 let view='week';
 let cursor=today();   // any date inside the displayed week / month
 
-const sessionsOn=k=>state.sessions.filter(s=>s.date===k);
+const sessionsOn=k=>state.sessions.filter(s=>s.date===k).sort((a,b)=>(WHEN_ORDER[a.when||'']||5)-(WHEN_ORDER[b.when||'']||5));
 const typeOf=t=>TYPES[t]?t:'run';
 
 /* ---------- countdown ---------- */
@@ -330,7 +359,7 @@ function sessHTML(s){
   const big=s.km?fmtKm(num(s.km)):(s.min?fmtDur(num(s.min)):'');
   const sub=(s.km&&s.min)?fmtDur(num(s.min)):'';
   return '<button class="sess'+(s.done?' done':'')+'" data-sess="'+esc(s.id)+'" style="--c:'+T.color+'">'+
-    '<span class="tag"><i class="dot'+(s.done?'':' plan')+'" style="--c:'+T.color+'"></i>'+T.label+'</span>'+
+    '<span class="tag"><i class="dot'+(s.done?'':' plan')+'" style="--c:'+T.color+'"></i>'+T.label+(s.when?' <span class="wh">· '+esc(s.when.toUpperCase())+'</span>':'')+'</span>'+
     '<span class="name">'+esc(s.title||T.name)+'</span>'+(big?'<span class="big">'+esc(big)+'</span>':'')+(sub?'<span class="sub">'+esc(sub)+'</span>':'')+'</button>';
 }
 function raceBlock(){
@@ -349,7 +378,7 @@ function renderWeek(){
     const d=addDays(mon,i),k=iso(d),ss=sessionsOn(k);
     list.push(...ss);
     const cls='day'+(diff(t,d)===0?' today':'')+(diff(t,d)<0?' past':'');
-    h+='<div class="'+cls+'" data-date="'+k+'"><button class="dh" data-day="'+k+'" aria-label="Ouvrir '+DOWL[i]+' '+fmtDM(d)+'"><div class="dn">'+fmtDM(d)+'</div><div class="dw">'+DOW[i]+'</div></button>'+
+    h+='<div class="'+cls+'" data-date="'+k+'"><button class="dh" data-day="'+k+'" aria-label="Ouvrir '+DOWL[i]+' '+fmtDM(d)+'"><div class="dn">'+fmtDM(d)+'</div><div class="dw">'+DOW[i]+'</div>'+(HABITS[i]?'<div class="hb">'+HABITS[i].label+'</div>':'')+'</button>'+
       '<div class="dcol">'+(k===raceK?raceBlock():'')+ss.map(sessHTML).join('')+'<button class="add" data-add="'+k+'">+ Ajouter</button></div></div>';
   }
   $('#sum').innerHTML=sumHTML(totals(list),false);
@@ -403,13 +432,15 @@ function openDay(k){
 
 function openSession(id,date){
   const ex=id?state.sessions.find(s=>s.id===id):null;
-  const s=ex||{id:null,date:date||iso(today()),type:'run',title:'',km:'',min:'',notes:'',done:false};
+  const dflt=date?HABITS[(parse(date).getDay()+6)%7]:null;
+  const s=ex||Object.assign({id:null,date:date||iso(today()),type:'run',title:'',km:'',min:'',when:'',notes:'',done:false},dflt?{type:dflt.type,title:dflt.title,km:dflt.km,min:dflt.min,when:dflt.when}:{});
   openSheet('<h2><small>'+(ex?'MODIFIER':'NOUVELLE SÉANCE')+'</small>'+(ex?esc(ex.title||TYPES[typeOf(ex.type)].name):'Ajouter')+'</h2>'+
    '<form id="sf" autocomplete="off">'+
    '<div class="field"><span class="lbl">DISCIPLINE</span><div class="types">'+KEYS.map(k=>'<input type="radio" name="type" id="t-'+k+'" value="'+k+'"'+(typeOf(s.type)===k?' checked':'')+'><label for="t-'+k+'" style="--c:'+TYPES[k].color+'"><i class="dot" style="--c:'+TYPES[k].color+'"></i>'+TYPES[k].label+'</label>').join('')+'</div></div>'+
    '<div class="field"><label for="f-title">TITRE</label><input type="text" id="f-title" name="title" value="'+esc(s.title)+'" placeholder="ex. Seuil 2×10\'"></div>'+
    '<div class="row"><div class="field"><label for="f-date">DATE</label><input type="date" id="f-date" name="date" value="'+esc(s.date)+'" required></div>'+
-   '<div class="field"><label for="f-km">DISTANCE (KM)</label><input type="text" inputmode="decimal" id="f-km" name="km" value="'+esc(s.km||'')+'" placeholder="—"></div>'+
+   '<div class="field"><label for="f-when">MOMENT</label><select id="f-when" name="when">'+WHEN.map(w=>'<option value="'+esc(w)+'"'+((s.when||'')===w?' selected':'')+'>'+(w?w.charAt(0).toUpperCase()+w.slice(1):'Non précisé')+'</option>').join('')+'</select></div></div>'+
+   '<div class="row"><div class="field"><label for="f-km">DISTANCE (KM)</label><input type="text" inputmode="decimal" id="f-km" name="km" value="'+esc(s.km||'')+'" placeholder="—"></div>'+
    '<div class="field"><label for="f-min">DURÉE (MIN)</label><input type="text" inputmode="numeric" id="f-min" name="min" value="'+esc(s.min||'')+'" placeholder="—"></div></div>'+
    '<div class="field"><label for="f-notes">NOTES</label><textarea id="f-notes" name="notes" placeholder="Détail de la séance, ressenti…">'+esc(s.notes||'')+'</textarea></div>'+
    '<label class="check"><input type="checkbox" name="done"'+(s.done?' checked':'')+'> Séance faite</label>'+
@@ -418,8 +449,8 @@ function openSession(id,date){
     e.preventDefault();
     const f=new FormData(e.target);
     const rec={id:ex?ex.id:uid(),date:f.get('date')||s.date,type:typeOf(f.get('type')),title:String(f.get('title')||'').trim(),
-      km:num(f.get('km')),min:num(f.get('min')),notes:String(f.get('notes')||'').trim(),done:f.get('done')==='on'};
-    if(ex)Object.assign(ex,rec);else state.sessions.push(rec);
+      km:num(f.get('km')),min:num(f.get('min')),when:WHEN.includes(f.get('when'))?f.get('when'):'',notes:String(f.get('notes')||'').trim(),done:f.get('done')==='on'};
+    if(ex)Object.assign(ex,rec,{edited:true});else state.sessions.push(rec);
     save();cursor=parse(rec.date);closeSheet();render();
   });
   setTimeout(()=>{const f=$('#f-title');if(f&&!ex)f.focus();},30);
@@ -464,14 +495,95 @@ function importData(obj){
   if(obj&&obj.settings&&typeof obj.settings==='object')state.settings=Object.assign({},state.settings,obj.settings);
   if(obj&&Array.isArray(obj.sessions)){
     const m=new Map(state.sessions.map(s=>[s.id,s]));
-    obj.sessions.forEach(s=>{if(s&&s.id&&/^\d{4}-\d{2}-\d{2}$/.test(s.date||'')){if(!m.has(s.id))added++;m.set(String(s.id),{id:String(s.id),date:s.date,type:typeOf(s.type),title:String(s.title||''),km:num(s.km),min:num(s.min),notes:String(s.notes||''),done:!!s.done});}});
+    obj.sessions.forEach(s=>{if(s&&s.id&&/^\d{4}-\d{2}-\d{2}$/.test(s.date||'')){if(!m.has(s.id))added++;m.set(String(s.id),{id:String(s.id),date:s.date,type:typeOf(s.type),title:String(s.title||''),km:num(s.km),min:num(s.min),when:WHEN.includes(s.when)?s.when:'',notes:String(s.notes||''),done:!!s.done});}});
     state.sessions=[...m.values()];
   }
   save();render();return added;
 }
 
+/* ---------- toast ---------- */
+let toastTimer=null,undoFn=null;
+function toast(msg,undo){
+  const t=$('#toast');undoFn=undo||null;
+  t.innerHTML='<span>'+esc(msg)+'</span>'+(undo?'<button data-undo="1">ANNULER</button>':'');
+  t.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),6000);
+}
+
+/* ---------- glisser-déposer (souris + appui long au doigt) ---------- */
+let drag=null,blockClickUntil=0;
+function dragCleanup(){
+  if(!drag)return;
+  clearTimeout(drag.timer);clearInterval(drag.scroller);
+  if(drag.ghost)drag.ghost.remove();
+  if(drag.el)drag.el.classList.remove('dragging');
+  document.querySelectorAll('.day.drop').forEach(d=>d.classList.remove('drop'));
+  document.body.classList.remove('is-dragging');
+  drag=null;
+}
+function startDrag(){
+  if(!drag||drag.active)return;
+  drag.active=true;
+  const r=drag.el.getBoundingClientRect();
+  const g=drag.el.cloneNode(true);g.classList.add('drag-ghost');g.classList.remove('dragging');g.style.width=r.width+'px';g.style.setProperty('--c',drag.el.style.getPropertyValue('--c'));
+  document.body.appendChild(g);drag.ghost=g;drag.w=r.width;
+  drag.el.classList.add('dragging');document.body.classList.add('is-dragging');
+  if(navigator.vibrate)try{navigator.vibrate(12);}catch(e){}
+  drag.scroller=setInterval(()=>{ if(!drag)return; if(drag.y<80)window.scrollBy(0,-14); else if(drag.y>innerHeight-80)window.scrollBy(0,14); updateDrag(); },30);
+  updateDrag();
+}
+function updateDrag(){
+  if(!drag||!drag.active)return;
+  drag.ghost.style.transform='translate('+Math.round(drag.x-drag.w/2)+'px,'+Math.round(drag.y-30)+'px)';
+  const t=document.elementFromPoint(drag.x,drag.y);
+  const day=t&&t.closest?t.closest('.day[data-date]'):null;
+  document.querySelectorAll('.day.drop').forEach(d=>{if(d!==day)d.classList.remove('drop');});
+  if(day)day.classList.add('drop');
+  drag.target=day?day.dataset.date:null;
+}
+document.addEventListener('pointerdown',e=>{
+  if(view!=='week'||(e.pointerType==='mouse'&&e.button!==0))return;
+  const el=e.target.closest&&e.target.closest('.sess[data-sess]');
+  if(!el)return;
+  dragCleanup();
+  const touch=e.pointerType!=='mouse';
+  drag={id:el.dataset.sess,el,sx:e.clientX,sy:e.clientY,x:e.clientX,y:e.clientY,pid:e.pointerId,touch,active:false,target:null,timer:null};
+  if(touch)drag.timer=setTimeout(startDrag,320);
+});
+document.addEventListener('pointermove',e=>{
+  if(!drag||e.pointerId!==drag.pid)return;
+  drag.x=e.clientX;drag.y=e.clientY;
+  const dist=Math.hypot(drag.x-drag.sx,drag.y-drag.sy);
+  if(!drag.active){
+    if(drag.touch){if(dist>10)dragCleanup();return;}   // le doigt bouge avant l'appui long : c'est un défilement
+    if(dist>6)startDrag();else return;
+  }
+  updateDrag();
+});
+document.addEventListener('touchmove',e=>{if(drag&&drag.active)e.preventDefault();},{passive:false});
+document.addEventListener('contextmenu',e=>{if(drag&&drag.touch)e.preventDefault();});
+function endDrag(cancel){
+  if(!drag)return;
+  const was=drag.active,id=drag.id,target=drag.target;
+  dragCleanup();
+  if(!was)return;
+  blockClickUntil=performance.now()+400;
+  if(cancel||!target)return;
+  const s=state.sessions.find(x=>x.id===id);
+  if(!s||s.date===target)return;
+  const from=s.date;
+  s.date=target;s.edited=true;save();render();
+  const d=parse(target);
+  toast('Déplacé au '+DOWL[(d.getDay()+6)%7].toLowerCase()+' '+fmtDM(d),()=>{s.date=from;save();render();});
+}
+document.addEventListener('pointerup',e=>{if(drag&&e.pointerId===drag.pid)endDrag(false);});
+document.addEventListener('pointercancel',e=>{if(drag&&e.pointerId===drag.pid)endDrag(true);});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&drag&&drag.active)endDrag(true);});
+
 /* ---------- events ---------- */
 document.addEventListener('click',e=>{
+  const u=e.target.closest&&e.target.closest('[data-undo]');
+  if(u){if(undoFn){undoFn();undoFn=null;}$('#toast').classList.remove('show');return;}
+  if(performance.now()<blockClickUntil){e.preventDefault();e.stopPropagation();return;}
   const t=e.target.closest('[data-sess],[data-day],[data-add],[data-race],[data-close],[data-del],[data-export],[data-import],[data-reset]');
   if(!t)return;
   if(t.dataset.close){closeSheet();return;}
@@ -482,7 +594,7 @@ document.addEventListener('click',e=>{
   if(t.dataset.del){if(confirm('Supprimer cette séance ?')){state.sessions=state.sessions.filter(s=>s.id!==t.dataset.del);save();closeSheet();render();}return;}
   if(t.dataset.export){exportData();return;}
   if(t.dataset.import){$('#file').click();return;}
-  if(t.dataset.reset){if(confirm('Effacer tes modifications et revenir au plan d’origine ?')){state=clone(SEED);save();closeSheet();render();}return;}
+  if(t.dataset.reset){if(confirm('Effacer tes modifications et revenir au plan d’origine ?')){state=fresh();save();closeSheet();render();}return;}
 });
 document.addEventListener('change',e=>{
   const c=e.target;
