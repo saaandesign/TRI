@@ -227,6 +227,52 @@ table.stab{border-collapse:collapse;width:100%;font-size:13px;white-space:nowrap
 .cpsum b{font-weight:500}
 @media (max-width:860px){.wkfoot{margin-top:0;justify-content:stretch}.wkfoot .btn{width:100%;text-align:center}}
 
+/* ---------- UX : pastilles, feuilles, animations ---------- */
+[hidden]{display:none!important}
+.st{border:1.5px solid #ff9f43;color:#ff9f43;background:rgba(255,159,67,.08)}
+.st:hover{border-color:#ffb870;color:#ffb870}
+.st.on{border-color:#4cd08a;color:#4cd08a;background:rgba(76,208,138,.14)}
+.sess.done{opacity:1;background:rgba(49,44,44,.55)}
+.sess.done .tag,.sess.done .name,.sess.done .big,.sess.done .sub{opacity:.42}
+.sess.done .real{opacity:.7}
+#d-off:checked+label{border-color:#ff9f43;color:#ff9f43;background:rgba(255,159,67,.1)}
+#d-on:checked+label{border-color:#4cd08a;color:#4cd08a;background:rgba(76,208,138,.12)}
+input[type=date]{-webkit-appearance:none;appearance:none;display:block;min-height:46px;text-align:left}
+input[type=date]::-webkit-date-and-time-value{text-align:left}
+.sheet{position:relative}
+.sheet h2{padding-right:52px}
+.xbtn,.dots{position:absolute;top:16px;width:38px;height:38px;border-radius:50%;border:1px solid var(--line);display:grid;place-items:center;font-size:15px;color:var(--muted);z-index:3;background:var(--panel)}
+.xbtn{right:16px}.dots{right:62px;font-size:20px;line-height:1;padding-bottom:5px}
+.xbtn:hover,.dots:hover{border-color:var(--text);color:var(--text)}
+.sheet.hasdots h2{padding-right:100px}
+.pop{position:absolute;top:60px;right:16px;background:var(--panel2);border:1px solid var(--line);border-radius:16px;padding:6px;z-index:6;min-width:200px;box-shadow:0 14px 40px rgba(0,0,0,.5);transform-origin:top right;animation:popin .3s cubic-bezier(.2,.9,.3,1.25)}
+.pop button{display:flex;justify-content:space-between;align-items:center;gap:14px;width:100%;padding:12px 14px;border-radius:10px;font-size:14px}
+.pop button:hover{background:var(--bg)}
+.pop button span{color:#4cd08a}
+.sline{margin-top:6px;font-size:14px;color:var(--muted)}
+.legend .ls{display:none}
+.legend .fp{margin-left:auto;display:inline-flex;gap:16px;white-space:nowrap}
+.btn,.arrow,.chip,.tile,.st,.add,.iconbtn,.seg button,.rc,.race,.dots,.xbtn{transition:transform .32s cubic-bezier(.2,.9,.3,1.3),background .2s,color .2s,border-color .2s}
+.btn:active,.arrow:active,.chip:active,.tile:active,.st:active,.add:active,.iconbtn:active,.rc:active,.race:active,.dots:active,.xbtn:active{transform:scale(.93)}
+.sess:active:not(.swiping){transform:scale(.975)}
+.fab:active{transform:scale(.9)}
+@keyframes rise{from{opacity:0;transform:translateY(16px) scale(.97)}to{opacity:1;transform:none}}
+@keyframes popin{from{opacity:0;transform:scale(.8)}to{opacity:1;transform:none}}
+.week.enter .day{animation:rise .55s cubic-bezier(.2,.9,.25,1.08) both;animation-delay:calc(var(--d,0)*45ms)}
+#toast{transition:opacity .25s,transform .5s cubic-bezier(.2,1.25,.3,1)}
+@media (max-width:860px){
+  dialog,dialog.wide{width:100%;max-width:100%;margin:auto 0 0 0;border-radius:26px 26px 0 0;max-height:92dvh;border-bottom:0}
+  .sheet{padding-bottom:calc(26px + env(safe-area-inset-bottom))}
+  .sheet::before{content:'';display:block;width:44px;height:5px;border-radius:3px;background:var(--line);margin:-10px auto 16px}
+  .xbtn,.dots{top:24px}
+  .pop{top:68px}
+}
+@media (max-width:520px){
+  .legend{flex-wrap:nowrap;gap:12px;font-size:11.5px}
+  .legend .ll{display:none}.legend .ls{display:inline}
+  .legend .fp{gap:10px}
+}
+
 /* ---------- bouton + ---------- */
 .fab{position:fixed;right:max(18px,env(safe-area-inset-right));bottom:calc(18px + env(safe-area-inset-bottom));width:60px;height:60px;border-radius:50%;background:var(--red);color:#fff;display:grid;place-items:center;font-size:32px;line-height:1;font-weight:300;box-shadow:0 10px 28px rgba(0,0,0,.55);z-index:50;transition:transform .15s}
 .fab:hover{transform:scale(1.06)}
@@ -366,7 +412,7 @@ const HABITS={1:{type:'run',title:'Fractionné club',km:8,min:50,when:'soir',lab
 function save(){try{localStorage.setItem(STORE,JSON.stringify(state));}catch(e){}}
 save();
 const today=()=>dayStart(new Date());
-let view='week';
+let view='week',enterNext=true;
 let cursor=today();   // any date inside the displayed week / month
 
 const sessionsOn=k=>state.sessions.filter(s=>s.date===k).sort((a,b)=>(WHEN_ORDER[a.when||'']||5)-(WHEN_ORDER[b.when||'']||5));
@@ -385,14 +431,29 @@ function renderCount(){
 
 /* ---------- allure, alertes ---------- */
 const fmtPace=v=>{if(!(v>0))return'—';let m=Math.floor(v),r=Math.round((v-m)*60);if(r===60){m++;r=0;}return m+':'+pad(r);};
+const fmt1=v=>(Math.round(v*10)/10).toString().replace('.',',');
+const fmtM=km=>Math.round(km*1000).toString().replace(/\B(?=(\d{3})+(?!\d))/g,' ')+' m';
+const SHORT={run:'CAP',bike:'Vélo',swim:'Nat',gym:'Renfo'};
 function realLine(s){
-  const ak=num(s.akm),am=num(s.amin),hr=num(s.hr),k=typeOf(s.type),out=[];
-  if(!(ak||am||hr))return'';
-  if(ak)out.push(fmtKm(ak));if(am)out.push(fmtDur(am));
-  if(ak&&am){if(k==='run')out.push(fmtPace(am/ak)+'/km');else if(k==='bike')out.push((Math.round(ak/(am/60)*10)/10).toString().replace('.',',')+' km/h');else if(k==='swim')out.push(fmtPace(am/(ak*10))+'/100 m');}
-  if(hr)out.push(Math.round(hr)+' bpm');
-  return 'Réel · '+out.join(' · ');
+  const k=typeOf(s.type),ak=num(s.akm),am=num(s.amin),pw=num(s.pw),o=[];
+  if(!(ak||am||(k==='bike'&&pw)))return'';
+  if(k==='swim'){if(ak)o.push(fmtM(ak));if(am)o.push(fmtDur(am));}
+  else{
+    if(ak)o.push(fmtKm(ak));if(am)o.push(fmtDur(am));
+    if(k==='run'&&ak&&am){o.push(fmtPace(am/ak)+'/km');o.push(fmt1(ak/(am/60))+' km/h');}
+    if(k==='bike'&&pw)o.push(Math.round(pw)+' W');
+  }
+  return 'Réel · '+o.join(' · ');
 }
+function realFields(type,s,pre){
+  const sw=type==='swim';
+  const kmv=s.akm?(sw?Math.round(s.akm*1000):s.akm):'';
+  const kmp=s.km?(sw?Math.round(s.km*1000):s.km):'—';
+  return '<div class="row"><div class="field"><label for="'+pre+'km" class="rl-km">'+(sw?'DISTANCE (M)':'DISTANCE (KM)')+'</label><input type="text" inputmode="decimal" id="'+pre+'km" name="akm" value="'+esc(kmv)+'" placeholder="'+esc(kmp)+'"></div>'+
+    '<div class="field"><label for="'+pre+'min">DURÉE (MIN)</label><input type="text" inputmode="numeric" id="'+pre+'min" name="amin" value="'+esc(s.amin||'')+'" placeholder="'+esc(s.min||'—')+'"></div>'+
+    '<div class="field rw-bike"'+(type==='bike'?'':' hidden')+'><label for="'+pre+'pw">PUISSANCE (W)</label><input type="text" inputmode="numeric" id="'+pre+'pw" name="pw" value="'+esc(s.pw||'')+'" placeholder="—"></div></div>';
+}
+function readReal(f,type){let akm=num(f.get('akm'));if(type==='swim'&&akm)akm=akm/1000;return {akm:akm,amin:num(f.get('amin')),pw:type==='bike'?num(f.get('pw')):null};}
 const capKm=()=>num(state.settings.capKm)||34;
 function alertsFor(mon){
   const t=wk(mon),p=wk(addDays(mon,-7)),km=Math.max(t.run.km,t.run.dkm),pk=Math.max(p.run.km,p.run.dkm),cap=capKm(),out=[];
@@ -408,7 +469,7 @@ function totals(list){
   list.forEach(s=>{const x=t[typeOf(s.type)];x.n++;x.km+=num(s.km)||0;x.min+=num(s.min)||0;
     if(s.done){const ak=num(s.akm)||num(s.km)||0,am=num(s.amin)||num(s.min)||0;
       x.dn++;x.dkm+=ak;x.dmin+=am;
-      if(num(s.hr)&&am){x.hw+=num(s.hr)*am;x.hm+=am;}
+      if(num(s.pw)&&am){x.hw+=num(s.pw)*am;x.hm+=am;}
       if(ak&&am){x.pk+=ak;x.pm+=am;}}});
   return t;
 }
@@ -425,8 +486,10 @@ function sumHTML(t,showGym){
 
 /* ---------- legend ---------- */
 function renderLegend(){
-  $('#legend').innerHTML=KEYS.map(k=>'<span><i class="dot" style="--c:'+TYPES[k].color+'"></i>'+TYPES[k].name+'</span>').join('')+
-   '<span style="margin-left:auto"><i class="dot" style="--c:var(--text)"></i>fait</span><span><i class="dot plan" style="--c:var(--text)"></i>prévu</span>';
+  const hasGym=state.sessions.some(x=>typeOf(x.type)==='gym');
+  const ks=KEYS.filter(k=>k!=='gym'||hasGym);
+  $('#legend').innerHTML=ks.map(k=>'<span><i class="dot" style="--c:'+TYPES[k].color+'"></i><span class="ll">'+TYPES[k].name+'</span><span class="ls">'+SHORT[k]+'</span></span>').join('')+
+   '<span class="fp"><span><i class="dot" style="--c:var(--text)"></i>fait</span><span><i class="dot plan" style="--c:var(--text)"></i>prévu</span></span>';
 }
 
 /* ---------- week view ---------- */
@@ -455,12 +518,13 @@ function renderWeek(){
     const d=addDays(mon,i),k=iso(d),ss=sessionsOn(k);
     list.push(...ss);
     const cls='day'+(diff(t,d)===0?' today':'')+(diff(t,d)<0?' past':'');
-    h+='<div class="'+cls+'" data-date="'+k+'"><button class="dh" data-day="'+k+'" aria-label="Ouvrir '+DOWL[i]+' '+fmtDM(d)+'"><div class="dn">'+fmtDM(d)+'</div><div class="dw">'+DOW[i]+'</div>'+'</button>'+
+    h+='<div class="'+cls+'" data-date="'+k+'" style="--d:'+i+'"><button class="dh" data-day="'+k+'" aria-label="Ouvrir '+DOWL[i]+' '+fmtDM(d)+'"><div class="dn">'+fmtDM(d)+'</div><div class="dw">'+DOW[i]+'</div>'+'</button>'+
       '<div class="dcol">'+(k===raceK?raceBlock():'')+ss.map(sessHTML).join('')+'<button class="add" data-add="'+k+'">+ Ajouter</button></div></div>';
   }
   $('#sum').innerHTML=sumHTML(totals(list),false);
   $('#alerts').innerHTML=alertHTML(alertsFor(mon));
-  $('#view').innerHTML='<div class="week">'+h+'</div><div class="wkfoot"><button class="btn" data-copy="1">Préparer la semaine suivante</button></div>';
+  const enter=enterNext;enterNext=false;
+  $('#view').innerHTML='<div class="week'+(enter?' enter':'')+'">'+h+'</div><div class="wkfoot"><button class="btn" data-copy="1">Préparer la semaine suivante</button></div>';
 }
 
 /* ---------- month view ---------- */
@@ -494,9 +558,75 @@ function render(){
 
 /* ---------- dialogs ---------- */
 const dlg=$('#dlg');
-function openSheet(html,cls){dlg.className=cls||'';dlg.innerHTML='<div class="sheet">'+html+'</div>';if(!dlg.open)dlg.showModal();}
-function closeSheet(){if(dlg.open)dlg.close();}
+const reduce=()=>window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+let originSel=null,originRect=null,closing=false,closeAnims=[];
+function selFor(el){
+  if(!el)return null;if(el.id)return '#'+el.id;
+  for(const a of ['data-sess','data-add','data-day','data-copy','data-race']){const v=el.getAttribute(a);if(v!==null)return '['+a+'="'+v+'"]';}
+  return null;
+}
+function setOrigin(el){originSel=el?selFor(el):null;originRect=el?el.getBoundingClientRect():null;}
+function abortClose(){closeAnims.forEach(a=>{a.oncancel=null;a.onfinish=null;try{a.cancel();}catch(e){}});closeAnims=[];closing=false;dlg.style.transform='';}
+function openSheet(html,cls){
+  if(closing)abortClose();
+  const first=!dlg.open;
+  dlg.className=cls||'';dlg.innerHTML='<div class="sheet"><button class="xbtn" data-close="1" aria-label="Fermer">✕</button>'+html+'</div>';
+  if(first){dlg.showModal();animateOpen();}
+}
+function animateOpen(){
+  if(reduce())return;
+  const r=dlg.getBoundingClientRect(),o=originRect;let kf;
+  if(o&&o.width>0&&r.width>0){
+    const sx=Math.max(o.width/r.width,.08),sy=Math.max(o.height/r.height,.06);
+    const dx=o.left+o.width/2-(r.left+r.width/2),dy=o.top+o.height/2-(r.top+r.height/2);
+    kf=[{transform:'translate('+dx+'px,'+dy+'px) scale('+sx+','+sy+')',opacity:.15},{transform:'none',opacity:1}];
+  }else kf=[{transform:'translateY(40px) scale(.97)',opacity:0},{transform:'none',opacity:1}];
+  dlg.animate(kf,{duration:480,easing:'cubic-bezier(.18,.95,.28,1.07)'});
+  try{dlg.animate([{opacity:0},{opacity:1}],{duration:300,pseudoElement:'::backdrop'});}catch(e){}
+}
+function closeSheet(how){
+  if(!dlg.open||closing)return;
+  if(reduce()){dlg.close();return;}
+  closing=true;
+  const el=originSel?document.querySelector(originSel):null;let kf,dur=300;
+  if(how==='down'){kf=[{transform:dlg.style.transform||'none'},{transform:'translateY('+innerHeight+'px)'}];dur=260;}
+  else if(el){
+    const o=el.getBoundingClientRect(),r=dlg.getBoundingClientRect();
+    const sx=Math.max(o.width/r.width,.08),sy=Math.max(o.height/r.height,.06);
+    const dx=o.left+o.width/2-(r.left+r.width/2),dy=o.top+o.height/2-(r.top+r.height/2);
+    kf=[{transform:'none',opacity:1},{transform:'translate('+dx+'px,'+dy+'px) scale('+sx+','+sy+')',opacity:0}];
+  }else kf=[{transform:'none',opacity:1},{transform:'translateY(60px) scale(.96)',opacity:0}];
+  const a=dlg.animate(kf,{duration:dur,easing:'cubic-bezier(.5,0,.2,1)',fill:'forwards'});
+  closeAnims=[a];
+  try{closeAnims.push(dlg.animate([{opacity:1},{opacity:0}],{duration:dur,pseudoElement:'::backdrop',fill:'forwards'}));}catch(e){}
+  const end=()=>{closeAnims.forEach(x=>{x.oncancel=null;x.onfinish=null;try{x.cancel();}catch(e){}});closeAnims=[];dlg.style.transform='';closing=false;if(dlg.open)dlg.close();};
+  a.onfinish=end;a.oncancel=end;
+}
 dlg.addEventListener('click',e=>{if(e.target===dlg)closeSheet();});
+dlg.addEventListener('cancel',e=>{e.preventDefault();closeSheet();});
+
+/* glisser vers le bas pour fermer · glisser sur les côtés pour changer de semaine (bilan) */
+let sd=null;
+dlg.addEventListener('touchstart',e=>{
+  if(e.touches.length!==1||closing){sd=null;return;}
+  sd={x:e.touches[0].clientX,y:e.touches[0].clientY,top:dlg.scrollTop<=0,on:false,dy:0,tw:!!(e.target.closest&&e.target.closest('.tw'))};
+},{passive:true});
+dlg.addEventListener('touchmove',e=>{
+  if(!sd)return;
+  const dy=e.touches[0].clientY-sd.y,dx=e.touches[0].clientX-sd.x;
+  if(!sd.on){if(sd.top&&dy>12&&dy>Math.abs(dx)*1.2)sd.on=true;else return;}
+  e.preventDefault();sd.dy=Math.max(0,dy);dlg.style.transform='translateY('+sd.dy+'px)';
+},{passive:false});
+dlg.addEventListener('touchend',e=>{
+  if(!sd)return;const g=sd;sd=null;
+  const c=e.changedTouches[0],dx=c.clientX-g.x,dy=c.clientY-g.y;
+  if(g.on){
+    if(g.dy>110)closeSheet('down');
+    else{const cur=dlg.style.transform;dlg.style.transform='';if(!reduce())dlg.animate([{transform:cur},{transform:'none'}],{duration:340,easing:'cubic-bezier(.2,.9,.3,1.3)'});}
+    return;
+  }
+  if(dlg.classList.contains('wide')&&!g.tw&&Math.abs(dx)>70&&Math.abs(dx)>Math.abs(dy)*1.6){stW=addDays(stW,dx<0?7:-7);renderStats();}
+},{passive:true});
 
 function dayTitle(k){const d=parse(k);return '<small>'+esc(DOWL[(d.getDay()+6)%7].toUpperCase())+'</small>'+d.getDate()+' '+esc(MONTHS[d.getMonth()])+' '+d.getFullYear();}
 
@@ -508,33 +638,46 @@ function openDay(k){
     '<div class="actions"><div class="grp"><button class="btn solid" data-add="'+k+'">+ Séance</button></div><button class="btn ghost" data-close="1">Fermer</button></div>');
 }
 
+const longDate=k=>{const d=parse(k);return DOWL[(d.getDay()+6)%7]+' '+d.getDate()+' '+MONTHS[d.getMonth()];};
 function openSession(id,date,type){
-  const ex=id?state.sessions.find(s=>s.id===id):null;
+  const ex=id?state.sessions.find(x=>x.id===id):null;
   const dflt=date?HABITS[(parse(date).getDay()+6)%7]:null;
   const s=ex||Object.assign({id:null,date:date||iso(today()),type:'run',title:'',km:'',min:'',when:'',notes:'',done:false},dflt?{type:dflt.type,title:dflt.title,km:dflt.km,min:dflt.min,when:dflt.when}:{},(!ex&&type)?{type:type,title:(dflt&&dflt.type===type)?dflt.title:'',km:(dflt&&dflt.type===type)?dflt.km:'',min:(dflt&&dflt.type===type)?dflt.min:'',when:(dflt&&dflt.type===type)?dflt.when:''}:{});
-  openSheet('<h2><small>'+(ex?'MODIFIER':'NOUVELLE SÉANCE')+'</small>'+(ex?esc(ex.title||TYPES[typeOf(ex.type)].name):'Ajouter')+'</h2>'+
+  const shown={date:false,when:!!s.when,notes:!!s.notes};
+  const pop=()=>[['date','Date'],['when','Heure / moment'],['notes','Notes']].map(o=>'<button type="button" data-reveal="'+o[0]+'">'+o[1]+(shown[o[0]]?'<span>✓</span>':'')+'</button>').join('');
+  openSheet('<button class="dots" type="button" data-dots="1" aria-label="Plus de détails">⋯</button><div class="pop" id="pop" hidden>'+pop()+'</div>'+
+   '<h2><small>'+(ex?'MODIFIER':'NOUVELLE SÉANCE')+'</small>'+(ex?esc(ex.title||TYPES[typeOf(ex.type)].name):'Ajouter')+'</h2><div class="sline" id="sline"></div>'+
    '<form id="sf" autocomplete="off">'+
    '<div class="field"><span class="lbl">DISCIPLINE</span><div class="types">'+KEYS.map(k=>'<input type="radio" name="type" id="t-'+k+'" value="'+k+'"'+(typeOf(s.type)===k?' checked':'')+'><label for="t-'+k+'" style="--c:'+TYPES[k].color+'"><i class="dot" style="--c:'+TYPES[k].color+'"></i>'+TYPES[k].label+'</label>').join('')+'</div></div>'+
    '<div class="field"><label for="f-title">TITRE</label><input type="text" id="f-title" name="title" value="'+esc(s.title)+'" placeholder="ex. Seuil 2×10\'"></div>'+
-   '<div class="row"><div class="field"><label for="f-date">DATE</label><input type="date" id="f-date" name="date" value="'+esc(s.date)+'" required></div>'+
-   '<div class="field"><label for="f-when">MOMENT</label><select id="f-when" name="when">'+WHEN.map(w=>'<option value="'+esc(w)+'"'+((s.when||'')===w?' selected':'')+'>'+(w?w.charAt(0).toUpperCase()+w.slice(1):'Non précisé')+'</option>').join('')+'</select></div></div>'+
    '<div class="row"><div class="field"><label for="f-km">DISTANCE (KM)</label><input type="text" inputmode="decimal" id="f-km" name="km" value="'+esc(s.km||'')+'" placeholder="—"></div>'+
    '<div class="field"><label for="f-min">DURÉE (MIN)</label><input type="text" inputmode="numeric" id="f-min" name="min" value="'+esc(s.min||'')+'" placeholder="—"></div></div>'+
-   '<div class="field"><span class="lbl">RÉALISÉ (OPTIONNEL)</span></div><div class="row" style="margin-top:-8px"><div class="field"><label for="f-akm">KM RÉELS</label><input type="text" inputmode="decimal" id="f-akm" name="akm" value="'+esc(s.akm||'')+'" placeholder="—"></div>'+
-   '<div class="field"><label for="f-amin">DURÉE RÉELLE (MIN)</label><input type="text" inputmode="numeric" id="f-amin" name="amin" value="'+esc(s.amin||'')+'" placeholder="—"></div>'+
-   '<div class="field"><label for="f-hr">FC MOY.</label><input type="text" inputmode="numeric" id="f-hr" name="hr" value="'+esc(s.hr||'')+'" placeholder="—"></div></div>'+
-   '<div class="field"><label for="f-notes">NOTES</label><textarea id="f-notes" name="notes" placeholder="Détail de la séance, ressenti…">'+esc(s.notes||'')+'</textarea></div>'+
+   '<div class="field opt" data-opt="date" hidden><label for="f-date">DATE</label><input type="date" id="f-date" name="date" value="'+esc(s.date)+'" required></div>'+
+   '<div class="field opt" data-opt="when"'+(shown.when?'':' hidden')+'><label for="f-when">HEURE / MOMENT</label><select id="f-when" name="when">'+WHEN.map(w=>'<option value="'+esc(w)+'"'+((s.when||'')===w?' selected':'')+'>'+(w?w.charAt(0).toUpperCase()+w.slice(1):'Non précisé')+'</option>').join('')+'</select></div>'+
+   '<div class="field opt" data-opt="notes"'+(shown.notes?'':' hidden')+'><label for="f-notes">NOTES</label><textarea id="f-notes" name="notes" placeholder="Détail de la séance, ressenti…">'+esc(s.notes||'')+'</textarea></div>'+
    '<div class="field"><span class="lbl">STATUT</span><div class="types two"><input type="radio" name="done" id="d-off" value="off"'+(s.done?'':' checked')+'><label for="d-off">À FAIRE</label><input type="radio" name="done" id="d-on" value="on"'+(s.done?' checked':'')+'><label for="d-on">✓ FAIT</label></div></div>'+
+   '<div id="realbox"'+(s.done?'':' hidden')+'><div class="field" style="margin-bottom:-6px"><span class="lbl">RÉALISÉ</span></div>'+realFields(typeOf(s.type),s,'f-a')+'</div>'+
    '<div class="actions"><div class="grp"><button class="btn solid" type="submit">Enregistrer</button><button class="btn ghost" type="button" data-close="1">Annuler</button></div>'+(ex?'<button class="btn danger" type="button" data-del="'+esc(ex.id)+'">Supprimer</button>':'')+'</div></form>');
-  $('#sf').addEventListener('submit',e=>{
+  dlg.querySelector('.sheet').classList.add('hasdots');
+  const form=$('#sf'),curType=()=>typeOf(new FormData(form).get('type'));
+  const line=()=>{const f=new FormData(form),w=f.get('when');$('#sline').textContent=longDate(f.get('date')||s.date)+(w?' · '+w:'');};
+  const sync=()=>{
+    const t=curType(),sw=t==='swim';
+    $('#realbox').hidden=new FormData(form).get('done')!=='on';
+    form.querySelector('.rw-bike').hidden=t!=='bike';
+    form.querySelector('.rl-km').textContent=sw?'DISTANCE (M)':'DISTANCE (KM)';
+  };
+  form.addEventListener('change',()=>{line();sync();});
+  dlg._shown=shown;dlg._popHTML=pop;line();sync();
+  form.addEventListener('submit',e=>{
     e.preventDefault();
-    const f=new FormData(e.target);
-    const rec={id:ex?ex.id:uid(),date:f.get('date')||s.date,type:typeOf(f.get('type')),title:String(f.get('title')||'').trim(),
-      km:num(f.get('km')),min:num(f.get('min')),akm:num(f.get('akm')),amin:num(f.get('amin')),hr:num(f.get('hr')),when:WHEN.includes(f.get('when'))?f.get('when'):'',notes:String(f.get('notes')||'').trim(),done:f.get('done')==='on'};
+    const f=new FormData(form),ty=typeOf(f.get('type'));
+    const rec=Object.assign({id:ex?ex.id:uid(),date:f.get('date')||s.date,type:ty,title:String(f.get('title')||'').trim(),
+      km:num(f.get('km')),min:num(f.get('min')),when:WHEN.includes(f.get('when'))?f.get('when'):'',notes:String(f.get('notes')||'').trim(),done:f.get('done')==='on'},readReal(f,ty));
     if(ex)Object.assign(ex,rec,{edited:true});else state.sessions.push(rec);
-    save();cursor=parse(rec.date);closeSheet();render();
+    save();cursor=parse(rec.date);closeSheet();render();appear(rec.id);
   });
-  setTimeout(()=>{const f=$('#f-title');if(f&&!ex)f.focus();},30);
+  setTimeout(()=>{const f=$('#f-title');if(f&&!ex&&!f.value)f.focus();},30);
 }
 
 let quickDay=null;
@@ -588,7 +731,7 @@ function importData(obj){
   if(obj&&obj.settings&&typeof obj.settings==='object')state.settings=Object.assign({},state.settings,obj.settings);
   if(obj&&Array.isArray(obj.sessions)){
     const m=new Map(state.sessions.map(s=>[s.id,s]));
-    obj.sessions.forEach(s=>{if(s&&s.id&&/^\d{4}-\d{2}-\d{2}$/.test(s.date||'')){if(!m.has(s.id))added++;m.set(String(s.id),{id:String(s.id),date:s.date,type:typeOf(s.type),title:String(s.title||''),km:num(s.km),min:num(s.min),akm:num(s.akm),amin:num(s.amin),hr:num(s.hr),when:WHEN.includes(s.when)?s.when:'',notes:String(s.notes||''),done:!!s.done});}});
+    obj.sessions.forEach(s=>{if(s&&s.id&&/^\d{4}-\d{2}-\d{2}$/.test(s.date||'')){if(!m.has(s.id))added++;m.set(String(s.id),{id:String(s.id),date:s.date,type:typeOf(s.type),title:String(s.title||''),km:num(s.km),min:num(s.min),akm:num(s.akm),amin:num(s.amin),pw:num(s.pw),when:WHEN.includes(s.when)?s.when:'',notes:String(s.notes||''),done:!!s.done});}});
     state.sessions=[...m.values()];
   }
   save();render();return added;
@@ -600,7 +743,7 @@ const METRICS={min:{label:'Durée',get:(x,d)=>d?x.dmin:x.min,fmt:v=>fmtDur(v)||'
 function wk(mon){
   const list=[];for(let i=0;i<7;i++)list.push(...sessionsOn(iso(addDays(mon,i))));
   const t=totals(list),all={km:0,min:0,dkm:0,dmin:0,n:0,dn:0,hw:0,hm:0,pk:0,pm:0};
-  KEYS.forEach(k=>{for(const f in all)all[f]+=t[k][f];});t.all=all;t.run.pace=t.run.pk?t.run.pm/t.run.pk:0;all.hr=all.hm?all.hw/all.hm:0;return t;
+  KEYS.forEach(k=>{for(const f in all)all[f]+=t[k][f];});t.all=all;t.run.pace=t.run.pk?t.run.pm/t.run.pk:0;t.bike.pw=t.bike.hm?t.bike.hw/t.bike.hm:0;return t;
 }
 function dlt(a,b){
   if(!b)return a?'<span class="dl">nouveau</span>':'<span class="dl">—</span>';
@@ -678,11 +821,11 @@ function statsTab(cur,pr,ks){
   const cmp='<div class="stt">COMPARAISON AVEC LA SEMAINE PRÉCÉDENTE</div><div class="tw"><table class="stab cmp"><thead><tr><th>Discipline</th><th>'+fmtDM(addDays(stW,-7))+'</th><th>'+fmtDM(stW)+'</th><th>Écart</th></tr></thead><tbody>'+
     ks.map(k=>row(TYPES[k].name,k)).join('')+row('<b>Total</b>','all')+
     '<tr><td>Allure CAP</td><td class="mut">'+(pr.run.pace?fmtPace(pr.run.pace)+'/km':'—')+'</td><td>'+(cur.run.pace?fmtPace(cur.run.pace)+'/km':'—')+'</td><td>'+dpace(cur.run.pace,pr.run.pace)+'</td></tr>'+
-    '<tr><td>FC moyenne</td><td class="mut">'+(pr.all.hr?Math.round(pr.all.hr)+' bpm':'—')+'</td><td>'+(cur.all.hr?Math.round(cur.all.hr)+' bpm':'—')+'</td><td>'+(cur.all.hr&&pr.all.hr?'<span class="dl">'+(Math.round(cur.all.hr-pr.all.hr)>0?'+':'')+Math.round(cur.all.hr-pr.all.hr)+' bpm</span>':'<span class="dl">—</span>')+'</td></tr>'+
+    '<tr><td>Puissance vélo</td><td class="mut">'+(pr.bike.pw?Math.round(pr.bike.pw)+' W':'—')+'</td><td>'+(cur.bike.pw?Math.round(cur.bike.pw)+' W':'—')+'</td><td>'+(cur.bike.pw&&pr.bike.pw?'<span class="dl">'+(Math.round(cur.bike.pw-pr.bike.pw)>0?'+':'')+Math.round(cur.bike.pw-pr.bike.pw)+' W</span>':'<span class="dl">—</span>')+'</td></tr>'+
     '<tr><td>Séances</td><td class="mut">'+pr.all.n+'</td><td>'+cur.all.n+'</td><td>'+dlt(cur.all.n,pr.all.n)+'</td></tr></tbody></table></div>';
   const ws=weekRange();let prevMin=null;
-  const rows=ws.map(m=>{const t=wk(m),a=t.all;const r='<tr data-stw="'+iso(m)+'"'+(iso(m)===iso(stW)?' class="sel"':'')+'><td>'+fmtDM(m)+' <span class="mut">'+esc(relWeek(m))+'</span></td><td'+(alertsFor(m).length?' class="warn" title="Dépasse la limite"':'')+'>'+(alertsFor(m).length?'⚠ ':'')+(t.run.km?fmtKm(t.run.km):'—')+'</td><td class="mut">'+(t.run.pace?fmtPace(t.run.pace):'—')+'</td><td class="mut">'+(a.hr?Math.round(a.hr):'—')+'</td><td>'+(fmtDur(t.bike.min)||'—')+'</td><td>'+(fmtDur(t.swim.min)||'—')+'</td><td><b>'+(fmtDur(a.min)||'—')+'</b></td><td>'+(a.min?Math.round(a.dmin/a.min*100)+' %':'—')+'</td><td>'+(prevMin===null?'<span class="dl">—</span>':dlt(a.min,prevMin))+'</td></tr>';prevMin=a.min;return r;}).join('');
-  const all='<div class="stt">TOUTES LES SEMAINES</div><div class="tw"><table class="stab"><thead><tr><th>Semaine</th><th>CAP</th><th>Allure</th><th>FC</th><th>Vélo</th><th>Nat</th><th>Total</th><th>Fait</th><th>Écart</th></tr></thead><tbody>'+rows+'</tbody></table></div><p class="hint">Touche une ligne pour la comparer. « Fait » = temps réalisé sur le temps prévu.</p>';
+  const rows=ws.map(m=>{const t=wk(m),a=t.all;const r='<tr data-stw="'+iso(m)+'"'+(iso(m)===iso(stW)?' class="sel"':'')+'><td>'+fmtDM(m)+' <span class="mut">'+esc(relWeek(m))+'</span></td><td'+(alertsFor(m).length?' class="warn" title="Dépasse la limite"':'')+'>'+(alertsFor(m).length?'⚠ ':'')+(t.run.km?fmtKm(t.run.km):'—')+'</td><td class="mut">'+(t.run.pace?fmtPace(t.run.pace):'—')+'</td><td class="mut">'+(t.bike.pw?Math.round(t.bike.pw):'—')+'</td><td>'+(fmtDur(t.bike.min)||'—')+'</td><td>'+(fmtDur(t.swim.min)||'—')+'</td><td><b>'+(fmtDur(a.min)||'—')+'</b></td><td>'+(a.min?Math.round(a.dmin/a.min*100)+' %':'—')+'</td><td>'+(prevMin===null?'<span class="dl">—</span>':dlt(a.min,prevMin))+'</td></tr>';prevMin=a.min;return r;}).join('');
+  const all='<div class="stt">TOUTES LES SEMAINES</div><div class="tw"><table class="stab"><thead><tr><th>Semaine</th><th>CAP</th><th>Allure</th><th>Watts</th><th>Vélo</th><th>Nat</th><th>Total</th><th>Fait</th><th>Écart</th></tr></thead><tbody>'+rows+'</tbody></table></div><p class="hint">Touche une ligne pour la comparer. « Fait » = temps réalisé sur le temps prévu.</p>';
   return cmp+all;
 }
 function renderStats(){
@@ -698,15 +841,13 @@ function openStats(){stW=mondayOf(cursor);renderStats();}
 
 /* ---------- réalisé rapide ---------- */
 function openActual(id){
-  const s=state.sessions.find(x=>x.id===id);if(!s)return;
-  const T=TYPES[typeOf(s.type)];
-  openSheet('<h2><small>RÉEL · '+esc(T.label)+'</small>'+esc(s.title||T.name)+'</h2>'+
-    '<p class="hint">Prévu : '+esc([fmtKm(num(s.km)),fmtDur(num(s.min))].filter(Boolean).join(' · ')||'—')+'. Laisse vide pour garder le prévu.</p>'+
-    '<form id="af" autocomplete="off"><div class="row"><div class="field"><label for="a-km">KM RÉELS</label><input type="text" inputmode="decimal" id="a-km" name="akm" value="'+esc(s.akm||'')+'" placeholder="'+esc(s.km||'—')+'"></div>'+
-    '<div class="field"><label for="a-min">DURÉE (MIN)</label><input type="text" inputmode="numeric" id="a-min" name="amin" value="'+esc(s.amin||'')+'" placeholder="'+esc(s.min||'—')+'"></div>'+
-    '<div class="field"><label for="a-hr">FC MOY. (BPM)</label><input type="text" inputmode="numeric" id="a-hr" name="hr" value="'+esc(s.hr||'')+'" placeholder="—"></div></div>'+
+  const x=state.sessions.find(v=>v.id===id);if(!x)return;
+  const ty=typeOf(x.type),T=TYPES[ty];
+  openSheet('<h2><small>RÉEL · '+esc(T.label)+'</small>'+esc(x.title||T.name)+'</h2>'+
+    '<p class="hint">Prévu : '+esc([fmtKm(num(x.km)),fmtDur(num(x.min))].filter(Boolean).join(' · ')||'—')+'. Laisse vide pour garder le prévu.</p>'+
+    '<form id="af" autocomplete="off">'+realFields(ty,x,'a-')+
     '<div class="actions"><div class="grp"><button class="btn solid" type="submit">Enregistrer</button><button class="btn ghost" type="button" data-close="1">Plus tard</button></div></div></form>');
-  $('#af').addEventListener('submit',e=>{e.preventDefault();const f=new FormData(e.target);s.akm=num(f.get('akm'));s.amin=num(f.get('amin'));s.hr=num(f.get('hr'));save();closeSheet();render();});
+  $('#af').addEventListener('submit',e=>{e.preventDefault();Object.assign(x,readReal(new FormData(e.target),ty));save();closeSheet();render();});
   setTimeout(()=>{const f=$('#a-km');if(f)f.focus();},30);
 }
 
@@ -743,12 +884,33 @@ function applyCopy(){
   toast(created.length+' séances copiées',()=>{state.sessions=state.sessions.filter(x=>!created.includes(x)).concat(removed);save();render();});
 }
 
+/* ---------- micro-animations des cartes ---------- */
+function cardEl(id){return document.querySelector('.sess[data-sess="'+id+'"]');}
+function popCard(id,done){
+  if(reduce())return;const el=cardEl(id);if(!el)return;
+  el.animate([{transform:'scale(.95)'},{transform:'scale(1.03)',offset:.55},{transform:'scale(1)'}],{duration:440,easing:'cubic-bezier(.2,.9,.3,1.2)'});
+  el.querySelectorAll('.tag,.name,.big,.sub').forEach(n=>n.animate([{opacity:done?1:.42},{opacity:done?.42:1}],{duration:480,easing:'ease-out'}));
+  const st=el.querySelector('.st');if(st)st.animate([{transform:'scale(.55)'},{transform:'scale(1.22)',offset:.6},{transform:'scale(1)'}],{duration:500,easing:'cubic-bezier(.2,.9,.3,1)'});
+}
+function appear(id){
+  if(reduce())return;const el=cardEl(id);if(!el)return;
+  el.animate([{opacity:0,transform:'translateY(14px) scale(.94)'},{opacity:1,transform:'none'}],{duration:480,easing:'cubic-bezier(.2,.9,.3,1.15)',delay:260,fill:'backwards'});
+}
+function settle(id){
+  if(reduce())return;const el=cardEl(id);if(!el)return;
+  el.animate([{transform:'scale(1.08)',boxShadow:'0 14px 30px rgba(0,0,0,.5)'},{transform:'scale(1)',boxShadow:'0 0 0 rgba(0,0,0,0)'}],{duration:460,easing:'cubic-bezier(.2,.9,.3,1.25)'});
+}
+function slideView(n){
+  if(reduce())return;
+  $('#view').animate([{transform:'translateX('+(n>0?40:-40)+'px)',opacity:0},{transform:'none',opacity:1}],{duration:400,easing:'cubic-bezier(.2,.9,.25,1)'});
+}
+
 /* ---------- statut ---------- */
 function setDone(id,val){
   const s=state.sessions.find(x=>x.id===id);
   if(!s||!!s.done===val)return;
-  s.done=val;save();render();
-  toast(val?'Séance faite ✓':'Remise à faire',()=>{s.done=!val;save();render();},val?{label:'RÉEL…',fn:()=>openActual(id)}:null);
+  s.done=val;save();render();popCard(id,val);
+  toast(val?'Séance faite ✓':'Remise à faire',()=>{s.done=!val;save();render();popCard(id,!val);},val?{label:'RÉEL…',fn:()=>openActual(id)}:null);
 }
 
 /* ---------- toast ---------- */
@@ -837,7 +999,7 @@ function endDrag(cancel){
   const s=state.sessions.find(x=>x.id===id);
   if(!s||s.date===target)return;
   const from=s.date;
-  s.date=target;s.edited=true;save();render();
+  s.date=target;s.edited=true;save();render();settle(id);
   const d=parse(target);
   toast('Déplacé au '+DOWL[(d.getDay()+6)%7].toLowerCase()+' '+fmtDM(d),()=>{s.date=from;save();render();});
 }
@@ -852,8 +1014,17 @@ document.addEventListener('click',e=>{
   const ex=e.target.closest&&e.target.closest('[data-extra]');
   if(ex){if(extraFn){const f=extraFn;extraFn=null;$('#toast').classList.remove('show');f();}return;}
   if(performance.now()<blockClickUntil){e.preventDefault();e.stopPropagation();return;}
-  const t=e.target.closest('[data-copy],[data-cpf],[data-cpm],[data-cpgo],[data-stats],[data-sttab],[data-stw],[data-stm],[data-toggle],[data-chip],[data-q],[data-fab],[data-sess],[data-day],[data-add],[data-race],[data-close],[data-del],[data-export],[data-import],[data-reset]');
+  const t=e.target.closest('[data-dots],[data-reveal],[data-copy],[data-cpf],[data-cpm],[data-cpgo],[data-stats],[data-sttab],[data-stw],[data-stm],[data-toggle],[data-chip],[data-q],[data-fab],[data-sess],[data-day],[data-add],[data-race],[data-close],[data-del],[data-export],[data-import],[data-reset]');
   if(!t)return;
+  if(t.dataset.dots){const pp=$('#pop');if(pp)pp.hidden=!pp.hidden;return;}
+  if(t.dataset.reveal){
+    const k=t.dataset.reveal,sh=dlg._shown;if(!sh)return;
+    sh[k]=!sh[k];const o=dlg.querySelector('[data-opt="'+k+'"]');if(o)o.hidden=!sh[k];
+    const pp=$('#pop');if(pp){pp.innerHTML=dlg._popHTML();pp.hidden=true;}
+    if(sh[k]){const inp=o&&o.querySelector('input,select,textarea');if(inp&&k!=='date')setTimeout(()=>inp.focus(),30);}
+    return;
+  }
+  if(!dlg.open&&(t.dataset.sess||t.dataset.add||t.dataset.day||t.dataset.race||t.dataset.copy))setOrigin(t);
   if(t.dataset.copy){openCopy();return;}
   if(t.dataset.cpf){cpF=Number(t.dataset.cpf);renderCopy();return;}
   if(t.dataset.cpm){cpMode=t.dataset.cpm;renderCopy();return;}
@@ -883,17 +1054,17 @@ document.addEventListener('change',e=>{
     r.readAsText(c.files[0]);
   }
 });
-$('#raceCard').addEventListener('click',openRace);
-$('#fab').addEventListener('click',openQuick);
-$('#btnStats').addEventListener('click',openStats);
-$('#btnMenu').addEventListener('click',openMenu);
-$('#btnToday').addEventListener('click',()=>{cursor=today();render();window.scrollTo({top:0,behavior:'smooth'});});
-$('#vWeek').addEventListener('click',()=>{view='week';render();});
+$('#raceCard').addEventListener('click',e=>{setOrigin(e.currentTarget);openRace();});
+$('#fab').addEventListener('click',e=>{setOrigin(e.currentTarget);openQuick();});
+$('#btnStats').addEventListener('click',e=>{setOrigin(e.currentTarget);openStats();});
+$('#btnMenu').addEventListener('click',e=>{setOrigin(e.currentTarget);openMenu();});
+$('#btnToday').addEventListener('click',()=>{cursor=today();enterNext=true;render();window.scrollTo({top:0,behavior:'smooth'});});
+$('#vWeek').addEventListener('click',()=>{view='week';enterNext=true;render();});
 $('#vMonth').addEventListener('click',()=>{view='month';render();});
 function shift(n){
   if(view==='week')cursor=addDays(cursor,7*n);
   else cursor=new Date(cursor.getFullYear(),cursor.getMonth()+n,1);
-  render();
+  render();slideView(n);
 }
 $('#prev').addEventListener('click',()=>shift(-1));
 $('#next').addEventListener('click',()=>shift(1));
@@ -901,6 +1072,18 @@ document.addEventListener('keydown',e=>{
   if(dlg.open||/INPUT|TEXTAREA|SELECT/.test((e.target.tagName||'')))return;
   if(e.key==='ArrowLeft')shift(-1);else if(e.key==='ArrowRight')shift(1);
 });
+// glisser sur les côtés (hors cartes) : semaine précédente / suivante
+let ws=null;
+document.addEventListener('touchstart',e=>{
+  if(dlg.open||e.touches.length!==1||drag){ws=null;return;}
+  const t=e.target;if(t.closest&&t.closest('.sess,.fab,input,select,textarea,#toast,.drag-ghost')){ws=null;return;}
+  ws={x:e.touches[0].clientX,y:e.touches[0].clientY};
+},{passive:true});
+document.addEventListener('touchend',e=>{
+  if(!ws)return;const g=ws;ws=null;if(dlg.open)return;
+  const c=e.changedTouches[0],dx=c.clientX-g.x,dy=c.clientY-g.y;
+  if(Math.abs(dx)>70&&Math.abs(dx)>Math.abs(dy)*1.6)shift(dx<0?1:-1);
+},{passive:true});
 // refresh the countdown if the app stays open past midnight
 let lastDay=iso(today());
 setInterval(()=>{const k=iso(today());if(k!==lastDay){lastDay=k;render();}},60000);
