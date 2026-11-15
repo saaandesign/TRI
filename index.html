@@ -352,9 +352,9 @@ function renderLegend(){
 function sessHTML(s){
   const k=typeOf(s.type),T=TYPES[k];
   const big=s.km?fmtKm(num(s.km)):(s.min?fmtDur(num(s.min)):'');
-  const sub=(s.km&&s.min)?fmtDur(num(s.min)):'';
+  const sub=[s.when?s.when.charAt(0).toUpperCase()+s.when.slice(1):'',(s.km&&s.min)?fmtDur(num(s.min)):''].filter(Boolean).join(' · ');
   return '<div class="sw"><button class="sess'+(s.done?' done':'')+'" data-sess="'+esc(s.id)+'" style="--c:'+T.color+'">'+
-    '<span class="srow"><span class="tag"><i class="dot'+(s.done?'':' plan')+'" style="--c:'+T.color+'"></i>'+T.label+(s.when?' <span class="wh">· '+esc(s.when.toUpperCase())+'</span>':'')+'</span>'+
+    '<span class="srow"><span class="tag"><i class="dot'+(s.done?'':' plan')+'" style="--c:'+T.color+'"></i>'+T.label+'</span>'+
     '<span class="st'+(s.done?' on':'')+'" data-toggle="'+esc(s.id)+'" role="button" aria-label="Changer le statut">'+(s.done?'✓ FAIT':'À FAIRE')+'</span></span>'+
     '<span class="name">'+esc(s.title||T.name)+'</span>'+(big?'<span class="big">'+esc(big)+'</span>':'')+(sub?'<span class="sub">'+esc(sub)+'</span>':'')+'</button></div>';
 }
@@ -374,7 +374,7 @@ function renderWeek(){
     const d=addDays(mon,i),k=iso(d),ss=sessionsOn(k);
     list.push(...ss);
     const cls='day'+(diff(t,d)===0?' today':'')+(diff(t,d)<0?' past':'');
-    h+='<div class="'+cls+'" data-date="'+k+'"><button class="dh" data-day="'+k+'" aria-label="Ouvrir '+DOWL[i]+' '+fmtDM(d)+'"><div class="dn">'+fmtDM(d)+'</div><div class="dw">'+DOW[i]+'</div>'+(HABITS[i]?'<div class="hb">'+HABITS[i].label+'</div>':'')+'</button>'+
+    h+='<div class="'+cls+'" data-date="'+k+'"><button class="dh" data-day="'+k+'" aria-label="Ouvrir '+DOWL[i]+' '+fmtDM(d)+'"><div class="dn">'+fmtDM(d)+'</div><div class="dw">'+DOW[i]+'</div>'+'</button>'+
       '<div class="dcol">'+(k===raceK?raceBlock():'')+ss.map(sessHTML).join('')+'<button class="add" data-add="'+k+'">+ Ajouter</button></div></div>';
   }
   $('#sum').innerHTML=sumHTML(totals(list),false);
