@@ -28,7 +28,7 @@
   --display:'Roboto Slab',Rockwell,'Rockwell Std',Georgia,serif;
   --body:'Roboto',system-ui,-apple-system,'Segoe UI',sans-serif;
   --pad:clamp(16px,3vw,40px); --r:14px;
-  --glass:color-mix(in srgb,var(--panel) 88%,transparent); --grain-o:.07; --grain:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 .13 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  --glass:color-mix(in srgb,var(--panel) 88%,transparent); --grain-o:.07; --grain:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 .065 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
   --sheen:linear-gradient(135deg,rgba(255,255,255,.10),rgba(255,255,255,0) 38%,rgba(255,255,255,.05) 72%,rgba(255,255,255,0));
   --amb1:rgba(225,50,50,.17); --amb2:rgba(90,170,255,.11); --amb3:rgba(255,255,255,.07); --bd:rgba(8,8,10,.5);
 }
@@ -39,7 +39,7 @@
   --up:#b4690e; --dn:#1c6fb8; --warn:#d9780f; --warn-hi:#b4600a; --warn-bg:rgba(217,120,15,.1); --ok:#1f9d5a; --ok-bg:rgba(31,157,90,.12);
   --panel-done:#f0f0f2; --hl:rgba(27,27,29,.07); --backdrop:rgba(20,20,24,.45); --scheme:light; --card-shadow:0 1px 2px rgba(27,27,29,.06),0 0 0 1px var(--line);
   --glow1:rgba(0,0,0,.26); --glow2:rgba(0,0,0,.09); --ring-hi:rgba(27,27,29,.95); --ring-lo:rgba(27,27,29,.25); --ring-base:rgba(27,27,29,.08);
-  --glass:color-mix(in srgb,var(--panel) 88%,transparent); --grain-o:.06; --grain:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 .11 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  --glass:color-mix(in srgb,var(--panel) 88%,transparent); --grain-o:.06; --grain:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 .055 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
   --sheen:linear-gradient(135deg,rgba(255,255,255,.45),rgba(255,255,255,0) 40%,rgba(255,255,255,.2) 75%,rgba(255,255,255,0));
   --amb1:rgba(225,50,50,.11); --amb2:rgba(60,130,255,.12); --amb3:rgba(0,0,0,.05); --bd:rgba(214,214,222,.5);
 }
@@ -276,6 +276,14 @@ input[type=date]::-webkit-date-and-time-value{text-align:left}
 .xbtn{right:16px}.dots{right:62px}
 .dots svg{width:18px;height:18px;display:block}
 .iconbtn svg{display:block}
+.top-actions .iconbtn{border:0;background:transparent;width:40px;height:40px;color:var(--muted)}
+.top-actions .iconbtn:hover{color:var(--text);background:var(--hl)}
+.top-actions{gap:2px;margin-left:auto}
+.sumwrap{position:relative;flex:none}
+.sumstat{position:absolute;top:8px;right:8px;width:36px;height:36px;border:0;background:transparent;color:var(--muted);z-index:2}
+.sumstat:hover{color:var(--text);background:var(--hl)}
+#sum:empty{display:none}
+#sum:empty~.sumstat{display:none}
 .rc-add svg{width:16px;height:16px;display:block}
 .types.list{display:flex;flex-direction:column;gap:8px}
 .types.list label{justify-content:flex-start;padding:9px 14px;font-size:12px;gap:12px}
@@ -342,8 +350,9 @@ input[type=date]::-webkit-date-and-time-value{text-align:left}
   .bar{flex:none;padding:14px 0 8px}
   .h1{font-size:clamp(28px,3.2vw,42px);min-height:0}
   .h1 small{margin-bottom:6px}
-  .legend,#alerts,.sum{flex:none}
-  .sum{margin-bottom:12px}
+  .legend,#alerts,.sumwrap{flex:none}
+  .sumwrap{margin-bottom:12px}
+  .sumwrap .sum{margin-bottom:0}
   #view{flex:1;min-height:0;display:flex;flex-direction:column}
   .week{flex:1;min-height:0;margin-bottom:8px}
   .day{min-height:0}
@@ -475,9 +484,7 @@ body.is-dragging .sess{cursor:grabbing}
   <header class="top">
     <span class="logo" role="img" aria-label="Kokoro"><i class="logo-ring"></i></span>
     <div class="top-actions">
-      <button class="iconbtn" id="btnStats" aria-label="Bilan de la semaine" title="Bilan"><svg viewBox="0 0 24 24" fill="none" stroke-width="3.2" stroke-linecap="butt"><circle cx="12" cy="12" r="8.4" style="stroke:var(--faint)"/><circle cx="12" cy="12" r="8.4" style="stroke:currentColor" stroke-dasharray="14 38.8" transform="rotate(-90 12 12)"/></svg></button>
       <button class="iconbtn" id="btnSync" aria-label="Synchroniser" title="Synchroniser"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11a8 8 0 0 0-14.5-3.5M4 5v4h4M4 13a8 8 0 0 0 14.5 3.5M20 19v-4h-4"/></svg></button>
-      <button class="btn ghost" id="btnToday">Aujourd'hui</button>
       <div class="menuwrap"><button class="iconbtn" id="btnMenu" aria-label="Réglages" aria-haspopup="true" aria-expanded="false"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="5" cy="12" r="1.9"/><circle cx="12" cy="12" r="1.9"/><circle cx="19" cy="12" r="1.9"/></svg></button>
         <div class="mpop" id="mpop" hidden><button class="mrow" id="rowTheme" role="switch" aria-checked="true"><span>Mode sombre</span><i class="sw2"><b></b></i></button><button class="mrow sub" id="rowSync">Synchronisation entre appareils…</button><button class="mrow sub" id="rowData">Sauvegarde, import, plafond CAP…</button></div></div>
     </div>
@@ -501,7 +508,7 @@ body.is-dragging .sess{cursor:grabbing}
 
   <div class="legend" id="legend"></div>
   <div id="alerts"></div>
-  <div class="sum" id="sum"></div>
+  <div class="sumwrap"><div class="sum" id="sum"></div><button class="iconbtn sumstat" id="btnStats" aria-label="Bilan de la semaine" title="Bilan"><svg viewBox="0 0 24 24" fill="none" stroke-width="3.2" stroke-linecap="butt"><circle cx="12" cy="12" r="8.4" style="stroke:var(--faint)"/><circle cx="12" cy="12" r="8.4" style="stroke:currentColor" stroke-dasharray="14 38.8" transform="rotate(-90 12 12)"/></svg></button></div>
   <main id="view"></main>
 </div>
 <button class="fab" id="fab" aria-label="Ajouter une séance">+</button>
@@ -817,10 +824,10 @@ function animateOpen(){
   const r=dlg.getBoundingClientRect(),o=originRect,sh=dlg.querySelector('.sheet');
   const D=520,E='cubic-bezier(.2,.85,.25,1)';
   if(o&&o.width>0&&r.width>0){
-    const t=o.top-r.top,rt=r.right-o.right,b=o.bottom?r.bottom-o.bottom:0,l=o.left-r.left;
+    const c0=v=>Math.max(0,v),t=c0(o.top-r.top),rt=c0(r.right-o.right),b=c0(r.bottom-o.bottom),l=c0(o.left-r.left);
     dlg.animate([{clipPath:insetCP(t,rt,b,l,14)},{clipPath:insetCP(0,0,0,0,22)}],{duration:D,easing:E});
   }else dlg.animate([{transform:'scale(.94)',opacity:0},{transform:'none',opacity:1}],{duration:340,easing:E});
-  if(sh)sh.animate([{opacity:0},{opacity:0,offset:.5},{opacity:1}],{duration:D+120,easing:'linear'});
+  if(sh)sh.animate([{opacity:0},{opacity:1}],{duration:240,delay:60,fill:'backwards',easing:'ease-out'});
   try{dlg.animate([{opacity:0},{opacity:1}],{duration:200,pseudoElement:'::backdrop'});}catch(e){}
 }
 function closeSheet(how){
@@ -836,7 +843,7 @@ function closeSheet(how){
     if(sh)closeAnims.push(sh.animate([{opacity:1},{opacity:0}],{duration:130,fill:'forwards',easing:'ease-in'}));
     if(el){
       const o=el.getBoundingClientRect(),r=dlg.getBoundingClientRect();
-      const t=o.top-r.top,rt=r.right-o.right,b=r.bottom-o.bottom,l=o.left-r.left,rad=parseFloat(getComputedStyle(el).borderRadius)||14;
+      const c0=v=>Math.max(0,v),t=c0(o.top-r.top),rt=c0(r.right-o.right),b=c0(r.bottom-o.bottom),l=c0(o.left-r.left),rad=parseFloat(getComputedStyle(el).borderRadius)||14;
       a=dlg.animate([{clipPath:insetCP(0,0,0,0,22),offset:0},{clipPath:insetCP(0,0,0,0,22),offset:.3},{clipPath:insetCP(t,rt,b,l,rad)}],{duration:340,easing:'cubic-bezier(.5,0,.2,1)',fill:'forwards'});
     }else a=dlg.animate([{transform:'none',opacity:1},{transform:'scale(.94)',opacity:0}],{duration:240,fill:'forwards'});
   }
@@ -1458,7 +1465,6 @@ dlg.addEventListener('pointerdown',e=>{
 dlg.addEventListener('contextmenu',e=>{if(e.target.closest&&e.target.closest('.types.list label,.tiles.list .tile'))e.preventDefault();});
 document.addEventListener('click',e=>{if(performance.now()<lpUntil&&!(e.target.closest&&e.target.closest('.trash'))){e.preventDefault();e.stopPropagation();}},true);
 
-$('#btnToday').addEventListener('click',e=>{cursor=today();enterNext=true;render();window.scrollTo({top:0,behavior:'smooth'});setOrigin(e.currentTarget);openDay(iso(today()),true);});
 $('#vWeek').addEventListener('click',()=>{view='week';enterNext=true;render();});
 $('#vMonth').addEventListener('click',()=>{view='month';render();});
 function shift(n){
