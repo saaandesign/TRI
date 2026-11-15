@@ -661,7 +661,16 @@ setInterval(()=>{const k=iso(today());if(k!==lastDay){lastDay=k;render();}},6000
 document.addEventListener('visibilitychange',()=>{if(!document.hidden){const k=iso(today());if(k!==lastDay){lastDay=k;cursor=today();}render();}});
 
 render();
-if('serviceWorker' in navigator&&location.protocol.startsWith('http')){navigator.serviceWorker.register('sw.js').catch(()=>{});}
+if('serviceWorker' in navigator&&location.protocol.startsWith('http')){
+  const had=!!navigator.serviceWorker.controller;let reloaded=false;
+  navigator.serviceWorker.addEventListener('controllerchange',()=>{if(had&&!reloaded){reloaded=true;location.reload();}});   // nouvelle version : rechargement automatique
+  navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(r=>{
+    const chk=()=>{try{r.update();}catch(e){}};
+    chk();setInterval(chk,10*60*1000);
+    document.addEventListener('visibilitychange',()=>{if(!document.hidden)chk();});
+    window.addEventListener('focus',chk);
+  }).catch(()=>{});
+}
 })();
 </script>
 </body>
