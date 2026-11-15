@@ -94,7 +94,7 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
 .dcol{display:flex;flex-direction:column;gap:8px;flex:1;min-height:170px}
 
 .sw{position:relative;border-radius:var(--r);overflow:hidden}
-.sw::before{content:attr(data-rev);position:absolute;inset:0;display:flex;align-items:center;padding:0 20px;font-family:var(--display);font-weight:800;font-size:12px;letter-spacing:.14em;background:var(--text);color:var(--bg);opacity:0}
+.sw::before{content:attr(data-rev);position:absolute;inset:0;display:flex;align-items:center;padding:0 20px;font-family:var(--display);font-weight:800;font-size:13px;letter-spacing:.14em;background:#2f9e68;color:#fff;opacity:0}
 .sw[data-dir]::before{opacity:1}
 .sw[data-dir="r"]::before{justify-content:flex-start}
 .sw[data-dir="l"]::before{justify-content:flex-end}
@@ -232,7 +232,7 @@ table.stab{border-collapse:collapse;width:100%;font-size:13px;white-space:nowrap
 .st{border:1.5px solid #ff9f43;color:#ff9f43;background:rgba(255,159,67,.08)}
 .st:hover{border-color:#ffb870;color:#ffb870}
 .st.on{border-color:#4cd08a;color:#4cd08a;background:rgba(76,208,138,.14)}
-.sess.done{opacity:1;background:rgba(49,44,44,.55)}
+.sess.done{opacity:1;background:rgba(49,44,44,.55);border:1.5px solid #4cd08a;border-left-width:4px;padding:11.5px 12.5px 10.5px 14px}
 .sess.done .tag,.sess.done .name,.sess.done .big,.sess.done .sub{opacity:.42}
 .sess.done .real{opacity:.7}
 #d-off:checked+label{border-color:#ff9f43;color:#ff9f43;background:rgba(255,159,67,.1)}
@@ -968,11 +968,11 @@ document.addEventListener('pointermove',e=>{
   if(!drag.active){
     if(drag.touch){
       const dx=drag.x-drag.sx,dy=drag.y-drag.sy;
-      if(!drag.swipe&&Math.abs(dx)>12&&Math.abs(dx)>Math.abs(dy)*1.4){drag.swipe=true;clearTimeout(drag.timer);drag.el.classList.add('swiping');}
+      if(!drag.swipe&&dx>12&&dx>Math.abs(dy)*1.4){drag.swipe=true;clearTimeout(drag.timer);drag.el.classList.add('swiping');}
       if(drag.swipe){
-        const c=Math.max(-130,Math.min(130,dx)),w=drag.el.closest('.sw');
+        const c=Math.max(0,Math.min(130,dx)),w=drag.el.closest('.sw');
         drag.el.style.transform='translateX('+c+'px)';
-        if(w){if(c>6){w.dataset.dir='r';w.dataset.rev='✓ FAIT';}else if(c<-6){w.dataset.dir='l';w.dataset.rev='↺ À FAIRE';}else delete w.dataset.dir;}
+        if(w){if(c>6){w.dataset.dir='r';w.dataset.rev='✓ FAIT';}else delete w.dataset.dir;}
         return;
       }
       if(dist>10)dragCleanup();return;   // le doigt bouge avant l'appui long : c'est un défilement
@@ -988,7 +988,7 @@ function endDrag(cancel){
   if(drag.swipe){
     const dx=drag.x-drag.sx,id=drag.id;
     dragCleanup();blockClickUntil=performance.now()+400;
-    if(!cancel&&Math.abs(dx)>=72)setDone(id,dx>0);
+    if(!cancel&&dx>=72)setDone(id,true);
     return;
   }
   const was=drag.active,id=drag.id,target=drag.target;
