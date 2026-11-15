@@ -171,6 +171,51 @@ textarea{resize:vertical;min-height:84px;line-height:1.4}
 .tile:hover{border-color:var(--text);border-left-color:var(--c)}
 .tile small{display:block;font-family:var(--body);font-weight:400;font-size:12px;color:var(--muted);margin-top:3px}
 
+/* ---------- bilan ---------- */
+dialog.wide{width:min(940px,calc(100vw - 24px))}
+.iconbtn{width:44px;height:42px;border:1px solid var(--line);border-radius:999px;display:grid;place-items:center;color:var(--text)}
+.iconbtn:hover{border-color:var(--text)}
+.iconbtn svg{width:22px;height:22px}
+.stnav{display:flex;gap:8px;align-items:center;justify-content:space-between;margin-top:18px;flex-wrap:wrap}
+.stnav .seg button{padding:10px 14px}
+.stmain{margin-top:22px}
+.donutwrap{position:relative;width:min(220px,60vw);aspect-ratio:1;flex:none}
+.donut{width:100%;height:100%;display:block}
+.dc{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;pointer-events:none}
+.dc b{font-family:var(--display);font-weight:800;font-size:clamp(18px,3vw,26px);line-height:1.1}
+.dc span{font-size:11px;color:var(--muted);margin-top:3px;letter-spacing:.04em}
+.stsplit{display:flex;gap:clamp(18px,4vw,44px);align-items:center;flex-wrap:wrap}
+.lg{flex:1;min-width:220px;display:flex;flex-direction:column}
+.lg .r{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;padding:11px 0;border-bottom:1px solid var(--line);font-size:14px}
+.lg .r small{display:block;color:var(--muted);font-size:12px}
+.lg .r .v{font-weight:300;font-size:18px;text-align:right}
+.lg .r .v small{font-weight:400}
+.rings{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px;margin-top:22px}
+.rcard{background:var(--bg);border:1px solid var(--line);border-radius:var(--r);padding:16px 12px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:10px}
+.rcard .donutwrap{width:96px}
+.rcard .t{font-family:var(--display);font-weight:700;font-size:10px;letter-spacing:.12em;display:flex;gap:7px;align-items:center}
+.rcard .d{font-size:12px;color:var(--muted);line-height:1.35}
+.stt{font-family:var(--display);font-weight:700;font-size:10px;letter-spacing:.14em;color:var(--muted);margin:26px 0 6px}
+.chart{width:100%;height:auto;display:block;margin-top:10px}
+.chart text{fill:var(--muted);font-family:var(--body);font-size:10px}
+.chart .sel{fill:var(--text);font-weight:700}
+.chart rect[data-stw]{cursor:pointer}
+.tw{overflow-x:auto;margin-top:8px;border:1px solid var(--line);border-radius:var(--r)}
+table.stab{border-collapse:collapse;width:100%;font-size:13px;white-space:nowrap}
+.stab th{font-family:var(--display);font-weight:700;font-size:10px;letter-spacing:.1em;color:var(--muted);text-align:right;padding:11px 12px;border-bottom:1px solid var(--line);background:var(--panel)}
+.stab td{text-align:right;padding:11px 12px;border-bottom:1px solid var(--line)}
+.stab th:first-child,.stab td:first-child{text-align:left}
+.stab tr[data-stw]{cursor:pointer}
+.stab tr[data-stw]:hover td{background:var(--panel2)}
+.stab tr.sel td{background:rgba(225,50,50,.16)}
+.stab tr:last-child td{border-bottom:0}
+.stab .mut{color:var(--muted)}
+.dl{font-size:12px;color:var(--muted)}
+.dl.up{color:#ffb15c}.dl.dn{color:#7cc4ff}
+.cmp td:nth-child(n+2){font-variant-numeric:tabular-nums}
+.cmp td small{font-size:11px;color:var(--muted)}
+@media (max-width:520px){.stnav .seg button{padding:9px 9px;font-size:10px;letter-spacing:.04em}.stnav{flex-wrap:nowrap}.stab th,.stab td{padding:10px 8px}}
+
 /* ---------- bouton + ---------- */
 .fab{position:fixed;right:max(18px,env(safe-area-inset-right));bottom:calc(18px + env(safe-area-inset-bottom));width:60px;height:60px;border-radius:50%;background:var(--red);color:#fff;display:grid;place-items:center;font-size:32px;line-height:1;font-weight:300;box-shadow:0 10px 28px rgba(0,0,0,.55);z-index:50;transition:transform .15s}
 .fab:hover{transform:scale(1.06)}
@@ -222,6 +267,7 @@ body.is-dragging .sess{cursor:grabbing}
   <header class="top">
     <span class="logo" role="img" aria-label="Kokoro"></span>
     <div class="top-actions">
+      <button class="iconbtn" id="btnStats" aria-label="Bilan de la semaine" title="Bilan"><svg viewBox="0 0 24 24" fill="none" stroke-width="3.2" stroke-linecap="butt"><circle cx="12" cy="12" r="8.4" style="stroke:var(--faint)"/><circle cx="12" cy="12" r="8.4" style="stroke:currentColor" stroke-dasharray="14 38.8" transform="rotate(-90 12 12)"/></svg></button>
       <button class="btn ghost" id="btnToday">Aujourd'hui</button>
       <button class="btn" id="btnMenu" aria-label="Menu">Menu</button>
     </div>
@@ -412,7 +458,7 @@ function render(){
 
 /* ---------- dialogs ---------- */
 const dlg=$('#dlg');
-function openSheet(html){dlg.innerHTML='<div class="sheet">'+html+'</div>';if(!dlg.open)dlg.showModal();}
+function openSheet(html,cls){dlg.className=cls||'';dlg.innerHTML='<div class="sheet">'+html+'</div>';if(!dlg.open)dlg.showModal();}
 function closeSheet(){if(dlg.open)dlg.close();}
 dlg.addEventListener('click',e=>{if(e.target===dlg)closeSheet();});
 
@@ -507,6 +553,101 @@ function importData(obj){
   }
   save();render();return added;
 }
+
+/* ---------- bilan ---------- */
+let stW=null,stTab='ring',stMetric='min';
+const METRICS={min:{label:'Durée',get:(x,d)=>d?x.dmin:x.min,fmt:v=>fmtDur(v)||'0'},km:{label:'Distance',get:(x,d)=>d?x.dkm:x.km,fmt:v=>(fmtKm(v)||'0 km')},n:{label:'Séances',get:(x,d)=>d?x.dn:x.n,fmt:v=>String(v)}};
+function wk(mon){
+  const list=[];for(let i=0;i<7;i++)list.push(...sessionsOn(iso(addDays(mon,i))));
+  const t=totals(list),all={km:0,min:0,dkm:0,dmin:0,n:0,dn:0};
+  KEYS.forEach(k=>{for(const f in all)all[f]+=t[k][f];});t.all=all;return t;
+}
+function dlt(a,b){
+  if(!b)return a?'<span class="dl">nouveau</span>':'<span class="dl">—</span>';
+  const p=Math.round((a-b)/b*100);
+  if(p===0)return '<span class="dl">=</span>';
+  return '<span class="dl '+(p>0?'up':'dn')+'">'+(p>0?'▲ +':'▼ ')+p+' %</span>';
+}
+function donut(parts,total,size,sw){
+  const r=(size-sw)/2,C=2*Math.PI*r,c=size/2;let off=0;
+  let h='<svg viewBox="0 0 '+size+' '+size+'" class="donut" aria-hidden="true"><circle cx="'+c+'" cy="'+c+'" r="'+r+'" fill="none" stroke-width="'+sw+'" style="stroke:var(--line)"/>';
+  parts.forEach(p=>{if(!(p.v>0)||!(total>0))return;const len=Math.min(C,C*p.v/total);
+    h+='<circle cx="'+c+'" cy="'+c+'" r="'+r+'" fill="none" stroke-width="'+sw+'" style="stroke:'+p.c+'" stroke-dasharray="'+len.toFixed(2)+' '+(C-len).toFixed(2)+'" stroke-dashoffset="'+(-off).toFixed(2)+'" transform="rotate(-90 '+c+' '+c+')"/>';off+=len;});
+  return h+'</svg>';
+}
+function relWeek(mon){
+  const wr=diff(mondayOf(parse(state.settings.raceDate)),mon);
+  return wr<0?'S−'+(-wr/7):(wr===0?'Semaine de course':'Après la course');
+}
+function weekRange(){
+  let a=null,b=mondayOf(parse(state.settings.raceDate));
+  state.sessions.forEach(x=>{const m=mondayOf(parse(x.date));if(!a||m<a)a=m;if(m>b)b=m;});
+  a=a||b;const out=[];for(let d=a;d<=b&&out.length<80;d=addDays(d,7))out.push(d);return out;
+}
+function statsRing(cur,pr,ks){
+  const tot=cur.all.min;
+  const parts=ks.map(k=>({v:cur[k].min,c:TYPES[k].color}));
+  const share=ks.map(k=>'<div class="r"><i class="dot" style="--c:'+TYPES[k].color+'"></i><div>'+TYPES[k].name+'<small>'+(cur[k].km?fmtKm(cur[k].km)+' · ':'')+cur[k].n+' séance'+(cur[k].n>1?'s':'')+'</small></div><div class="v">'+(fmtDur(cur[k].min)||'—')+'<small> '+(tot?Math.round(cur[k].min/tot*100):0)+' %</small></div></div>').join('');
+  const rings=ks.map(k=>{
+    const x=cur[k],pc=x.min?Math.min(100,Math.round(x.dmin/x.min*100)):0;
+    return '<div class="rcard"><div class="t"><i class="dot" style="--c:'+TYPES[k].color+'"></i>'+TYPES[k].label+'</div><div class="donutwrap">'+donut([{v:pc,c:TYPES[k].color}],100,96,11)+'<div class="dc"><b style="font-size:18px">'+(x.min?pc+' %':'—')+'</b></div></div><div class="d">fait '+(fmtDur(x.dmin)||'0')+'<br>prévu '+(fmtDur(x.min)||'0')+'</div></div>';
+  }).join('');
+  const all=cur.all,pcAll=all.min?Math.round(all.dmin/all.min*100):0;
+  return '<div class="stsplit"><div class="donutwrap">'+donut(parts,tot,200,26)+'<div class="dc"><b>'+(fmtDur(tot)||'0')+'</b><span>prévu cette semaine</span></div></div><div class="lg">'+share+
+    '<div class="r"><span></span><div>Total<small>vs semaine précédente '+dlt(tot,pr.all.min)+'</small></div><div class="v">'+(fmtDur(tot)||'0')+'</div></div></div></div>'+
+    '<div class="stt">RÉALISÉ SUR LE PRÉVU · '+pcAll+' % AU TOTAL</div><div class="rings">'+rings+'</div>';
+}
+function statsBar(ks){
+  const M=METRICS[stMetric],W=8,weeks=[];
+  for(let i=-4;i<W-4;i++)weeks.push(addDays(stW,7*i));
+  const data=weeks.map(m=>{const t=wk(m);return {m,t,tot:ks.reduce((a,k)=>a+M.get(t[k],false),0)};});
+  let max=Math.max(...data.map(d=>d.tot),0.0001);
+  const step=stMetric==='n'?1:(stMetric==='km'?10:60);
+  max=Math.ceil(max/step)*step;if(stMetric==='n'&&max<4)max=4;
+  const Wd=640,H=280,L=46,B=34,T=14,cw=(Wd-L-10)/W,bw=Math.min(46,cw*.62),ph=H-B-T;
+  let h='<svg viewBox="0 0 '+Wd+' '+H+'" class="chart" role="img" aria-label="Graphique par semaine">';
+  for(let g=0;g<=4;g++){const v=max*g/4,y=T+ph-ph*g/4;h+='<line x1="'+L+'" x2="'+(Wd-6)+'" y1="'+y+'" y2="'+y+'" style="stroke:var(--line)" stroke-width="1"/><text x="'+(L-8)+'" y="'+(y+3)+'" text-anchor="end">'+(stMetric==='min'?Math.round(v/60*10)/10+' h':(stMetric==='km'?Math.round(v)+' km':Math.round(v*10)/10))+'</text>';}
+  data.forEach((d,i)=>{
+    const x=L+i*cw+(cw-bw)/2;let yb=T+ph;const sel=iso(d.m)===iso(stW);
+    ks.forEach(k=>{
+      const pv=M.get(d.t[k],false),dv=M.get(d.t[k],true);if(!(pv>0))return;
+      const hp=ph*pv/max,hd=ph*Math.min(dv,pv)/max;
+      h+='<rect x="'+x+'" y="'+(yb-hp)+'" width="'+bw+'" height="'+hp+'" style="fill:'+TYPES[k].color+'" opacity=".3" data-stw="'+iso(d.m)+'"/>'+
+         '<rect x="'+x+'" y="'+(yb-hd)+'" width="'+bw+'" height="'+hd+'" style="fill:'+TYPES[k].color+'" data-stw="'+iso(d.m)+'"/>';
+      yb-=hp;
+    });
+    h+='<rect x="'+(L+i*cw)+'" y="'+T+'" width="'+cw+'" height="'+ph+'" fill="transparent" data-stw="'+iso(d.m)+'"/>';
+    h+='<text x="'+(x+bw/2)+'" y="'+(H-14)+'" text-anchor="middle" class="'+(sel?'sel':'')+'">'+fmtDM(d.m)+'</text>';
+    if(sel)h+='<rect x="'+x+'" y="'+(H-8)+'" width="'+bw+'" height="3" fill="#e13232"/>';
+    if(d.tot>0)h+='<text x="'+(x+bw/2)+'" y="'+(yb-5)+'" text-anchor="middle">'+M.fmt(d.tot)+'</text>';
+  });
+  h+='</svg>';
+  const seg='<div class="seg" role="group" aria-label="Mesure">'+Object.keys(METRICS).map(m=>'<button data-stm="'+m+'" aria-pressed="'+(m===stMetric)+'">'+METRICS[m].label+'</button>').join('')+'</div>';
+  const lgd='<div class="legend" style="padding:12px 0 0">'+ks.map(k=>'<span><i class="dot" style="--c:'+TYPES[k].color+'"></i>'+TYPES[k].name+'</span>').join('')+'<span style="margin-left:auto">plein = fait · clair = prévu</span></div>';
+  return seg+h+lgd+'<p class="hint">Touche une barre pour afficher la semaine correspondante.</p>';
+}
+function statsTab(cur,pr,ks){
+  const mc=(k,x,y)=>{const a=k==='all'?x.all:x[k],b=k==='all'?y.all:y[k];return a;};
+  const row=(label,key)=>{const a=key==='all'?cur.all:cur[key],b=key==='all'?pr.all:pr[key];
+    return '<tr><td>'+label+'</td><td class="mut">'+(fmtDur(b.min)||'—')+(b.km?'<br><small>'+fmtKm(b.km)+'</small>':'')+'</td><td>'+(fmtDur(a.min)||'—')+(a.km?'<br><small>'+fmtKm(a.km)+'</small>':'')+'</td><td>'+dlt(a.min,b.min)+'</td></tr>';};
+  const cmp='<div class="stt">COMPARAISON AVEC LA SEMAINE PRÉCÉDENTE</div><div class="tw"><table class="stab cmp"><thead><tr><th>Discipline</th><th>'+fmtDM(addDays(stW,-7))+'</th><th>'+fmtDM(stW)+'</th><th>Écart</th></tr></thead><tbody>'+
+    ks.map(k=>row(TYPES[k].name,k)).join('')+row('<b>Total</b>','all')+
+    '<tr><td>Séances</td><td class="mut">'+pr.all.n+'</td><td>'+cur.all.n+'</td><td>'+dlt(cur.all.n,pr.all.n)+'</td></tr></tbody></table></div>';
+  const ws=weekRange();let prevMin=null;
+  const rows=ws.map(m=>{const t=wk(m),a=t.all;const r='<tr data-stw="'+iso(m)+'"'+(iso(m)===iso(stW)?' class="sel"':'')+'><td>'+fmtDM(m)+' <span class="mut">'+esc(relWeek(m))+'</span></td><td>'+(t.run.km?fmtKm(t.run.km):'—')+'</td><td>'+(fmtDur(t.bike.min)||'—')+'</td><td>'+(fmtDur(t.swim.min)||'—')+'</td><td><b>'+(fmtDur(a.min)||'—')+'</b></td><td>'+(a.min?Math.round(a.dmin/a.min*100)+' %':'—')+'</td><td>'+(prevMin===null?'<span class="dl">—</span>':dlt(a.min,prevMin))+'</td></tr>';prevMin=a.min;return r;}).join('');
+  const all='<div class="stt">TOUTES LES SEMAINES</div><div class="tw"><table class="stab"><thead><tr><th>Semaine</th><th>CAP</th><th>Vélo</th><th>Nat</th><th>Total</th><th>Fait</th><th>Écart</th></tr></thead><tbody>'+rows+'</tbody></table></div><p class="hint">Touche une ligne pour la comparer. « Fait » = temps réalisé sur le temps prévu.</p>';
+  return cmp+all;
+}
+function renderStats(){
+  const mon=stW,sun=addDays(mon,6),cur=wk(mon),pr=wk(addDays(mon,-7));
+  const ks=KEYS.filter(k=>k!=='gym'||cur[k].n||pr[k].n);
+  const tabs=[['ring','Anneaux'],['bar','Graphique'],['tab','Tableau']];
+  const body=stTab==='ring'?statsRing(cur,pr,ks):(stTab==='bar'?statsBar(ks):statsTab(cur,pr,ks));
+  openSheet('<h2><small>BILAN · '+esc(relWeek(mon))+'</small>'+fmtDM(mon)+' — '+fmtDM(sun)+'</h2>'+
+    '<div class="stnav"><button class="arrow" data-stw="-1" aria-label="Semaine précédente">←</button><div class="seg" role="group" aria-label="Affichage">'+tabs.map(t=>'<button data-sttab="'+t[0]+'" aria-pressed="'+(t[0]===stTab)+'">'+t[1]+'</button>').join('')+'</div><button class="arrow" data-stw="1" aria-label="Semaine suivante">→</button></div>'+
+    '<div class="stmain">'+body+'</div><div class="actions"><span></span><button class="btn ghost" data-close="1">Fermer</button></div>','wide');
+}
+function openStats(){stW=mondayOf(cursor);renderStats();}
 
 /* ---------- statut ---------- */
 function setDone(id,val){
@@ -615,8 +756,11 @@ document.addEventListener('click',e=>{
   const u=e.target.closest&&e.target.closest('[data-undo]');
   if(u){if(undoFn){undoFn();undoFn=null;}$('#toast').classList.remove('show');return;}
   if(performance.now()<blockClickUntil){e.preventDefault();e.stopPropagation();return;}
-  const t=e.target.closest('[data-toggle],[data-chip],[data-q],[data-fab],[data-sess],[data-day],[data-add],[data-race],[data-close],[data-del],[data-export],[data-import],[data-reset]');
+  const t=e.target.closest('[data-stats],[data-sttab],[data-stw],[data-stm],[data-toggle],[data-chip],[data-q],[data-fab],[data-sess],[data-day],[data-add],[data-race],[data-close],[data-del],[data-export],[data-import],[data-reset]');
   if(!t)return;
+  if(t.dataset.sttab){stTab=t.dataset.sttab;renderStats();return;}
+  if(t.dataset.stm){stMetric=t.dataset.stm;renderStats();return;}
+  if(t.dataset.stw){const v=t.dataset.stw;stW=(v==='-1'||v==='1')?addDays(stW,7*Number(v)):mondayOf(parse(v));renderStats();return;}
   if(t.dataset.toggle){e.preventDefault();const s=state.sessions.find(x=>x.id===t.dataset.toggle);if(s){setDone(s.id,!s.done);if(dlg.open&&t.dataset.keep){const k=s.date;openDay(k);}}return;}
   if(t.dataset.chip){quickDay=t.dataset.chip;document.querySelectorAll('.chip').forEach(c=>c.setAttribute('aria-pressed',c.dataset.chip===quickDay));return;}
   if(t.dataset.q){openSession(null,quickDay,t.dataset.q);return;}
@@ -640,6 +784,7 @@ document.addEventListener('change',e=>{
 });
 $('#raceCard').addEventListener('click',openRace);
 $('#fab').addEventListener('click',openQuick);
+$('#btnStats').addEventListener('click',openStats);
 $('#btnMenu').addEventListener('click',openMenu);
 $('#btnToday').addEventListener('click',()=>{cursor=today();render();window.scrollTo({top:0,behavior:'smooth'});});
 $('#vWeek').addEventListener('click',()=>{view='week';render();});
