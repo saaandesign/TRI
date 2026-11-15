@@ -44,13 +44,14 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
 .btn.danger:hover{background:#ff8a8a;color:var(--bg)}
 
 /* ---------- compte à rebours (discret) ---------- */
-.count{display:flex;justify-content:space-between;align-items:center;gap:var(--pad);padding:18px 0 20px;border-bottom:1px solid var(--line)}
+.count{display:flex;justify-content:flex-end;align-items:center;gap:var(--pad);padding:18px 0 20px;border-bottom:1px solid var(--line)}
 .cw{display:flex;align-items:center;gap:12px;color:var(--muted);font-size:14px}
 .cw b{font-family:var(--display);font-weight:800;font-size:13px;letter-spacing:.06em;background:var(--red);color:#fff;padding:6px 11px;border-radius:999px}
 .count-side{width:min(340px,100%)}
 .rc{display:block;width:100%;border:1px solid var(--red);background:rgba(225,50,50,.1);padding:12px 16px;border-radius:var(--r);transition:background .15s}
 .rc:hover{background:rgba(225,50,50,.22)}
-.rc .k{font-family:var(--display);font-weight:700;font-size:10px;letter-spacing:.14em;color:#ff6a6a}
+.rc .k{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:700;font-size:10px;letter-spacing:.14em;color:#ff6a6a}
+.rc .wk{font-family:var(--display);font-weight:800;font-size:12px;letter-spacing:.06em;background:var(--red);color:#fff;padding:5px 10px;border-radius:999px}
 .rc .n{font-family:var(--display);font-weight:800;font-size:15px;margin:6px 0 4px;line-height:1.2}
 .rc .m{font-size:12px;color:var(--muted);line-height:1.4}
 
@@ -224,8 +225,7 @@ body.is-dragging .sess{cursor:grabbing}
     </div>
   </header>
 
-  <section class="count" aria-label="Compte à rebours">
-    <div class="cw" id="countMain"></div>
+  <section class="count" aria-label="Course">
     <div class="count-side"><button class="rc" id="raceCard"></button></div>
   </section>
 
@@ -315,17 +315,11 @@ const typeOf=t=>TYPES[t]?t:'run';
 /* ---------- countdown ---------- */
 function renderCount(){
   const r=parse(state.settings.raceDate),d=diff(today(),r);
-  const main=$('#countMain');
-  if(d>0){
-    const w=diff(mondayOf(today()),mondayOf(r))/7;
-    main.innerHTML=w>0?'<b>S−'+w+'</b><span>'+w+' semaine'+(w>1?'s':'')+' avant la course</span>':'<b>SEMAINE DE COURSE</b><span>c’est bientôt</span>';
-  }else if(d===0){
-    main.innerHTML='<b>J-0</b><span>Bonne course !</span>';
-  }else{
-    main.innerHTML='<b>FIN</b><span>Course terminée — change la date dans la fiche course pour la prochaine.</span>';
-  }
+  let chip;
+  if(d>0){const w=diff(mondayOf(today()),mondayOf(r))/7;chip=w>0?'S−'+w:'SEMAINE DE COURSE';}
+  else if(d===0)chip='J-0';else chip='FIN';
   const S=state.settings;
-  $('#raceCard').innerHTML='<span class="k">COURSE · '+esc(DOW[(r.getDay()+6)%7])+' '+fmtDM(r)+'</span><div class="n">'+esc(S.raceName)+'</div><div class="m">'+
+  $('#raceCard').innerHTML='<span class="k"><b class="wk">'+chip+'</b>COURSE · '+esc(DOW[(r.getDay()+6)%7])+' '+fmtDM(r)+'</span><div class="n">'+esc(S.raceName)+'</div><div class="m">'+
     [S.raceKm?fmtKm(num(S.raceKm)):'',S.raceTime?esc(S.raceTime):'',S.raceGoal?'Objectif '+esc(S.raceGoal):''].filter(Boolean).join(' · ')+'</div>';
 }
 
