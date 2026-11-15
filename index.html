@@ -98,6 +98,7 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
 .sw[data-dir]::before{opacity:1}
 .sw[data-dir="r"]::before{justify-content:flex-start}
 .sw[data-dir="l"]::before{justify-content:flex-end}
+.sw[data-tone="todo"]::before{background:#d9822b}
 .sess{display:block;width:100%;padding:13px 14px 12px;background:var(--panel);border-radius:var(--r);border-left:4px solid var(--c);position:relative;touch-action:pan-y;transition:transform .2s,opacity .25s}
 .sess.swiping{transition:none}
 .sess:hover{background:var(--panel2)}
@@ -927,7 +928,7 @@ function dragCleanup(){
   if(!drag)return;
   clearTimeout(drag.timer);clearInterval(drag.scroller);
   if(drag.ghost)drag.ghost.remove();
-  if(drag.el){drag.el.classList.remove('dragging','swiping');drag.el.style.transform='';const w=drag.el.closest('.sw');if(w){delete w.dataset.dir;delete w.dataset.rev;}}
+  if(drag.el){drag.el.classList.remove('dragging','swiping');drag.el.style.transform='';const w=drag.el.closest('.sw');if(w){delete w.dataset.dir;delete w.dataset.rev;delete w.dataset.tone;}}
   document.querySelectorAll('.day.drop').forEach(d=>d.classList.remove('drop'));
   document.body.classList.remove('is-dragging');
   drag=null;
@@ -972,7 +973,7 @@ document.addEventListener('pointermove',e=>{
       if(drag.swipe){
         const c=Math.min(0,Math.max(-130,dx)),w=drag.el.closest('.sw');
         drag.el.style.transform='translateX('+c+'px)';
-        if(w){if(c<-6){w.dataset.dir='l';w.dataset.rev='✓ FAIT';}else delete w.dataset.dir;}
+        if(w){if(c<-6){const was=drag.el.classList.contains('done');w.dataset.dir='l';w.dataset.rev=was?'↺ À FAIRE':'✓ FAIT';w.dataset.tone=was?'todo':'done';}else delete w.dataset.dir;}
         return;
       }
       if(dist>10)dragCleanup();return;   // le doigt bouge avant l'appui long : c'est un défilement
@@ -988,7 +989,7 @@ function endDrag(cancel){
   if(drag.swipe){
     const dx=drag.x-drag.sx,id=drag.id;
     dragCleanup();blockClickUntil=performance.now()+400;
-    if(!cancel&&dx<=-72)setDone(id,true);
+    if(!cancel&&dx<=-72){const x=state.sessions.find(v=>v.id===id);if(x)setDone(id,!x.done);}
     return;
   }
   const was=drag.active,id=drag.id,target=drag.target;
