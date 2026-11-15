@@ -107,7 +107,8 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
 .dh .hb{font-family:var(--display);font-weight:700;font-size:9px;letter-spacing:.12em;color:var(--faint);margin-top:6px}
 .day.today .dh{background:var(--red);color:#fff;padding:10px 10px 8px}
 .day.today .dh .dn,.day.today .dh .hb{color:rgba(255,255,255,.78)}
-.day.past .dw{color:var(--muted)}
+.day.past .dw{color:var(--faint)}
+:root[data-theme="light"] .day.past .dw{color:var(--muted)}
 .dcol{display:flex;flex-direction:column;gap:8px;flex:1;min-height:170px}
 
 .sw{position:relative;border-radius:var(--r);overflow:hidden}
@@ -246,7 +247,7 @@ table.stab{border-collapse:collapse;width:100%;font-size:13px;white-space:nowrap
 .stab td.warn{color:var(--warn-text);font-weight:700}
 .cpsum{background:var(--bg);border:1px solid var(--line);border-radius:var(--r);padding:14px 16px;margin-top:16px;font-size:14px;line-height:1.6}
 .cpsum b{font-weight:500}
-@media (max-width:860px){.wkfoot{margin-top:0;justify-content:stretch}.wkfoot .btn{width:100%;text-align:center}}
+@media (max-width:860px){.wkfoot{margin-top:0;justify-content:stretch}.wkfoot .btn{flex:1;text-align:center}}
 
 /* ---------- UX : pastilles, feuilles, animations ---------- */
 [hidden]{display:none!important}
@@ -272,12 +273,27 @@ input[type=date]::-webkit-date-and-time-value{text-align:left}
 .types.list label small{margin-left:auto;font-family:var(--body);font-weight:400;font-size:12px;letter-spacing:0;color:var(--muted)}
 .sp-add{display:flex;align-items:center;gap:10px;width:100%;margin-top:8px;padding:9px 14px;border:1px dashed var(--line);border-radius:12px;font-family:var(--display);font-weight:700;font-size:11px;letter-spacing:.08em;color:var(--muted)}
 .sp-add:hover{border-color:var(--text);color:var(--text)}
+@media (hover:hover){.sp-add:hover{border-color:var(--muted)}}
+.sp-cur{display:flex;align-items:center;gap:12px;width:100%;margin-top:8px;padding:12px 14px;border:1px solid var(--c,var(--line));border-radius:12px;font-family:var(--display);font-weight:700;font-size:12px;letter-spacing:.08em;color:var(--text);background:var(--hl);text-align:left}
+.sp-cur small{margin-left:auto;font-family:var(--body);font-weight:400;font-size:12px;letter-spacing:0;color:var(--muted)}
+.sp-cur svg{width:14px;height:14px;flex:none;transition:transform .3s cubic-bezier(.2,.9,.3,1.2);color:var(--muted)}
+.sp-cur[aria-expanded="true"] svg{transform:rotate(180deg)}
+#spmenu{margin-top:8px}
+.types.list label,.tiles.list .tile{position:relative;-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
+.lp{border-color:var(--danger)!important}
+.trash{position:absolute;right:8px;top:50%;margin-top:-17px;width:34px;height:34px;border-radius:50%;background:var(--danger);color:#fff;display:grid;place-items:center;z-index:2;animation:popin .25s cubic-bezier(.2,.9,.3,1.3)}
+.trash svg{width:16px;height:16px;display:block}
+.lp small{visibility:hidden}
+.sum>div[data-sumadd]{cursor:pointer;transition:background .2s}
+@media (hover:hover){.sum>div[data-sumadd]:hover{background:var(--hl)}}
+.wkfoot{gap:10px;flex-wrap:wrap}
 .sp-new{display:flex;gap:8px;margin-top:8px}
 .sp-new input{flex:1;min-width:0}
 .tiles.list{grid-template-columns:1fr;gap:8px}
 .tiles.list .tile{padding:12px 16px}
 .dtrow{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.xbtn:hover,.dots:hover{border-color:var(--text);color:var(--text)}
+.xbtn:focus,.xbtn:focus-visible,.dots:focus,.dots:focus-visible{outline:none}
+@media (hover:hover){.xbtn:hover,.dots:hover{border-color:var(--muted);color:var(--text)}}
 .sheet.hasdots h2{padding-right:100px}
 .pop{position:absolute;top:60px;right:16px;background:var(--panel2);border:1px solid var(--line);border-radius:16px;padding:6px;z-index:6;min-width:200px;box-shadow:0 14px 40px rgba(0,0,0,.5);transform-origin:top right;animation:popin .3s cubic-bezier(.2,.9,.3,1.25)}
 .pop button{display:flex;justify-content:space-between;align-items:center;gap:14px;width:100%;padding:12px 14px;border-radius:10px;font-size:14px}
@@ -295,10 +311,9 @@ input[type=date]::-webkit-date-and-time-value{text-align:left}
 .week.enter .day{animation:rise .55s cubic-bezier(.2,.9,.25,1.08) both;animation-delay:calc(var(--d,0)*45ms)}
 #toast{transition:opacity .25s,transform .5s cubic-bezier(.2,1.25,.3,1)}
 @media (max-width:860px){
-  dialog,dialog.wide{width:100%;max-width:100%;margin:auto 0 0 0;border-radius:26px 26px 0 0;max-height:92dvh;border-bottom:0}
-  .sheet{padding-bottom:calc(26px + env(safe-area-inset-bottom))}
-  .sheet::before{content:'';display:block;width:44px;height:5px;border-radius:3px;background:var(--line);margin:-10px auto 16px}
-  dialog.wide{height:92dvh}
+  dialog,dialog.wide{width:calc(100vw - 20px);max-width:100%;margin:auto;border-radius:22px;max-height:calc(100dvh - 28px)}
+  dialog{-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
+  dialog.wide{height:calc(100dvh - 28px)}
   .xbtn,.dots{top:24px}
   .pop{top:68px}
 }
@@ -474,7 +489,7 @@ const uid=()=>'u-'+Date.now().toString(36)+Math.random().toString(36).slice(2,6)
 
 /* ---------- state ---------- */
 function clone(o){return JSON.parse(JSON.stringify(o));}
-const fresh=()=>Object.assign(clone(SEED),{seedVersion:SEED.version,races:[],sports:[]});
+const fresh=()=>Object.assign(clone(SEED),{seedVersion:SEED.version,races:[],sports:[],hidden:[]});
 function syncTypes(){
   Object.keys(TYPES).forEach(k=>{if(!BASE.includes(k))delete TYPES[k];});
   (state.sports||[]).forEach(x=>{if(x&&x.key&&x.name)TYPES[x.key]={label:x.label||x.name.toUpperCase().slice(0,8),name:x.name,color:x.color||SPORT_COLORS[0]};});
@@ -482,11 +497,21 @@ function syncTypes(){
 }
 function addSport(name){
   name=String(name||'').trim().slice(0,24);if(!name)return null;
-  const ex=(state.sports||[]).find(x=>x.name.toLowerCase()===name.toLowerCase());if(ex)return ex.key;
+  const low=name.toLowerCase();
+  const ex=KEYS.find(k=>TYPES[k].name.toLowerCase()===low||TYPES[k].label.toLowerCase()===low);
+  if(ex){state.hidden=state.hidden.filter(h=>h!==ex);save();return ex;}
   const key='s'+uid().slice(1,7);
   state.sports.push({key:key,name:name,label:name.toUpperCase().slice(0,8),color:SPORT_COLORS[state.sports.length%SPORT_COLORS.length]});
   save();syncTypes();return key;
 }
+function removeSport(key){
+  if(KEYS.filter(k=>!state.hidden.includes(k)).length<=1)return false;
+  const used=state.sessions.some(x=>x.type===key);
+  if(!BASE.includes(key)&&!used)state.sports=state.sports.filter(x=>x.key!==key);
+  else if(!state.hidden.includes(key))state.hidden.push(key);
+  save();syncTypes();return true;
+}
+const visibleKeys=sel=>KEYS.filter(k=>!state.hidden.includes(k)||k===sel);
 function load(){
   let s=null;
   try{s=JSON.parse(localStorage.getItem(STORE));}catch(e){}
@@ -499,6 +524,7 @@ function load(){
   }
   if(!Array.isArray(s.races))s.races=[];
   if(!Array.isArray(s.sports))s.sports=[];
+  if(!Array.isArray(s.hidden))s.hidden=[];
   return s;
 }
 let state=load();
@@ -622,7 +648,7 @@ function sumHTML(t,showGym){
     const x=t[k],T=TYPES[k];
     const main=x.km?fmtKm(x.km):(x.min?fmtDur(x.min):'—');
     const det=[x.km&&x.min?fmtDur(x.min):'',x.n?'fait '+(x.dkm?fmtKm(x.dkm):fmtDur(x.dmin)||x.dn+'/'+x.n):''].filter(Boolean).join(' · ');
-    return '<div><div class="t"><i class="dot" style="--c:'+T.color+'"></i>'+T.label+'</div><div class="v">'+main+'</div><div class="d">'+(det||'&nbsp;')+'</div></div>';
+    return '<div data-sumadd="'+k+'" role="button" tabindex="0"><div class="t"><i class="dot" style="--c:'+T.color+'"></i>'+T.label+'</div><div class="v">'+main+'</div><div class="d">'+(det||'&nbsp;')+'</div></div>';
   }).join('');
 }
 
@@ -659,12 +685,12 @@ function renderWeek(){
     list.push(...ss);
     const cls='day'+(diff(t,d)===0?' today':'')+(diff(t,d)<0?' past':'');
     h+='<div class="'+cls+'" data-date="'+k+'" style="--d:'+i+'"><button class="dh" data-day="'+k+'" aria-label="Ouvrir '+DOWL[i]+' '+fmtDM(d)+'"><div class="dn">'+fmtDM(d)+'</div><div class="dw">'+DOW[i]+'</div>'+'</button>'+
-      '<div class="dcol">'+raceAt(k).map(raceBlock).join('')+ss.map(sessHTML).join('')+'<button class="add" data-add="'+k+'">+ Ajouter</button></div></div>';
+      '<div class="dcol">'+raceAt(k).map(raceBlock).join('')+ss.map(sessHTML).join('')+'</div></div>';
   }
   $('#sum').innerHTML=sumHTML(totals(list),false);
   $('#alerts').innerHTML=alertHTML(alertsFor(mon));
   const enter=enterNext;enterNext=false;
-  $('#view').innerHTML='<div class="week'+(enter?' enter':'')+'">'+h+'</div><div class="wkfoot"><button class="btn" data-copy="1">Préparer la semaine suivante</button></div>';
+  $('#view').innerHTML='<div class="week'+(enter?' enter':'')+'">'+h+'</div><div class="wkfoot"><button class="btn" data-clearweek="1">Clear</button><button class="btn" data-copy="1">Préparer la semaine suivante</button></div>';
 }
 
 /* ---------- month view ---------- */
@@ -780,8 +806,9 @@ function openDay(k,isToday){
 
 
 function sportListHTML(sel,name,cls){
-  return KEYS.map(k=>'<input type="radio" name="'+name+'" id="t-'+k+'" value="'+k+'"'+(sel===k?' checked':'')+'><label for="t-'+k+'" style="--c:'+TYPES[k].color+'"><i class="dot" style="--c:'+TYPES[k].color+'"></i>'+TYPES[k].label+'<small>'+esc(TYPES[k].name)+'</small></label>').join('');
+  return visibleKeys(sel).map(k=>'<input type="radio" name="'+name+'" id="t-'+k+'" value="'+k+'"'+(sel===k?' checked':'')+'><label for="t-'+k+'" style="--c:'+TYPES[k].color+'"><i class="dot" style="--c:'+TYPES[k].color+'"></i>'+TYPES[k].label+'<small>'+esc(TYPES[k].name)+'</small></label>').join('');
 }
+const spCurHTML=k=>'<button type="button" class="sp-cur" id="spcur" data-spopen="1" aria-expanded="false" style="--c:'+TYPES[k].color+'"><i class="dot" style="--c:'+TYPES[k].color+'"></i><span>'+TYPES[k].label+'</span><small>'+esc(TYPES[k].name)+'</small><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6l5 5 5-5"/></svg></button>';
 const spAddHTML='<div id="spbox"><button type="button" class="sp-add" data-newsport="1"><span style="font-size:16px;line-height:1">+</span> Ajouter un sport</button></div>';
 function spForm(){return '<div class="sp-new"><input type="text" id="sp-name" maxlength="24" placeholder="ex. Rando, Rameur, Yoga…" autocomplete="off"><button type="button" class="btn solid" data-spgo="1">Ajouter</button></div>';}
 const longDate=k=>{const d=parse(k);return DOWL[(d.getDay()+6)%7]+' '+d.getDate()+' '+MONTHS[d.getMonth()];};
@@ -794,7 +821,7 @@ function openSession(id,date,type){
   openSheet('<button class="dots" type="button" data-dots="1" aria-label="Plus de détails"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg></button><div class="pop" id="pop" hidden>'+pop()+'</div>'+
    '<h2><small>'+(ex?'MODIFIER':'NOUVELLE SÉANCE')+'</small>'+(ex?esc(ex.title||TYPES[typeOf(ex.type)].name):'Ajouter')+'</h2><div class="sline" id="sline"></div>'+
    '<form id="sf" autocomplete="off">'+
-   '<div class="field"><span class="lbl">DISCIPLINE</span><div class="types list" id="typelist">'+sportListHTML(typeOf(s.type),'type')+'</div>'+spAddHTML+'</div>'+
+   '<div class="field"><span class="lbl">DISCIPLINE</span>'+spCurHTML(typeOf(s.type))+'<div id="spmenu" hidden><div class="types list" id="typelist">'+sportListHTML(typeOf(s.type),'type')+'</div>'+spAddHTML+'</div></div>'+
    '<div class="field"><label for="f-title">TITRE</label><input type="text" id="f-title" name="title" value="'+esc(s.title)+'" placeholder="ex. Seuil 2×10\'"></div>'+
    '<div class="row"><div class="field"><label for="f-km">DISTANCE (KM)</label><input type="text" inputmode="decimal" id="f-km" name="km" value="'+esc(s.km||'')+'" placeholder="—"></div>'+
    '<div class="field"><label for="f-min">DURÉE (MIN)</label><input type="text" inputmode="numeric" id="f-min" name="min" value="'+esc(s.min||'')+'" placeholder="—"></div></div>'+
@@ -814,7 +841,7 @@ function openSession(id,date,type){
     form.querySelector('.rw-run').hidden=t!=='run';
     form.querySelector('.rl-km').textContent=sw?'DISTANCE (M)':'DISTANCE (KM)';
   };
-  form.addEventListener('change',()=>{line();sync();});
+  form.addEventListener('change',e=>{line();sync();if(e.target&&e.target.name==='type'){const c=$('#spcur');if(c){c.outerHTML=spCurHTML(typeOf(e.target.value));$('#spmenu').hidden=true;}}});
   dlg._shown=shown;dlg._popHTML=pop;line();sync();
   form.addEventListener('submit',e=>{
     e.preventDefault();
@@ -833,7 +860,7 @@ function openQuick(){
   const days=[];for(let i=0;i<7;i++)days.push(addDays(mon,i));
   if(!quickDay||!days.some(d=>iso(d)===quickDay))quickDay=days.some(d=>diff(t,d)===0)?iso(t):iso(days[0]);
   const chips=days.map(d=>'<button class="chip" data-chip="'+iso(d)+'" aria-pressed="'+(iso(d)===quickDay)+'">'+DOW[(d.getDay()+6)%7]+' '+d.getDate()+'</button>').join('');
-  const tiles=KEYS.map(k=>'<button class="tile" data-q="'+k+'" style="--c:'+TYPES[k].color+'"><span>'+TYPES[k].label+'<small>'+esc(TYPES[k].name)+'</small></span></button>').join('');
+  const tiles=visibleKeys().map(k=>'<button class="tile" data-q="'+k+'" style="--c:'+TYPES[k].color+'"><span>'+TYPES[k].label+'<small>'+esc(TYPES[k].name)+'</small></span></button>').join('');
   openSheet('<h2><small>AJOUTER</small>Quelle séance ?</h2><div class="field"><span class="lbl">JOUR</span><div class="chips">'+chips+'</div></div>'+
     '<div class="field"><span class="lbl">DISCIPLINE</span><div class="tiles list">'+tiles+'</div>'+spAddHTML+'</div>'+
     '<div class="actions"><span></span><button class="btn ghost" data-close="1">Fermer</button></div>');
@@ -1168,7 +1195,7 @@ document.addEventListener('click',e=>{
   const ex=e.target.closest&&e.target.closest('[data-extra]');
   if(ex){if(extraFn){const f=extraFn;extraFn=null;$('#toast').classList.remove('show');f();}return;}
   if(performance.now()<blockClickUntil){e.preventDefault();e.stopPropagation();return;}
-  const t=e.target.closest('[data-newsport],[data-spgo],[data-newrace],[data-delrace],[data-dots],[data-reveal],[data-copy],[data-cpf],[data-cpm],[data-cpgo],[data-stats],[data-sttab],[data-stw],[data-stm],[data-toggle],[data-chip],[data-q],[data-fab],[data-sess],[data-day],[data-add],[data-race],[data-close],[data-del],[data-export],[data-import],[data-reset]');
+  const t=e.target.closest('[data-delsport],[data-spopen],[data-sumadd],[data-clearweek],[data-newsport],[data-spgo],[data-newrace],[data-delrace],[data-dots],[data-reveal],[data-copy],[data-cpf],[data-cpm],[data-cpgo],[data-stats],[data-sttab],[data-stw],[data-stm],[data-toggle],[data-chip],[data-q],[data-fab],[data-sess],[data-day],[data-add],[data-race],[data-close],[data-del],[data-export],[data-import],[data-reset]');
   if(!t)return;
   if(t.dataset.dots){const pp=$('#pop');if(pp)pp.hidden=!pp.hidden;return;}
   if(t.dataset.reveal){
@@ -1192,11 +1219,24 @@ document.addEventListener('click',e=>{
   if(t.dataset.close){closeSheet();return;}
   if(t.dataset.sess){openSession(t.dataset.sess);return;}
   if(t.dataset.add){openSession(null,t.dataset.add);return;}
+  if(t.dataset.delsport){e.preventDefault();const k=t.dataset.delsport;
+    if(!removeSport(k))return;
+    const tl=$('#typelist');
+    if(tl){const f=$('#sf');let sel=new FormData(f).get('type');if(!sel||!TYPES[sel]||state.hidden.includes(sel))sel=visibleKeys()[0];tl.innerHTML=sportListHTML(sel,'type');const c=$('#spcur');if(c)c.outerHTML=spCurHTML(sel);f.dispatchEvent(new Event('change'));$('#spmenu').hidden=false;}
+    else openQuick();
+    return;}
+  if(t.dataset.spopen){const m=$('#spmenu');m.hidden=!m.hidden;t.setAttribute('aria-expanded',String(!m.hidden));return;}
+  if(t.dataset.sumadd){setOrigin(t);const mon=mondayOf(cursor),td=today();const d=diff(mon,td)>=0&&diff(mon,td)<7?iso(td):iso(mon);openSession(null,d,t.dataset.sumadd);return;}
+  if(t.dataset.clearweek){
+    const mon=mondayOf(cursor),list=weekList(mon);if(!list.length)return;
+    if(!confirm('Supprimer les '+list.length+' séance'+(list.length>1?'s':'')+' de la semaine du '+fmtDM(mon)+' ?'))return;
+    state.sessions=state.sessions.filter(x=>!list.includes(x));save();render();
+    toast(list.length+' séance'+(list.length>1?'s':'')+' supprimée'+(list.length>1?'s':''),()=>{state.sessions=state.sessions.concat(list);save();render();});return;}
   if(t.dataset.newsport){const b=$('#spbox');b.innerHTML=spForm();const i=$('#sp-name');i.focus();i.addEventListener('keydown',ev=>{if(ev.key==='Enter'){ev.preventDefault();const g=b.querySelector('[data-spgo]');if(g)g.click();}});return;}
   if(t.dataset.spgo){
     const key=addSport(($('#sp-name')||{}).value);if(!key)return;
     const tl=$('#typelist');
-    if(tl){tl.innerHTML=sportListHTML(key,'type');$('#spbox').innerHTML=spAddHTML.replace(/^<div id="spbox">|<\/div>$/g,'');const f=$('#sf');if(f)f.dispatchEvent(new Event('change'));}
+    if(tl){tl.innerHTML=sportListHTML(key,'type');$('#spbox').innerHTML=spAddHTML.replace(/^<div id="spbox">|<\/div>$/g,'');const c=$('#spcur');if(c)c.outerHTML=spCurHTML(key);const f=$('#sf');if(f)f.dispatchEvent(new Event('change'));}
     else{openQuick();}
     return;}
   if(t.dataset.newrace){openRace('new');return;}
@@ -1237,6 +1277,28 @@ $('#btnMenu').addEventListener('click',()=>toggleMpop(mpop.hidden));
 $('#rowTheme').addEventListener('click',()=>applyTheme(document.documentElement.dataset.theme==='light'?'dark':'light',true));
 $('#rowData').addEventListener('click',e=>{toggleMpop(false);setOrigin($('#btnMenu'));openMenu();});
 document.addEventListener('click',e=>{if(!mpop.hidden&&!(e.target.closest&&e.target.closest('.menuwrap')))toggleMpop(false);},true);
+/* appui long sur un sport : corbeille */
+let lpT=null,lpFired=false,lpUntil=0;const TRASH='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13M10 11v6M14 11v6"/></svg>';
+function clearLP(){document.querySelectorAll('.lp').forEach(x=>{x.classList.remove('lp');const tr=x.querySelector('.trash');if(tr)tr.remove();});}
+dlg.addEventListener('pointerdown',e=>{
+  const row=e.target.closest&&e.target.closest('.types.list label,.tiles.list .tile');
+  if(!e.target.closest('.trash')&&!(row&&row.classList.contains('lp')))clearLP();
+  if(!row||e.target.closest('.trash'))return;
+  lpFired=false;clearTimeout(lpT);
+  lpT=setTimeout(()=>{
+    const key=row.tagName==='LABEL'?String(row.getAttribute('for')||'').replace(/^t-/,''):row.dataset.q;
+    if(!key)return;lpFired=true;clearLP();row.classList.add('lp');
+    row.insertAdjacentHTML('beforeend','<span class="trash" data-delsport="'+esc(key)+'" role="button" aria-label="Supprimer ce sport">'+TRASH+'</span>');
+    if(navigator.vibrate)try{navigator.vibrate(12);}catch(x){}
+  },520);
+});
+['pointerup','pointercancel','pointermove'].forEach(ev=>dlg.addEventListener(ev,e=>{
+  if(ev==='pointermove'&&Math.abs(e.movementX)+Math.abs(e.movementY)<3)return;
+  clearTimeout(lpT);if(ev==='pointerup'&&lpFired){lpUntil=performance.now()+400;lpFired=false;}
+}));
+dlg.addEventListener('contextmenu',e=>{if(e.target.closest&&e.target.closest('.types.list label,.tiles.list .tile'))e.preventDefault();});
+document.addEventListener('click',e=>{if(performance.now()<lpUntil&&!(e.target.closest&&e.target.closest('.trash'))){e.preventDefault();e.stopPropagation();}},true);
+
 $('#btnToday').addEventListener('click',e=>{cursor=today();enterNext=true;render();window.scrollTo({top:0,behavior:'smooth'});setOrigin(e.currentTarget);openDay(iso(today()),true);});
 $('#vWeek').addEventListener('click',()=>{view='week';enterNext=true;render();});
 $('#vMonth').addEventListener('click',()=>{view='month';render();});
