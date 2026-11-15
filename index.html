@@ -35,7 +35,7 @@
   --red-text:#c42626; --danger:#c42626; --danger-line:#e3b5b5; --alert-line:#e6a496; --alert-text:#8a2a1c; --warn-text:#c0392b;
   --up:#b4690e; --dn:#1c6fb8; --warn:#d9780f; --warn-hi:#b4600a; --warn-bg:rgba(217,120,15,.1); --ok:#1f9d5a; --ok-bg:rgba(31,157,90,.12);
   --panel-done:#f0f0f2; --hl:rgba(27,27,29,.07); --backdrop:rgba(20,20,24,.45); --scheme:light; --card-shadow:0 1px 2px rgba(27,27,29,.06),0 0 0 1px var(--line);
-  --glow1:rgba(225,50,50,.28); --glow2:rgba(225,50,50,.1); --ring-hi:rgba(27,27,29,.95); --ring-lo:rgba(27,27,29,.25); --ring-base:rgba(27,27,29,.08);
+  --glow1:rgba(0,0,0,.26); --glow2:rgba(0,0,0,.09); --ring-hi:rgba(27,27,29,.95); --ring-lo:rgba(27,27,29,.25); --ring-base:rgba(27,27,29,.08);
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html{-webkit-text-size-adjust:100%}
@@ -67,8 +67,8 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
 .rc{display:block;width:100%;text-align:left;border:1px solid var(--line);background:var(--panel);padding:12px 16px;border-radius:var(--r);transition:background .15s,border-color .15s;box-shadow:var(--card-shadow)}
 .rc:hover{border-color:var(--muted)}
 .rc .k{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:700;font-size:10px;letter-spacing:.14em;color:var(--muted)}
-.rc .wk{font-family:var(--display);font-weight:800;font-size:12px;letter-spacing:.06em;background:var(--panel2);color:var(--text);padding:5px 10px;border-radius:999px}
-.pill{font-family:var(--display);font-weight:700;font-size:9px;letter-spacing:.12em;white-space:nowrap;border:1px solid var(--line);color:var(--muted);padding:4px 8px;border-radius:999px;background:transparent}
+.rc .wk{font-family:var(--display);font-weight:800;font-size:12px;letter-spacing:.06em;background:transparent;color:var(--red-text);border:1.5px solid var(--red);padding:4px 10px;border-radius:999px}
+.pill{font-family:var(--display);font-weight:700;font-size:9px;letter-spacing:.12em;white-space:nowrap;border:1px solid var(--red);color:var(--red-text);padding:4px 8px;border-radius:999px;background:transparent}
 .pill.ok{color:var(--text);border-color:var(--muted)}
 .rc .pill{margin-left:auto}
 .rc .n{font-family:var(--display);font-weight:800;font-size:15px;margin:6px 0 4px;line-height:1.2}
@@ -263,7 +263,20 @@ input[type=date]::-webkit-date-and-time-value{text-align:left}
 .sheet{position:relative}
 .sheet h2{padding-right:52px}
 .xbtn,.dots{position:absolute;top:16px;width:38px;height:38px;border-radius:50%;border:1px solid var(--line);display:grid;place-items:center;font-size:15px;color:var(--muted);z-index:3;background:var(--panel)}
-.xbtn{right:16px}.dots{right:62px;font-size:20px;line-height:1;padding-bottom:5px}
+.xbtn{right:16px}.dots{right:62px}
+.dots svg{width:18px;height:18px;display:block}
+.iconbtn svg{display:block}
+.rc-add svg{width:16px;height:16px;display:block}
+.types.list{display:flex;flex-direction:column;gap:8px}
+.types.list label{justify-content:flex-start;padding:9px 14px;font-size:12px;gap:12px}
+.types.list label small{margin-left:auto;font-family:var(--body);font-weight:400;font-size:12px;letter-spacing:0;color:var(--muted)}
+.sp-add{display:flex;align-items:center;gap:10px;width:100%;margin-top:8px;padding:9px 14px;border:1px dashed var(--line);border-radius:12px;font-family:var(--display);font-weight:700;font-size:11px;letter-spacing:.08em;color:var(--muted)}
+.sp-add:hover{border-color:var(--text);color:var(--text)}
+.sp-new{display:flex;gap:8px;margin-top:8px}
+.sp-new input{flex:1;min-width:0}
+.tiles.list{grid-template-columns:1fr;gap:8px}
+.tiles.list .tile{padding:12px 16px}
+.dtrow{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .xbtn:hover,.dots:hover{border-color:var(--text);color:var(--text)}
 .sheet.hasdots h2{padding-right:100px}
 .pop{position:absolute;top:60px;right:16px;background:var(--panel2);border:1px solid var(--line);border-radius:16px;padding:6px;z-index:6;min-width:200px;box-shadow:0 14px 40px rgba(0,0,0,.5);transform-origin:top right;animation:popin .3s cubic-bezier(.2,.9,.3,1.25)}
@@ -316,7 +329,6 @@ input[type=date]::-webkit-date-and-time-value{text-align:left}
 html.theme-anim,html.theme-anim *{transition:background-color .4s,color .4s,border-color .4s,fill .4s!important}
 .cs-row .rc{flex:1;min-width:0;width:auto}
 .rc-add,.rc-list{flex:none;width:40px;height:40px;border-radius:50%;border:1px solid var(--line);color:var(--text);display:grid;place-items:center;font-size:20px;line-height:1;transition:transform .3s cubic-bezier(.2,.9,.3,1.3),border-color .2s}
-.rc-add{padding-bottom:2px}
 .rc-list svg{width:18px;height:18px}
 .rc-add:hover,.rc-list:hover{border-color:var(--text)}
 .rc-add:active,.rc-list:active{transform:scale(.88)}
@@ -378,8 +390,10 @@ body.is-dragging .sess{cursor:grabbing}
   .btn{padding:11px 14px}
   .top-actions .hide-s{display:none}
   .types{grid-template-columns:repeat(2,1fr)}
+  .types.list{display:flex}
   .types.two{grid-template-columns:repeat(2,1fr)}
   .tiles{grid-template-columns:1fr 1fr}
+  .tiles.list{grid-template-columns:1fr}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
@@ -397,7 +411,7 @@ body.is-dragging .sess{cursor:grabbing}
   </header>
 
   <section class="count" aria-label="Course">
-    <div class="count-side"><div class="cs-row"><button class="rc" id="raceCard"></button><div class="cs-btns"><button class="rc-list" id="raceList" aria-label="Liste des courses"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M8 6h12M8 12h12M8 18h12"/><circle cx="4" cy="6" r=".6"/><circle cx="4" cy="12" r=".6"/><circle cx="4" cy="18" r=".6"/></svg></button><button class="rc-add" id="raceAdd" aria-label="Ajouter une course">+</button></div></div><button class="rband" id="raceBand" hidden></button></div>
+    <div class="count-side"><div class="cs-row"><button class="rc" id="raceCard"></button><div class="cs-btns"><button class="rc-list" id="raceList" aria-label="Liste des courses"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M8 6h12M8 12h12M8 18h12"/><circle cx="4" cy="6" r=".6"/><circle cx="4" cy="12" r=".6"/><circle cx="4" cy="18" r=".6"/></svg></button><button class="rc-add" id="raceAdd" aria-label="Ajouter une course"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M8 2v12M2 8h12"/></svg></button></div></div><button class="rband" id="raceBand" hidden></button></div>
   </section>
 
   <section class="bar">
@@ -433,7 +447,10 @@ const TYPES={
   swim:{label:'NAT',name:'Natation',color:'var(--swim)'},
   gym:{label:'RENFO',name:'Renfo / PPG',color:'var(--gym)'}
 };
-const KEYS=Object.keys(TYPES);
+let KEYS=Object.keys(TYPES);
+const BASE=['run','bike','swim','gym'];
+const optional=k=>k==='gym'||!BASE.includes(k);
+const SPORT_COLORS=['#e9c46a','#2ec4b6','#ff6fa5','#9d8cff','#f4845f','#8ecae6'];
 const DOW=['LUN','MAR','MER','JEU','VEN','SAM','DIM'];
 const DOWL=['Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi','Dimanche'];
 const MONTHS=['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
@@ -457,7 +474,19 @@ const uid=()=>'u-'+Date.now().toString(36)+Math.random().toString(36).slice(2,6)
 
 /* ---------- state ---------- */
 function clone(o){return JSON.parse(JSON.stringify(o));}
-const fresh=()=>Object.assign(clone(SEED),{seedVersion:SEED.version,races:[]});
+const fresh=()=>Object.assign(clone(SEED),{seedVersion:SEED.version,races:[],sports:[]});
+function syncTypes(){
+  Object.keys(TYPES).forEach(k=>{if(!BASE.includes(k))delete TYPES[k];});
+  (state.sports||[]).forEach(x=>{if(x&&x.key&&x.name)TYPES[x.key]={label:x.label||x.name.toUpperCase().slice(0,8),name:x.name,color:x.color||SPORT_COLORS[0]};});
+  KEYS=Object.keys(TYPES);
+}
+function addSport(name){
+  name=String(name||'').trim().slice(0,24);if(!name)return null;
+  const ex=(state.sports||[]).find(x=>x.name.toLowerCase()===name.toLowerCase());if(ex)return ex.key;
+  const key='s'+uid().slice(1,7);
+  state.sports.push({key:key,name:name,label:name.toUpperCase().slice(0,8),color:SPORT_COLORS[state.sports.length%SPORT_COLORS.length]});
+  save();syncTypes();return key;
+}
 function load(){
   let s=null;
   try{s=JSON.parse(localStorage.getItem(STORE));}catch(e){}
@@ -469,9 +498,11 @@ function load(){
     s.seedVersion=SEED.version;
   }
   if(!Array.isArray(s.races))s.races=[];
+  if(!Array.isArray(s.sports))s.sports=[];
   return s;
 }
 let state=load();
+syncTypes();
 const WHEN=['','matin','midi','après-midi','soir'];
 const WHEN_ORDER={'matin':1,'midi':2,'après-midi':3,'soir':4,'':5};
 const HABITS={1:{type:'run',title:'Fractionné club',km:8,min:50,when:'soir',label:'FRACTIONNÉ · SOIR'},
@@ -541,14 +572,16 @@ const fmtPace=v=>{if(!(v>0))return'—';let m=Math.floor(v),r=Math.round((v-m)*6
 const fmt1=v=>(Math.round(v*10)/10).toString().replace('.',',');
 const fmtM=km=>Math.round(km*1000).toString().replace(/\B(?=(\d{3})+(?!\d))/g,' ')+' m';
 const SHORT={run:'CAP',bike:'Vélo',swim:'Nat',gym:'Renfo'};
+const shortOf=k=>SHORT[k]||(TYPES[k]?TYPES[k].name:k);
 function realLine(s){
-  const k=typeOf(s.type),ak=num(s.akm),am=num(s.amin),pw=num(s.pw),o=[];
-  if(!(ak||am||(k==='bike'&&pw)))return'';
+  const k=typeOf(s.type),ak=num(s.akm),am=num(s.amin),pw=num(s.pw),hr=num(s.hr),o=[];
+  if(!(ak||am||(k==='bike'&&pw)||(k==='run'&&hr)))return'';
   if(k==='swim'){if(ak)o.push(fmtM(ak));if(am)o.push(fmtDur(am));}
   else{
     if(ak)o.push(fmtKm(ak));if(am)o.push(fmtDur(am));
     if(k==='run'&&ak&&am){o.push(fmtPace(am/ak)+'/km');o.push(fmt1(ak/(am/60))+' km/h');}
     if(k==='bike'&&pw)o.push(Math.round(pw)+' W');
+    if(k==='run'&&hr)o.push(Math.round(hr)+' bpm');
   }
   return 'Réel · '+o.join(' · ');
 }
@@ -558,9 +591,10 @@ function realFields(type,s,pre){
   const kmp=s.km?(sw?Math.round(s.km*1000):s.km):'—';
   return '<div class="row"><div class="field"><label for="'+pre+'km" class="rl-km">'+(sw?'DISTANCE (M)':'DISTANCE (KM)')+'</label><input type="text" inputmode="decimal" id="'+pre+'km" name="akm" value="'+esc(kmv)+'" placeholder="'+esc(kmp)+'"></div>'+
     '<div class="field"><label for="'+pre+'min">DURÉE (MIN)</label><input type="text" inputmode="numeric" id="'+pre+'min" name="amin" value="'+esc(s.amin||'')+'" placeholder="'+esc(s.min||'—')+'"></div>'+
-    '<div class="field rw-bike"'+(type==='bike'?'':' hidden')+'><label for="'+pre+'pw">PUISSANCE (W)</label><input type="text" inputmode="numeric" id="'+pre+'pw" name="pw" value="'+esc(s.pw||'')+'" placeholder="—"></div></div>';
+    '<div class="field rw-bike"'+(type==='bike'?'':' hidden')+'><label for="'+pre+'pw">PUISSANCE (W)</label><input type="text" inputmode="numeric" id="'+pre+'pw" name="pw" value="'+esc(s.pw||'')+'" placeholder="—"></div>'+
+    '<div class="field rw-run"'+(type==='run'?'':' hidden')+'><label for="'+pre+'hr">FC MOYENNE (BPM)</label><input type="text" inputmode="numeric" id="'+pre+'hr" name="hr" value="'+esc(s.hr||'')+'" placeholder="—"></div></div>';
 }
-function readReal(f,type){let akm=num(f.get('akm'));if(type==='swim'&&akm)akm=akm/1000;return {akm:akm,amin:num(f.get('amin')),pw:type==='bike'?num(f.get('pw')):null};}
+function readReal(f,type){let akm=num(f.get('akm'));if(type==='swim'&&akm)akm=akm/1000;return {akm:akm,amin:num(f.get('amin')),pw:type==='bike'?num(f.get('pw')):null,hr:type==='run'?num(f.get('hr')):null};}
 const capKm=()=>num(state.settings.capKm)||34;
 function alertsFor(mon){
   const t=wk(mon),p=wk(addDays(mon,-7)),km=Math.max(t.run.km,t.run.dkm),pk=Math.max(p.run.km,p.run.dkm),cap=capKm(),out=[];
@@ -572,16 +606,17 @@ const alertHTML=a=>a.map(x=>'<div class="alert">⚠ '+esc(x)+'</div>').join('');
 
 /* ---------- totals ---------- */
 function totals(list){
-  const t={};KEYS.forEach(k=>t[k]={km:0,min:0,dkm:0,dmin:0,n:0,dn:0,hw:0,hm:0,pk:0,pm:0});
+  const t={};KEYS.forEach(k=>t[k]={km:0,min:0,dkm:0,dmin:0,n:0,dn:0,hw:0,hm:0,pk:0,pm:0,hrw:0,hrm:0});
   list.forEach(s=>{const x=t[typeOf(s.type)];x.n++;x.km+=num(s.km)||0;x.min+=num(s.min)||0;
     if(s.done){const ak=num(s.akm)||num(s.km)||0,am=num(s.amin)||num(s.min)||0;
       x.dn++;x.dkm+=ak;x.dmin+=am;
       if(num(s.pw)&&am){x.hw+=num(s.pw)*am;x.hm+=am;}
+      if(num(s.hr)&&am){x.hrw+=num(s.hr)*am;x.hrm+=am;}
       if(ak&&am){x.pk+=ak;x.pm+=am;}}});
   return t;
 }
 function sumHTML(t,showGym){
-  const ks=KEYS.filter(k=>showGym||k!=='gym'||t[k].n);
+  const ks=KEYS.filter(k=>showGym||!optional(k)||t[k].n);
   $('#sum').style.setProperty('--n',ks.length);
   return ks.map(k=>{
     const x=t[k],T=TYPES[k];
@@ -593,9 +628,8 @@ function sumHTML(t,showGym){
 
 /* ---------- legend ---------- */
 function renderLegend(){
-  const hasGym=state.sessions.some(x=>typeOf(x.type)==='gym');
-  const ks=KEYS.filter(k=>k!=='gym'||hasGym);
-  $('#legend').innerHTML=ks.map(k=>'<span><i class="dot" style="--c:'+TYPES[k].color+'"></i><span class="ll">'+TYPES[k].name+'</span><span class="ls">'+SHORT[k]+'</span></span>').join('')+
+  const ks=KEYS.filter(k=>!optional(k)||state.sessions.some(x=>typeOf(x.type)===k));
+  $('#legend').innerHTML=ks.map(k=>'<span><i class="dot" style="--c:'+TYPES[k].color+'"></i><span class="ll">'+TYPES[k].name+'</span><span class="ls">'+shortOf(k)+'</span></span>').join('')+
    '<span class="fp"><span><i class="dot" style="--c:var(--text)"></i>fait</span><span><i class="dot plan" style="--c:var(--text)"></i>prévu</span></span>';
 }
 
@@ -650,7 +684,7 @@ function renderMonth(){
   }
   const tt=totals(list);
   $('#sum').innerHTML='';$('#alerts').innerHTML='';
-  const mk=KEYS.filter(k=>k!=='gym'||tt[k].n);
+  const mk=KEYS.filter(k=>!optional(k)||tt[k].n);
   $('#view').innerHTML='<div class="month"><div class="mhead">'+DOW.map(x=>'<div>'+x+'</div>').join('')+'</div><div class="mgrid">'+cells+'</div>'+
     '<div class="mtot" style="--n:'+mk.length+'">'+mk.map(k=>'<div><i class="dot" style="--c:'+TYPES[k].color+'"></i> '+TYPES[k].label+'<b>'+(tt[k].km?fmtKm(tt[k].km)+' · ':'')+(fmtDur(tt[k].min)||'—')+'</b></div>').join('')+'</div></div>';
 }
@@ -736,30 +770,36 @@ dlg.addEventListener('touchend',e=>{
 
 function dayTitle(k){const d=parse(k);return '<small>'+esc(DOWL[(d.getDay()+6)%7].toUpperCase())+'</small>'+d.getDate()+' '+esc(MONTHS[d.getMonth()])+' '+d.getFullYear();}
 
-function openDay(k){
+function openDay(k,isToday){
   const ss=sessionsOn(k),rcs=raceAt(k),isRace=rcs.length>0;
-  openSheet('<h2>'+dayTitle(k)+'</h2>'+
+  openSheet('<h2>'+(isToday?dayTitle(k).replace('<small>','<small>AUJOURD’HUI · '):dayTitle(k))+'</h2>'+
     (isRace?'<div class="list">'+rcs.map(R=>'<div class="li"><i class="dot" style="--c:var(--red)"></i><button class="tg" data-race="'+esc(R.id)+'"><b>'+esc(R.name)+'</b><span>Jour de course · modifier</span></button></div>').join('')+'</div>':'')+
-    (ss.length?'<div class="list">'+ss.map(s=>{const T=TYPES[typeOf(s.type)];return '<div class="li"'+(s.done?' style="opacity:.5"':'')+'><i class="dot" style="--c:'+T.color+'"></i><button class="tg" data-sess="'+esc(s.id)+'"><b>'+esc(s.title||T.name)+'</b><span>'+esc([T.label,fmtKm(num(s.km)),fmtDur(num(s.min))].filter(Boolean).join(' · '))+'</span></button><button class="st'+(s.done?' on':'')+'" data-toggle="'+esc(s.id)+'" data-keep="1">'+(s.done?'✓ FAIT':'À FAIRE')+'</button></div>';}).join('')+'</div>':(isRace?'':'<p class="empty">Rien de prévu ce jour-là.</p>'))+
+    (ss.length?'<div class="list">'+ss.map(s=>{const T=TYPES[typeOf(s.type)];return '<div class="li"'+(s.done?' style="opacity:.5"':'')+'><i class="dot" style="--c:'+T.color+'"></i><button class="tg" data-sess="'+esc(s.id)+'"><b>'+esc(s.title||T.name)+'</b><span>'+esc([T.label,fmtKm(num(s.km)),fmtDur(num(s.min))].filter(Boolean).join(' · '))+'</span></button><button class="st'+(s.done?' on':'')+'" data-toggle="'+esc(s.id)+'" data-keep="1">'+(s.done?'✓ FAIT':'À FAIRE')+'</button></div>';}).join('')+'</div>':(isRace?'':'<p class="empty">'+(isToday?'Repos aujourd’hui, rien de prévu.':'Rien de prévu ce jour-là.')+'</p>'))+
     '<div class="actions"><div class="grp"><button class="btn solid" data-add="'+k+'">+ Séance</button></div><button class="btn ghost" data-close="1">Fermer</button></div>');
 }
 
+
+function sportListHTML(sel,name,cls){
+  return KEYS.map(k=>'<input type="radio" name="'+name+'" id="t-'+k+'" value="'+k+'"'+(sel===k?' checked':'')+'><label for="t-'+k+'" style="--c:'+TYPES[k].color+'"><i class="dot" style="--c:'+TYPES[k].color+'"></i>'+TYPES[k].label+'<small>'+esc(TYPES[k].name)+'</small></label>').join('');
+}
+const spAddHTML='<div id="spbox"><button type="button" class="sp-add" data-newsport="1"><span style="font-size:16px;line-height:1">+</span> Ajouter un sport</button></div>';
+function spForm(){return '<div class="sp-new"><input type="text" id="sp-name" maxlength="24" placeholder="ex. Rando, Rameur, Yoga…" autocomplete="off"><button type="button" class="btn solid" data-spgo="1">Ajouter</button></div>';}
 const longDate=k=>{const d=parse(k);return DOWL[(d.getDay()+6)%7]+' '+d.getDate()+' '+MONTHS[d.getMonth()];};
 function openSession(id,date,type){
   const ex=id?state.sessions.find(x=>x.id===id):null;
   const dflt=date?HABITS[(parse(date).getDay()+6)%7]:null;
   const s=ex||Object.assign({id:null,date:date||iso(today()),type:'run',title:'',km:'',min:'',when:'',notes:'',done:false},dflt?{type:dflt.type,title:dflt.title,km:dflt.km,min:dflt.min,when:dflt.when}:{},(!ex&&type)?{type:type,title:(dflt&&dflt.type===type)?dflt.title:'',km:(dflt&&dflt.type===type)?dflt.km:'',min:(dflt&&dflt.type===type)?dflt.min:'',when:(dflt&&dflt.type===type)?dflt.when:''}:{});
-  const shown={date:false,when:!!s.when,notes:!!s.notes};
-  const pop=()=>[['date','Date'],['when','Heure / moment'],['notes','Notes']].map(o=>'<button type="button" data-reveal="'+o[0]+'">'+o[1]+(shown[o[0]]?'<span>✓</span>':'')+'</button>').join('');
-  openSheet('<button class="dots" type="button" data-dots="1" aria-label="Plus de détails">⋯</button><div class="pop" id="pop" hidden>'+pop()+'</div>'+
+  const shown={dt:false,notes:false};
+  const pop=()=>[['dt','Date / heure'],['notes','Notes']].map(o=>'<button type="button" data-reveal="'+o[0]+'">'+o[1]+(shown[o[0]]?'<span>✓</span>':'')+'</button>').join('');
+  openSheet('<button class="dots" type="button" data-dots="1" aria-label="Plus de détails"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg></button><div class="pop" id="pop" hidden>'+pop()+'</div>'+
    '<h2><small>'+(ex?'MODIFIER':'NOUVELLE SÉANCE')+'</small>'+(ex?esc(ex.title||TYPES[typeOf(ex.type)].name):'Ajouter')+'</h2><div class="sline" id="sline"></div>'+
    '<form id="sf" autocomplete="off">'+
-   '<div class="field"><span class="lbl">DISCIPLINE</span><div class="types">'+KEYS.map(k=>'<input type="radio" name="type" id="t-'+k+'" value="'+k+'"'+(typeOf(s.type)===k?' checked':'')+'><label for="t-'+k+'" style="--c:'+TYPES[k].color+'"><i class="dot" style="--c:'+TYPES[k].color+'"></i>'+TYPES[k].label+'</label>').join('')+'</div></div>'+
+   '<div class="field"><span class="lbl">DISCIPLINE</span><div class="types list" id="typelist">'+sportListHTML(typeOf(s.type),'type')+'</div>'+spAddHTML+'</div>'+
    '<div class="field"><label for="f-title">TITRE</label><input type="text" id="f-title" name="title" value="'+esc(s.title)+'" placeholder="ex. Seuil 2×10\'"></div>'+
    '<div class="row"><div class="field"><label for="f-km">DISTANCE (KM)</label><input type="text" inputmode="decimal" id="f-km" name="km" value="'+esc(s.km||'')+'" placeholder="—"></div>'+
    '<div class="field"><label for="f-min">DURÉE (MIN)</label><input type="text" inputmode="numeric" id="f-min" name="min" value="'+esc(s.min||'')+'" placeholder="—"></div></div>'+
-   '<div class="field opt" data-opt="date" hidden><label for="f-date">DATE</label><input type="date" id="f-date" name="date" value="'+esc(s.date)+'" required></div>'+
-   '<div class="field opt" data-opt="when"'+(shown.when?'':' hidden')+'><label for="f-when">HEURE / MOMENT</label><select id="f-when" name="when">'+WHEN.map(w=>'<option value="'+esc(w)+'"'+((s.when||'')===w?' selected':'')+'>'+(w?w.charAt(0).toUpperCase()+w.slice(1):'Non précisé')+'</option>').join('')+'</select></div>'+
+   '<div class="opt dtrow" data-opt="dt" hidden><div class="field"><label for="f-date">DATE</label><input type="date" id="f-date" name="date" value="'+esc(s.date)+'" required></div>'+
+   '<div class="field"><label for="f-when">HEURE</label><select id="f-when" name="when">'+WHEN.map(w=>'<option value="'+esc(w)+'"'+((s.when||'')===w?' selected':'')+'>'+(w?w.charAt(0).toUpperCase()+w.slice(1):'Non précisé')+'</option>').join('')+'</select></div></div>'+
    '<div class="field opt" data-opt="notes"'+(shown.notes?'':' hidden')+'><label for="f-notes">NOTES</label><textarea id="f-notes" name="notes" placeholder="Détail de la séance, ressenti…">'+esc(s.notes||'')+'</textarea></div>'+
    '<div class="field"><span class="lbl">STATUT</span><div class="types two"><input type="radio" name="done" id="d-off" value="off"'+(s.done?'':' checked')+'><label for="d-off">À FAIRE</label><input type="radio" name="done" id="d-on" value="on"'+(s.done?' checked':'')+'><label for="d-on">✓ FAIT</label></div></div>'+
    '<div id="realbox"'+(s.done?'':' hidden')+'><div class="field" style="margin-bottom:-6px"><span class="lbl">RÉALISÉ</span></div>'+realFields(typeOf(s.type),s,'f-a')+'</div>'+
@@ -771,6 +811,7 @@ function openSession(id,date,type){
     const t=curType(),sw=t==='swim';
     $('#realbox').hidden=new FormData(form).get('done')!=='on';
     form.querySelector('.rw-bike').hidden=t!=='bike';
+    form.querySelector('.rw-run').hidden=t!=='run';
     form.querySelector('.rl-km').textContent=sw?'DISTANCE (M)':'DISTANCE (KM)';
   };
   form.addEventListener('change',()=>{line();sync();});
@@ -792,9 +833,9 @@ function openQuick(){
   const days=[];for(let i=0;i<7;i++)days.push(addDays(mon,i));
   if(!quickDay||!days.some(d=>iso(d)===quickDay))quickDay=days.some(d=>diff(t,d)===0)?iso(t):iso(days[0]);
   const chips=days.map(d=>'<button class="chip" data-chip="'+iso(d)+'" aria-pressed="'+(iso(d)===quickDay)+'">'+DOW[(d.getDay()+6)%7]+' '+d.getDate()+'</button>').join('');
-  const tiles=KEYS.map(k=>'<button class="tile" data-q="'+k+'" style="--c:'+TYPES[k].color+'"><span>'+TYPES[k].label+'<small>'+TYPES[k].name+'</small></span></button>').join('');
+  const tiles=KEYS.map(k=>'<button class="tile" data-q="'+k+'" style="--c:'+TYPES[k].color+'"><span>'+TYPES[k].label+'<small>'+esc(TYPES[k].name)+'</small></span></button>').join('');
   openSheet('<h2><small>AJOUTER</small>Quelle séance ?</h2><div class="field"><span class="lbl">JOUR</span><div class="chips">'+chips+'</div></div>'+
-    '<div class="field"><span class="lbl">DISCIPLINE</span><div class="tiles">'+tiles+'</div></div>'+
+    '<div class="field"><span class="lbl">DISCIPLINE</span><div class="tiles list">'+tiles+'</div>'+spAddHTML+'</div>'+
     '<div class="actions"><span></span><button class="btn ghost" data-close="1">Fermer</button></div>');
 }
 function openRace(id){
@@ -838,10 +879,11 @@ function exportData(){
 function importData(obj){
   let added=0;
   if(obj&&obj.settings&&typeof obj.settings==='object')state.settings=Object.assign({},state.settings,obj.settings);
+  if(obj&&Array.isArray(obj.sports)){obj.sports.forEach(x=>{if(x&&x.key&&x.name&&!state.sports.some(y=>y.key===x.key))state.sports.push({key:String(x.key),name:String(x.name),label:String(x.label||''),color:String(x.color||SPORT_COLORS[0])});});syncTypes();}
   if(obj&&Array.isArray(obj.races)){const ids=new Set(state.races.map(r=>r.id));obj.races.forEach(r=>{if(r&&r.id&&r.id!=='main'&&/^\d{4}-\d{2}-\d{2}$/.test(r.date||'')&&!ids.has(r.id))state.races.push({id:String(r.id),name:String(r.name||'Course'),date:r.date,km:num(r.km)||'',time:String(r.time||''),goal:String(r.goal||''),result:String(r.result||'')});});}
   if(obj&&Array.isArray(obj.sessions)){
     const m=new Map(state.sessions.map(s=>[s.id,s]));
-    obj.sessions.forEach(s=>{if(s&&s.id&&/^\d{4}-\d{2}-\d{2}$/.test(s.date||'')){if(!m.has(s.id))added++;m.set(String(s.id),{id:String(s.id),date:s.date,type:typeOf(s.type),title:String(s.title||''),km:num(s.km),min:num(s.min),akm:num(s.akm),amin:num(s.amin),pw:num(s.pw),when:WHEN.includes(s.when)?s.when:'',notes:String(s.notes||''),done:!!s.done});}});
+    obj.sessions.forEach(s=>{if(s&&s.id&&/^\d{4}-\d{2}-\d{2}$/.test(s.date||'')){if(!m.has(s.id))added++;m.set(String(s.id),{id:String(s.id),date:s.date,type:typeOf(s.type),title:String(s.title||''),km:num(s.km),min:num(s.min),akm:num(s.akm),amin:num(s.amin),pw:num(s.pw),hr:num(s.hr),when:WHEN.includes(s.when)?s.when:'',notes:String(s.notes||''),done:!!s.done});}});
     state.sessions=[...m.values()];
   }
   save();render();return added;
@@ -852,8 +894,8 @@ let stW=null,stTab='ring',stMetric='min';
 const METRICS={min:{label:'Durée',get:(x,d)=>d?x.dmin:x.min,fmt:v=>fmtDur(v)||'0'},km:{label:'Distance',get:(x,d)=>d?x.dkm:x.km,fmt:v=>(fmtKm(v)||'0 km')},n:{label:'Séances',get:(x,d)=>d?x.dn:x.n,fmt:v=>String(v)}};
 function wk(mon){
   const list=[];for(let i=0;i<7;i++)list.push(...sessionsOn(iso(addDays(mon,i))));
-  const t=totals(list),all={km:0,min:0,dkm:0,dmin:0,n:0,dn:0,hw:0,hm:0,pk:0,pm:0};
-  KEYS.forEach(k=>{for(const f in all)all[f]+=t[k][f];});t.all=all;t.run.pace=t.run.pk?t.run.pm/t.run.pk:0;t.bike.pw=t.bike.hm?t.bike.hw/t.bike.hm:0;return t;
+  const t=totals(list),all={km:0,min:0,dkm:0,dmin:0,n:0,dn:0,hw:0,hm:0,pk:0,pm:0,hrw:0,hrm:0};
+  KEYS.forEach(k=>{for(const f in all)all[f]+=t[k][f];});t.all=all;t.run.pace=t.run.pk?t.run.pm/t.run.pk:0;t.bike.pw=t.bike.hm?t.bike.hw/t.bike.hm:0;t.run.hr=t.run.hrm?t.run.hrw/t.run.hrm:0;return t;
 }
 function dlt(a,b){
   if(!b)return a?'<span class="dl">nouveau</span>':'<span class="dl">—</span>';
@@ -933,6 +975,7 @@ function statsTab(cur,pr,ks){
     ks.map(k=>row(TYPES[k].name,k)).join('')+row('<b>Total</b>','all')+
     '<tr><td>Allure CAP</td><td class="mut">'+(pr.run.pace?fmtPace(pr.run.pace)+'/km':'—')+'</td><td>'+(cur.run.pace?fmtPace(cur.run.pace)+'/km':'—')+'</td><td>'+dpace(cur.run.pace,pr.run.pace)+'</td></tr>'+
     '<tr><td>Puissance vélo</td><td class="mut">'+(pr.bike.pw?Math.round(pr.bike.pw)+' W':'—')+'</td><td>'+(cur.bike.pw?Math.round(cur.bike.pw)+' W':'—')+'</td><td>'+(cur.bike.pw&&pr.bike.pw?'<span class="dl">'+(Math.round(cur.bike.pw-pr.bike.pw)>0?'+':'')+Math.round(cur.bike.pw-pr.bike.pw)+' W</span>':'<span class="dl">—</span>')+'</td></tr>'+
+    '<tr><td>FC moyenne CAP</td><td class="mut">'+(pr.run.hr?Math.round(pr.run.hr)+' bpm':'—')+'</td><td>'+(cur.run.hr?Math.round(cur.run.hr)+' bpm':'—')+'</td><td>'+(cur.run.hr&&pr.run.hr?'<span class="dl">'+(Math.round(cur.run.hr-pr.run.hr)>0?'+':'')+Math.round(cur.run.hr-pr.run.hr)+' bpm</span>':'<span class="dl">—</span>')+'</td></tr>'+
     '<tr><td>Séances</td><td class="mut">'+pr.all.n+'</td><td>'+cur.all.n+'</td><td>'+dlt(cur.all.n,pr.all.n)+'</td></tr></tbody></table></div>';
   const ws=weekRange();let prevMin=null;
   const rows=ws.map(m=>{const t=wk(m),a=t.all;const r='<tr data-stw="'+iso(m)+'"'+(iso(m)===iso(stW)?' class="sel"':'')+'><td>'+fmtDM(m)+' <span class="mut">'+esc(relWeek(m))+'</span></td><td'+(alertsFor(m).length?' class="warn" title="Dépasse la limite"':'')+'>'+(alertsFor(m).length?'⚠ ':'')+(t.run.km?fmtKm(t.run.km):'—')+'</td><td class="mut">'+(t.run.pace?fmtPace(t.run.pace):'—')+'</td><td class="mut">'+(t.bike.pw?Math.round(t.bike.pw):'—')+'</td><td>'+(fmtDur(t.bike.min)||'—')+'</td><td>'+(fmtDur(t.swim.min)||'—')+'</td><td><b>'+(fmtDur(a.min)||'—')+'</b></td><td>'+(a.min?Math.round(a.dmin/a.min*100)+' %':'—')+'</td><td>'+(prevMin===null?'<span class="dl">—</span>':dlt(a.min,prevMin))+'</td></tr>';prevMin=a.min;return r;}).join('');
@@ -941,7 +984,7 @@ function statsTab(cur,pr,ks){
 }
 function renderStats(){
   const mon=stW,sun=addDays(mon,6),cur=wk(mon),pr=wk(addDays(mon,-7));
-  const ks=KEYS.filter(k=>k!=='gym'||cur[k].n||pr[k].n);
+  const ks=KEYS.filter(k=>!optional(k)||cur[k].n||pr[k].n);
   const tabs=[['ring','Anneaux'],['bar','Graphique'],['tab','Tableau']];
   const body=stTab==='ring'?statsRing(cur,pr,ks):(stTab==='bar'?statsBar(ks):statsTab(cur,pr,ks));
   openSheet('<h2><small>BILAN · '+esc(relWeek(mon))+'</small>'+fmtDM(mon)+' — '+fmtDM(sun)+'</h2>'+(alertsFor(mon).length?'<div class="alerts-in" style="margin-top:14px;display:flex;flex-direction:column;gap:8px">'+alertHTML(alertsFor(mon))+'</div>':'')+
@@ -1125,14 +1168,14 @@ document.addEventListener('click',e=>{
   const ex=e.target.closest&&e.target.closest('[data-extra]');
   if(ex){if(extraFn){const f=extraFn;extraFn=null;$('#toast').classList.remove('show');f();}return;}
   if(performance.now()<blockClickUntil){e.preventDefault();e.stopPropagation();return;}
-  const t=e.target.closest('[data-newrace],[data-delrace],[data-dots],[data-reveal],[data-copy],[data-cpf],[data-cpm],[data-cpgo],[data-stats],[data-sttab],[data-stw],[data-stm],[data-toggle],[data-chip],[data-q],[data-fab],[data-sess],[data-day],[data-add],[data-race],[data-close],[data-del],[data-export],[data-import],[data-reset]');
+  const t=e.target.closest('[data-newsport],[data-spgo],[data-newrace],[data-delrace],[data-dots],[data-reveal],[data-copy],[data-cpf],[data-cpm],[data-cpgo],[data-stats],[data-sttab],[data-stw],[data-stm],[data-toggle],[data-chip],[data-q],[data-fab],[data-sess],[data-day],[data-add],[data-race],[data-close],[data-del],[data-export],[data-import],[data-reset]');
   if(!t)return;
   if(t.dataset.dots){const pp=$('#pop');if(pp)pp.hidden=!pp.hidden;return;}
   if(t.dataset.reveal){
     const k=t.dataset.reveal,sh=dlg._shown;if(!sh)return;
     sh[k]=!sh[k];const o=dlg.querySelector('[data-opt="'+k+'"]');if(o)o.hidden=!sh[k];
     const pp=$('#pop');if(pp){pp.innerHTML=dlg._popHTML();pp.hidden=true;}
-    if(sh[k]){const inp=o&&o.querySelector('input,select,textarea');if(inp&&k!=='date')setTimeout(()=>inp.focus(),30);}
+    if(sh[k]&&k==='notes'){const inp=o&&o.querySelector('textarea');if(inp)setTimeout(()=>inp.focus(),30);}
     return;
   }
   if(!dlg.open&&(t.dataset.sess||t.dataset.add||t.dataset.day||t.dataset.race||t.dataset.copy))setOrigin(t);
@@ -1149,6 +1192,13 @@ document.addEventListener('click',e=>{
   if(t.dataset.close){closeSheet();return;}
   if(t.dataset.sess){openSession(t.dataset.sess);return;}
   if(t.dataset.add){openSession(null,t.dataset.add);return;}
+  if(t.dataset.newsport){const b=$('#spbox');b.innerHTML=spForm();const i=$('#sp-name');i.focus();i.addEventListener('keydown',ev=>{if(ev.key==='Enter'){ev.preventDefault();const g=b.querySelector('[data-spgo]');if(g)g.click();}});return;}
+  if(t.dataset.spgo){
+    const key=addSport(($('#sp-name')||{}).value);if(!key)return;
+    const tl=$('#typelist');
+    if(tl){tl.innerHTML=sportListHTML(key,'type');$('#spbox').innerHTML=spAddHTML.replace(/^<div id="spbox">|<\/div>$/g,'');const f=$('#sf');if(f)f.dispatchEvent(new Event('change'));}
+    else{openQuick();}
+    return;}
   if(t.dataset.newrace){openRace('new');return;}
   if(t.dataset.race){openRace(t.dataset.race);return;}
   if(t.dataset.delrace){if(confirm('Supprimer cette course ?')){state.races=state.races.filter(r=>r.id!==t.dataset.delrace);save();closeSheet();render();}return;}
@@ -1156,7 +1206,7 @@ document.addEventListener('click',e=>{
   if(t.dataset.del){if(confirm('Supprimer cette séance ?')){state.sessions=state.sessions.filter(s=>s.id!==t.dataset.del);save();closeSheet();render();}return;}
   if(t.dataset.export){exportData();return;}
   if(t.dataset.import){$('#file').click();return;}
-  if(t.dataset.reset){if(confirm('Effacer tes modifications et revenir au plan d’origine ?')){state=fresh();save();closeSheet();render();}return;}
+  if(t.dataset.reset){if(confirm('Effacer tes modifications et revenir au plan d’origine ?')){state=fresh();syncTypes();save();closeSheet();render();}return;}
 });
 document.addEventListener('change',e=>{
   const c=e.target;
@@ -1187,7 +1237,7 @@ $('#btnMenu').addEventListener('click',()=>toggleMpop(mpop.hidden));
 $('#rowTheme').addEventListener('click',()=>applyTheme(document.documentElement.dataset.theme==='light'?'dark':'light',true));
 $('#rowData').addEventListener('click',e=>{toggleMpop(false);setOrigin($('#btnMenu'));openMenu();});
 document.addEventListener('click',e=>{if(!mpop.hidden&&!(e.target.closest&&e.target.closest('.menuwrap')))toggleMpop(false);},true);
-$('#btnToday').addEventListener('click',()=>{cursor=today();enterNext=true;render();window.scrollTo({top:0,behavior:'smooth'});});
+$('#btnToday').addEventListener('click',e=>{cursor=today();enterNext=true;render();window.scrollTo({top:0,behavior:'smooth'});setOrigin(e.currentTarget);openDay(iso(today()),true);});
 $('#vWeek').addEventListener('click',()=>{view='week';enterNext=true;render();});
 $('#vMonth').addEventListener('click',()=>{view='month';render();});
 function shift(n){
