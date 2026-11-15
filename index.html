@@ -61,11 +61,16 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
 .count{display:flex;justify-content:flex-end;align-items:center;gap:var(--pad);padding:18px 0 20px;border-bottom:1px solid var(--line)}
 .cw{display:flex;align-items:center;gap:12px;color:var(--muted);font-size:14px}
 .cw b{font-family:var(--display);font-weight:800;font-size:13px;letter-spacing:.06em;background:var(--red);color:#fff;padding:6px 11px;border-radius:999px}
-.count-side{width:min(400px,100%);display:flex;align-items:center;gap:10px}
-.rc{display:block;width:100%;border:1px solid var(--red);background:rgba(225,50,50,.1);padding:12px 16px;border-radius:var(--r);transition:background .15s}
-.rc:hover{background:rgba(225,50,50,.22)}
-.rc .k{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:700;font-size:10px;letter-spacing:.14em;color:var(--red-text)}
-.rc .wk{font-family:var(--display);font-weight:800;font-size:12px;letter-spacing:.06em;background:var(--red);color:#fff;padding:5px 10px;border-radius:999px}
+.count-side{width:min(420px,100%);display:flex;flex-direction:column;gap:8px}
+.cs-row{display:flex;align-items:stretch;gap:10px}
+.cs-btns{display:flex;flex-direction:column;gap:8px;justify-content:center}
+.rc{display:block;width:100%;text-align:left;border:1px solid var(--line);background:var(--panel);padding:12px 16px;border-radius:var(--r);transition:background .15s,border-color .15s;box-shadow:var(--card-shadow)}
+.rc:hover{border-color:var(--muted)}
+.rc .k{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:700;font-size:10px;letter-spacing:.14em;color:var(--muted)}
+.rc .wk{font-family:var(--display);font-weight:800;font-size:12px;letter-spacing:.06em;background:var(--panel2);color:var(--text);padding:5px 10px;border-radius:999px}
+.pill{font-family:var(--display);font-weight:700;font-size:9px;letter-spacing:.12em;white-space:nowrap;border:1px solid var(--line);color:var(--muted);padding:4px 8px;border-radius:999px;background:transparent}
+.pill.ok{color:var(--text);border-color:var(--muted)}
+.rc .pill{margin-left:auto}
 .rc .n{font-family:var(--display);font-weight:800;font-size:15px;margin:6px 0 4px;line-height:1.2}
 .rc .m{font-size:12px;color:var(--muted);line-height:1.4}
 
@@ -126,9 +131,9 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
 .sess .sub{display:block;font-size:12px;color:var(--muted);margin-top:5px}
 .add{display:block;width:100%;padding:11px;border:1px dashed var(--line);border-radius:var(--r);color:var(--muted);font-size:13px;text-align:center;margin-top:auto}
 .add:hover{color:var(--text);border-color:var(--text)}
-.race{display:block;width:100%;border:1px solid var(--red);background:rgba(225,50,50,.12);border-radius:var(--r);padding:13px 12px}
-.race:hover{background:rgba(225,50,50,.24)}
-.race .k{font-family:var(--display);font-weight:700;font-size:10px;letter-spacing:.14em;color:var(--red-text)}
+.race{display:block;width:100%;text-align:left;border:1px solid var(--line);background:var(--panel);box-shadow:var(--card-shadow);border-radius:var(--r);padding:13px 12px}
+.race:hover{border-color:var(--muted)}
+.race .k{display:flex;justify-content:space-between;align-items:center;gap:6px;font-family:var(--display);font-weight:700;font-size:10px;letter-spacing:.14em;color:var(--muted)}
 .race .n{font-family:var(--display);font-weight:800;font-size:clamp(14px,1.25vw,18px);line-height:1.15;margin:8px 0 6px;overflow-wrap:anywhere;hyphens:auto}
 .race .m{font-size:12px;color:var(--muted);line-height:1.4}
 
@@ -143,7 +148,7 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
 .mc .num{font-family:var(--display);font-weight:800;font-size:13px}
 .mc.today .num{background:var(--red);color:#fff;display:inline-block;padding:3px 8px;border-radius:999px;align-self:flex-start}
 .mc .dots{display:flex;gap:5px;flex-wrap:wrap}
-.mc .rflag{font-family:var(--display);font-weight:700;font-size:9px;letter-spacing:.1em;color:#fff;background:var(--red);padding:4px 7px;border-radius:999px;align-self:flex-start}
+.mc .rflag{font-family:var(--display);font-weight:700;font-size:9px;letter-spacing:.1em;color:var(--muted);background:transparent;border:1px solid var(--line);padding:3px 6px;border-radius:999px;align-self:flex-start}
 .mtot{display:grid;grid-template-columns:repeat(var(--n,3),minmax(0,1fr));border:1px solid var(--line);border-top:0}
 .mtot>div{padding:12px 14px;border-left:1px solid var(--line);font-size:13px;color:var(--muted)}
 .mtot>div:first-child{border-left:0}
@@ -309,10 +314,27 @@ input[type=date]::-webkit-date-and-time-value{text-align:left}
 .mrow[aria-checked="true"] .sw2{background:var(--ok)}
 .mrow[aria-checked="true"] .sw2 b{transform:translateX(18px);background:#fff}
 html.theme-anim,html.theme-anim *{transition:background-color .4s,color .4s,border-color .4s,fill .4s!important}
-.count-side .rc{flex:1;min-width:0;width:auto}
-.rc-add{flex:none;width:44px;height:44px;border-radius:50%;border:1px solid var(--red);color:var(--red-text);display:grid;place-items:center;font-size:20px;line-height:1;padding-bottom:2px;transition:transform .3s cubic-bezier(.2,.9,.3,1.3),background .2s}
-.rc-add:hover{background:rgba(225,50,50,.2)}
-.rc-add:active{transform:scale(.88)}
+.cs-row .rc{flex:1;min-width:0;width:auto}
+.rc-add,.rc-list{flex:none;width:40px;height:40px;border-radius:50%;border:1px solid var(--line);color:var(--text);display:grid;place-items:center;font-size:20px;line-height:1;transition:transform .3s cubic-bezier(.2,.9,.3,1.3),border-color .2s}
+.rc-add{padding-bottom:2px}
+.rc-list svg{width:18px;height:18px}
+.rc-add:hover,.rc-list:hover{border-color:var(--text)}
+.rc-add:active,.rc-list:active{transform:scale(.88)}
+.rband{display:flex;align-items:center;gap:10px;width:100%;text-align:left;padding:8px 14px;border:1px solid var(--line);border-radius:12px;font-size:12px;color:var(--muted);transition:border-color .2s}
+.rband:hover{border-color:var(--muted)}
+.rband b{font-family:var(--display);font-weight:700;font-size:10px;letter-spacing:.12em;color:var(--text)}
+.rband span.n{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text)}
+.rl-sec{font-family:var(--display);font-weight:700;font-size:10px;letter-spacing:.14em;color:var(--muted);margin:18px 0 8px}
+.rl-row{display:flex;align-items:center;gap:14px;width:100%;text-align:left;padding:12px 4px;border-bottom:1px solid var(--line)}
+.rl-row:hover .rl-n{text-decoration:underline;text-underline-offset:4px}
+.rl-d{font-family:var(--display);font-weight:800;font-size:15px;min-width:58px}
+.rl-d small{display:block;font-weight:700;font-size:9px;letter-spacing:.1em;color:var(--muted);margin-top:2px}
+.rl-i{flex:1;min-width:0}
+.rl-n{font-family:var(--display);font-weight:800;font-size:14px;line-height:1.2}
+.rl-m{font-size:12px;color:var(--muted);margin-top:3px}
+.rl-t{text-align:right;font-family:var(--display);font-weight:800;font-size:15px}
+.rl-t small{display:block;font-family:var(--body);font-weight:400;font-size:11px;color:var(--muted);margin-top:2px}
+.rl-empty{font-size:13px;color:var(--muted);padding:10px 4px}
 .stsplit{flex-direction:column;align-items:center;gap:22px}
 .stsplit .lg{width:100%;max-width:540px;flex:none}
 
@@ -375,7 +397,7 @@ body.is-dragging .sess{cursor:grabbing}
   </header>
 
   <section class="count" aria-label="Course">
-    <div class="count-side"><button class="rc" id="raceCard"></button><button class="rc-add" id="raceAdd" aria-label="Ajouter une course">+</button></div>
+    <div class="count-side"><div class="cs-row"><button class="rc" id="raceCard"></button><div class="cs-btns"><button class="rc-list" id="raceList" aria-label="Liste des courses"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M8 6h12M8 12h12M8 18h12"/><circle cx="4" cy="6" r=".6"/><circle cx="4" cy="12" r=".6"/><circle cx="4" cy="18" r=".6"/></svg></button><button class="rc-add" id="raceAdd" aria-label="Ajouter une course">+</button></div></div><button class="rband" id="raceBand" hidden></button></div>
   </section>
 
   <section class="bar">
@@ -466,7 +488,7 @@ const typeOf=t=>TYPES[t]?t:'run';
 /* ---------- courses ---------- */
 function allRaces(){
   const S=state.settings;
-  return [{id:'main',name:S.raceName,date:S.raceDate,km:S.raceKm,time:S.raceTime,goal:S.raceGoal}].concat((state.races||[]).filter(r=>r&&/^\d{4}-\d{2}-\d{2}$/.test(r.date||'')));
+  return [{id:'main',name:S.raceName,date:S.raceDate,km:S.raceKm,time:S.raceTime,goal:S.raceGoal,result:S.raceResult||''}].concat((state.races||[]).filter(r=>r&&/^\d{4}-\d{2}-\d{2}$/.test(r.date||'')));
 }
 const raceAt=k=>allRaces().filter(r=>r.date===k);
 function upcomingRaces(){const t=iso(today());return allRaces().filter(r=>r.date>=t).sort((a,b)=>a.date<b.date?-1:(a.date>b.date?1:0));}
@@ -476,14 +498,42 @@ function nextRace(){
 }
 
 /* ---------- countdown ---------- */
+const isPast=R=>R.date<iso(today());
+function parseChrono(t){
+  const m=String(t||'').trim().replace(/h/i,':').replace(/[’'"]/g,':').split(':').filter(x=>x!=='').map(Number);
+  if(!m.length||m.some(x=>!isFinite(x)))return 0;
+  return m.length===3?m[0]*3600+m[1]*60+m[2]:(m.length===2?m[0]*60+m[1]:m[0]*60);
+}
+function racePace(R){const sec=parseChrono(R.result),km=num(R.km);return sec>0&&km>0?fmtPace(sec/60/km)+' /km':'';}
+function racePill(R){return isPast(R)?'<span class="pill ok">'+(R.result?esc(R.result):'EFFECTUÉE')+'</span>':'<span class="pill">À VENIR</span>';}
 function renderCount(){
-  const R=nextRace(),r=parse(R.date),d=diff(today(),r),others=Math.max(0,upcomingRaces().length-1);
+  const R=nextRace(),r=parse(R.date),d=diff(today(),r),up=upcomingRaces();
   let chip;
   if(d>0){const w=diff(mondayOf(today()),mondayOf(r))/7;chip=w>0?'S−'+w:'SEMAINE DE COURSE';}
   else if(d===0)chip='J-0';else chip='FIN';
-  $('#raceCard').innerHTML='<span class="k"><b class="wk">'+chip+'</b>COURSE · '+esc(DOW[(r.getDay()+6)%7])+' '+fmtDM(r)+'</span><div class="n">'+esc(R.name)+'</div><div class="m">'+
-    [R.km?fmtKm(num(R.km)):'',R.time?esc(R.time):'',R.goal?'Objectif '+esc(R.goal):'',others?'+'+others+' autre'+(others>1?'s':'')+' à venir':''].filter(Boolean).join(' · ')+'</div>';
+  $('#raceCard').innerHTML='<span class="k"><b class="wk">'+chip+'</b>'+esc(DOW[(r.getDay()+6)%7])+' '+fmtDM(r)+racePill(R)+'</span><div class="n">'+esc(R.name)+'</div><div class="m">'+
+    [R.km?fmtKm(num(R.km)):'',R.time?esc(R.time):'',R.goal?'Objectif '+esc(R.goal):'',isPast(R)?racePace(R):''].filter(Boolean).join(' · ')+'</div>';
   $('#raceCard').dataset.race=R.id;
+  const band=$('#raceBand'),nx=up.filter(x=>x.id!==R.id);
+  if(nx.length){
+    const N=nx[0],nr=parse(N.date),w=diff(mondayOf(today()),mondayOf(nr))/7;
+    band.hidden=false;
+    band.innerHTML='<b>PROCHAINE</b><span>'+fmtDM(nr)+'</span><span class="n">'+esc(N.name)+'</span><span>'+(w>0?'S−'+w:'')+(nx.length>1?' · +'+(nx.length-1):'')+'</span>';
+  }else band.hidden=true;
+}
+function openRaces(){
+  const t=iso(today()),all=allRaces();
+  const up=all.filter(x=>x.date>=t).sort((a,b)=>a.date<b.date?-1:1),done=all.filter(x=>x.date<t).sort((a,b)=>a.date<b.date?1:-1);
+  const row=(R,isUp)=>{
+    const d=parse(R.date),w=isUp?diff(mondayOf(today()),mondayOf(d))/7:0;
+    return '<button class="rl-row" data-race="'+esc(R.id)+'"><span class="rl-d">'+fmtDM(d)+'<small>'+d.getFullYear()+'</small></span><span class="rl-i"><div class="rl-n">'+esc(R.name)+'</div><div class="rl-m">'+
+      [R.km?fmtKm(num(R.km)):'',R.goal&&isUp?'Objectif '+esc(R.goal):'',R.time&&isUp?esc(R.time):''].filter(Boolean).join(' · ')+'</div></span>'+
+      (isUp?'<span class="pill">À VENIR'+(w>0?' · S−'+w:'')+'</span>':'<span class="rl-t">'+(R.result?esc(R.result):'<span class="pill">SANS CHRONO</span>')+(R.result&&racePace(R)?'<small>'+racePace(R)+'</small>':'')+'</span>')+'</button>';
+  };
+  openSheet('<h2><small>COURSES</small>Calendrier des courses</h2>'+
+    '<div class="rl-sec">À VENIR · '+up.length+'</div>'+(up.length?up.map(x=>row(x,true)).join(''):'<div class="rl-empty">Aucune course prévue.</div>')+
+    '<div class="rl-sec">EFFECTUÉES · '+done.length+'</div>'+(done.length?done.map(x=>row(x,false)).join(''):'<div class="rl-empty">Pas encore de course courue. Après la course, ouvre-la pour saisir ton chrono.</div>')+
+    '<div class="actions"><div class="grp"><button class="btn solid" data-newrace="1">+ Ajouter</button></div><button class="btn ghost" data-close="1">Fermer</button></div>');
 }
 
 /* ---------- allure, alertes ---------- */
@@ -560,7 +610,7 @@ function sessHTML(s){
     '<span class="name">'+esc(s.title||T.name)+'</span>'+(big?'<span class="big">'+esc(big)+'</span>':'')+(sub?'<span class="sub">'+esc(sub)+'</span>':'')+(s.done&&realLine(s)?'<span class="real">'+esc(realLine(s))+'</span>':'')+'</button></div>';
 }
 function raceBlock(R){
-  return '<button class="race" data-race="'+esc(R.id)+'"><span class="k">COURSE</span><div class="n">'+esc(R.name)+'</div><div class="m">'+
+  return '<button class="race" data-race="'+esc(R.id)+'"><span class="k">COURSE'+racePill(R)+'</span><div class="n">'+esc(R.name)+'</div><div class="m">'+
     [R.km?fmtKm(num(R.km)):'',R.time?esc(R.time):'',R.goal?esc(R.goal):''].filter(Boolean).join('<br>')+'</div></button>';
 }
 function renderWeek(){
@@ -749,7 +799,7 @@ function openQuick(){
 }
 function openRace(id){
   const isNew=id==='new',main=!isNew&&(!id||id==='1'||id==='main');
-  const R=isNew?{id:null,name:'',date:iso(addDays(mondayOf(cursor),5)),km:'',time:'',goal:''}:(main?allRaces()[0]:(state.races.find(r=>r.id===id)||allRaces()[0]));
+  const R=isNew?{id:null,name:'',date:iso(addDays(mondayOf(cursor),5)),km:'',time:'',goal:'',result:''}:(main?allRaces()[0]:(state.races.find(r=>r.id===id)||allRaces()[0]));
   const isMain=!isNew&&(main||R.id==='main');
   openSheet('<h2><small>'+(isNew?'NOUVELLE COURSE':'COURSE')+'</small>'+(isNew?'Ajouter':esc(R.name))+'</h2>'+
    '<form id="rf" autocomplete="off"><div class="field"><label for="r-name">NOM</label><input type="text" id="r-name" name="name" value="'+esc(R.name)+'" placeholder="ex. 10 km de Paris"></div>'+
@@ -757,11 +807,12 @@ function openRace(id){
    '<div class="field"><label for="r-km">DISTANCE (KM)</label><input type="text" inputmode="decimal" id="r-km" name="km" value="'+esc(R.km||'')+'"></div></div>'+
    '<div class="row"><div class="field"><label for="r-time">HORAIRE / LIEU</label><input type="text" id="r-time" name="time" value="'+esc(R.time||'')+'" placeholder="ex. départ 20h00"></div>'+
    '<div class="field"><label for="r-goal">OBJECTIF</label><input type="text" id="r-goal" name="goal" value="'+esc(R.goal||'')+'" placeholder="ex. 47:00"></div></div>'+
+   '<div class="field"><label for="r-res">CHRONO (APRÈS LA COURSE)</label><input type="text" id="r-res" name="result" value="'+esc(R.result||'')+'" placeholder="ex. 47:12 ou 1:02:45"></div>'+
    '<div class="actions"><div class="grp"><button class="btn solid" type="submit">Enregistrer</button><button class="btn ghost" type="button" data-close="1">Annuler</button></div>'+(!isNew&&!isMain?'<button class="btn danger" type="button" data-delrace="'+esc(R.id)+'">Supprimer</button>':'')+'</div></form>');
   $('#rf').addEventListener('submit',e=>{
     e.preventDefault();const f=new FormData(e.target);
-    const rec={name:String(f.get('name')||'').trim()||'Course',date:f.get('date')||R.date,km:num(f.get('km'))||'',time:String(f.get('time')||'').trim(),goal:String(f.get('goal')||'').trim()};
-    if(isMain){state.settings.raceName=rec.name;state.settings.raceDate=rec.date;state.settings.raceKm=rec.km;state.settings.raceTime=rec.time;state.settings.raceGoal=rec.goal;}
+    const rec={name:String(f.get('name')||'').trim()||'Course',date:f.get('date')||R.date,km:num(f.get('km'))||'',time:String(f.get('time')||'').trim(),goal:String(f.get('goal')||'').trim(),result:String(f.get('result')||'').trim()};
+    if(isMain){state.settings.raceName=rec.name;state.settings.raceDate=rec.date;state.settings.raceKm=rec.km;state.settings.raceTime=rec.time;state.settings.raceGoal=rec.goal;state.settings.raceResult=rec.result;}
     else if(isNew)state.races.push(Object.assign({id:'r-'+uid().slice(2)},rec));
     else Object.assign(R,rec);
     save();closeSheet();render();
@@ -787,7 +838,7 @@ function exportData(){
 function importData(obj){
   let added=0;
   if(obj&&obj.settings&&typeof obj.settings==='object')state.settings=Object.assign({},state.settings,obj.settings);
-  if(obj&&Array.isArray(obj.races)){const ids=new Set(state.races.map(r=>r.id));obj.races.forEach(r=>{if(r&&r.id&&r.id!=='main'&&/^\d{4}-\d{2}-\d{2}$/.test(r.date||'')&&!ids.has(r.id))state.races.push({id:String(r.id),name:String(r.name||'Course'),date:r.date,km:num(r.km)||'',time:String(r.time||''),goal:String(r.goal||'')});});}
+  if(obj&&Array.isArray(obj.races)){const ids=new Set(state.races.map(r=>r.id));obj.races.forEach(r=>{if(r&&r.id&&r.id!=='main'&&/^\d{4}-\d{2}-\d{2}$/.test(r.date||'')&&!ids.has(r.id))state.races.push({id:String(r.id),name:String(r.name||'Course'),date:r.date,km:num(r.km)||'',time:String(r.time||''),goal:String(r.goal||''),result:String(r.result||'')});});}
   if(obj&&Array.isArray(obj.sessions)){
     const m=new Map(state.sessions.map(s=>[s.id,s]));
     obj.sessions.forEach(s=>{if(s&&s.id&&/^\d{4}-\d{2}-\d{2}$/.test(s.date||'')){if(!m.has(s.id))added++;m.set(String(s.id),{id:String(s.id),date:s.date,type:typeOf(s.type),title:String(s.title||''),km:num(s.km),min:num(s.min),akm:num(s.akm),amin:num(s.amin),pw:num(s.pw),when:WHEN.includes(s.when)?s.when:'',notes:String(s.notes||''),done:!!s.done});}});
@@ -1074,7 +1125,7 @@ document.addEventListener('click',e=>{
   const ex=e.target.closest&&e.target.closest('[data-extra]');
   if(ex){if(extraFn){const f=extraFn;extraFn=null;$('#toast').classList.remove('show');f();}return;}
   if(performance.now()<blockClickUntil){e.preventDefault();e.stopPropagation();return;}
-  const t=e.target.closest('[data-delrace],[data-dots],[data-reveal],[data-copy],[data-cpf],[data-cpm],[data-cpgo],[data-stats],[data-sttab],[data-stw],[data-stm],[data-toggle],[data-chip],[data-q],[data-fab],[data-sess],[data-day],[data-add],[data-race],[data-close],[data-del],[data-export],[data-import],[data-reset]');
+  const t=e.target.closest('[data-newrace],[data-delrace],[data-dots],[data-reveal],[data-copy],[data-cpf],[data-cpm],[data-cpgo],[data-stats],[data-sttab],[data-stw],[data-stm],[data-toggle],[data-chip],[data-q],[data-fab],[data-sess],[data-day],[data-add],[data-race],[data-close],[data-del],[data-export],[data-import],[data-reset]');
   if(!t)return;
   if(t.dataset.dots){const pp=$('#pop');if(pp)pp.hidden=!pp.hidden;return;}
   if(t.dataset.reveal){
@@ -1098,6 +1149,7 @@ document.addEventListener('click',e=>{
   if(t.dataset.close){closeSheet();return;}
   if(t.dataset.sess){openSession(t.dataset.sess);return;}
   if(t.dataset.add){openSession(null,t.dataset.add);return;}
+  if(t.dataset.newrace){openRace('new');return;}
   if(t.dataset.race){openRace(t.dataset.race);return;}
   if(t.dataset.delrace){if(confirm('Supprimer cette course ?')){state.races=state.races.filter(r=>r.id!==t.dataset.delrace);save();closeSheet();render();}return;}
   if(t.dataset.day){openDay(t.dataset.day);return;}
@@ -1116,6 +1168,8 @@ document.addEventListener('change',e=>{
   }
 });
 $('#raceCard').addEventListener('click',e=>{setOrigin(e.currentTarget);openRace(e.currentTarget.dataset.race||'main');});
+$('#raceList').addEventListener('click',e=>{setOrigin(e.currentTarget);openRaces();});
+$('#raceBand').addEventListener('click',e=>{setOrigin(e.currentTarget);openRaces();});
 $('#raceAdd').addEventListener('click',e=>{setOrigin(e.currentTarget);openRace('new');});
 $('#fab').addEventListener('click',e=>{setOrigin(e.currentTarget);openQuick();});
 $('#btnStats').addEventListener('click',e=>{setOrigin(e.currentTarget);openStats();});
