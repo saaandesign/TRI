@@ -420,6 +420,7 @@ html.theme-anim,html.theme-anim *{transition:background-color .4s,color .4s,bord
 .rc-add:active,.rc-list:active{transform:scale(.88)}
 .rband{display:flex;align-items:center;gap:10px;width:100%;text-align:left;padding:8px 14px;border:1px solid var(--line);border-radius:12px;font-size:12px;color:var(--muted);transition:border-color .2s}
 .rband:hover{border-color:var(--muted)}
+.rbands{display:flex;flex-direction:column;gap:6px}
 .rband b{font-family:var(--display);font-weight:700;font-size:10px;letter-spacing:.12em;color:var(--text)}
 .rband span.n{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text)}
 .rl-sec{font-family:var(--display);font-weight:700;font-size:10px;letter-spacing:.14em;color:var(--muted);margin:18px 0 8px}
@@ -492,12 +493,12 @@ body.is-dragging .sess{cursor:grabbing}
     <div class="top-actions">
       <button class="iconbtn" id="btnSync" aria-label="Synchroniser" title="Synchroniser"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11a8 8 0 0 0-14.5-3.5M4 5v4h4M4 13a8 8 0 0 0 14.5 3.5M20 19v-4h-4"/></svg></button>
       <div class="menuwrap"><button class="iconbtn" id="btnMenu" aria-label="Réglages" aria-haspopup="true" aria-expanded="false"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="5" cy="12" r="1.9"/><circle cx="12" cy="12" r="1.9"/><circle cx="19" cy="12" r="1.9"/></svg></button>
-        <div class="mpop" id="mpop" hidden><button class="mrow" id="rowTheme" role="switch" aria-checked="true"><span>Mode sombre</span><i class="sw2"><b></b></i></button><button class="mrow sub" id="rowSync">Synchronisation entre appareils…</button><button class="mrow sub" id="rowData">Sauvegarde, import, plafond CAP…</button></div></div>
+        <div class="mpop" id="mpop" hidden><button class="mrow" id="rowTheme" role="switch" aria-checked="true"><span>Mode sombre</span><i class="sw2"><b></b></i></button><button class="mrow" id="rowSound" role="switch" aria-checked="false"><span>Effets sonores</span><i class="sw2"><b></b></i></button><button class="mrow sub" id="rowSync">Synchronisation entre appareils…</button><button class="mrow sub" id="rowData">Sauvegarde, import, plafond CAP…</button></div></div>
     </div>
   </header>
 
   <section class="count" aria-label="Course">
-    <div class="count-side"><div class="cs-row"><button class="rc" id="raceCard"></button><div class="cs-btns"><button class="rc-list" id="raceList" aria-label="Liste des courses"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M8 6h12M8 12h12M8 18h12"/><circle cx="4" cy="6" r=".6"/><circle cx="4" cy="12" r=".6"/><circle cx="4" cy="18" r=".6"/></svg></button><button class="rc-add" id="raceAdd" aria-label="Ajouter une course"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M8 2v12M2 8h12"/></svg></button></div></div><button class="rband" id="raceBand" hidden></button></div>
+    <div class="count-side"><div class="cs-row"><button class="rc" id="raceCard"></button><div class="cs-btns"><button class="rc-list" id="raceList" aria-label="Liste des courses"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M8 6h12M8 12h12M8 18h12"/><circle cx="4" cy="6" r=".6"/><circle cx="4" cy="12" r=".6"/><circle cx="4" cy="18" r=".6"/></svg></button><button class="rc-add" id="raceAdd" aria-label="Ajouter une course"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M8 2v12M2 8h12"/></svg></button></div></div><div class="rbands" id="raceBand" hidden></div></div>
   </section>
 
   <section class="bar">
@@ -658,9 +659,9 @@ function renderCount(){
   $('#raceCard').dataset.race=R.id;
   const band=$('#raceBand'),nx=up.filter(x=>x.id!==R.id);
   if(nx.length){
-    const N=nx[0],nr=parse(N.date),w=diff(mondayOf(today()),mondayOf(nr))/7;
     band.hidden=false;
-    band.innerHTML='<b>PROCHAINE</b><span>'+fmtDM(nr)+'</span><span class="n">'+esc(N.name)+'</span><span>'+(w>0?'S−'+w:'')+(nx.length>1?' · +'+(nx.length-1):'')+'</span>';
+    band.innerHTML=nx.map((N,i)=>{const nr=parse(N.date),w=diff(mondayOf(today()),mondayOf(nr))/7;
+      return '<button class="rband" data-race="'+esc(N.id)+'"><b>'+(i===0?'ENSUITE':'À VENIR')+'</b><span>'+fmtDM(nr)+'</span><span class="n">'+esc(N.name)+'</span><span>'+(w>0?'S−'+w:'')+'</span></button>';}).join('');
   }else band.hidden=true;
 }
 function openRaces(){
@@ -832,45 +833,26 @@ function openSheet(html,cls){
   dlg.className=cls||'';dlg.innerHTML='<div class="sheet"><button class="xbtn" data-close="1" aria-label="Fermer">✕</button>'+html+'</div>';
   if(first){dlg.showModal();animateOpen();}
 }
-const insetCP=(t,rt,b,l,rad)=>'inset('+t+'px '+rt+'px '+b+'px '+l+'px round '+rad+'px)';
 function animateOpen(){
   if(reduce())return;
-  const r=dlg.getBoundingClientRect(),o=originRect,sh=dlg.querySelector('.sheet');
-  const D=520,E='cubic-bezier(.2,.85,.25,1)';
-  if(o&&o.width>0&&r.width>0){
-    const c0=v=>Math.max(0,v),t=c0(o.top-r.top),rt=c0(r.right-o.right),b=c0(r.bottom-o.bottom),l=c0(o.left-r.left);
-    dlg.animate([{clipPath:insetCP(t,rt,b,l,14)},{clipPath:insetCP(0,0,0,0,22)}],{duration:D,easing:E});
-  }else dlg.animate([{transform:'scale(.94)',opacity:0},{transform:'none',opacity:1}],{duration:340,easing:E});
+  const sh=dlg.querySelector('.sheet'),E='cubic-bezier(.16,1,.3,1)';
+  dlg.animate([{opacity:0,transform:'translateY(22px) scale(.965)'},{opacity:1,transform:'none'}],{duration:520,easing:E});
+  try{dlg.animate([{opacity:0},{opacity:1}],{duration:320,easing:'ease-out',pseudoElement:'::backdrop'});}catch(e){}
   if(sh){
-    let ox='50%',oy='30%';
-    if(o&&o.width>0){ox=Math.round(o.left+o.width/2-r.left)+'px';oy=Math.round(o.top+o.height/2-r.top)+'px';}
-    sh.style.transformOrigin=ox+' '+oy;
-    sh.animate([{opacity:0,transform:'scale(.86)',filter:'blur(3px)'},{opacity:.6,transform:'scale(.97)',filter:'blur(0)',offset:.55},{opacity:1,transform:'none',filter:'blur(0)'}],{duration:560,delay:40,fill:'backwards',easing:'cubic-bezier(.2,.85,.25,1)'});
+    Array.from(sh.children).filter(c=>!c.classList.contains('xbtn')&&!c.classList.contains('dots')&&!c.classList.contains('pop')).slice(0,9).forEach((c,i)=>c.animate([{opacity:0,transform:'translateY(12px)'},{opacity:1,transform:'none'}],{duration:480,delay:90+i*38,fill:'backwards',easing:E}));
+    const x=sh.querySelector('.xbtn');if(x)x.animate([{opacity:0},{opacity:1}],{duration:300,delay:160,fill:'backwards'});
   }
-  try{dlg.animate([{opacity:0},{opacity:1}],{duration:200,pseudoElement:'::backdrop'});}catch(e){}
 }
 function closeSheet(how){
   if(!dlg.open||closing)return;
   if(reduce()){dlg.close();return;}
   closing=true;
-  const el=originSel?document.querySelector(originSel):null;
-  const sh=dlg.querySelector('.sheet');
   const finish=()=>{closeAnims.forEach(x=>{x.oncancel=null;x.onfinish=null;try{x.cancel();}catch(e){}});closeAnims=[];dlg.style.transform='';closing=false;if(dlg.open)dlg.close();};
   let a;
   if(how==='down'){a=dlg.animate([{transform:dlg.style.transform||'none'},{transform:'translateY('+innerHeight+'px)'}],{duration:260,easing:'cubic-bezier(.5,0,.2,1)',fill:'forwards'});}
-  else{
-    if(sh){
-      if(el){const o=el.getBoundingClientRect(),r=dlg.getBoundingClientRect();sh.style.transformOrigin=Math.round(o.left+o.width/2-r.left)+'px '+Math.round(o.top+o.height/2-r.top)+'px';}
-      closeAnims.push(sh.animate([{opacity:1,transform:'none'},{opacity:.4,transform:'scale(.95)',offset:.5},{opacity:0,transform:'scale(.88)'}],{duration:300,fill:'forwards',easing:'cubic-bezier(.4,0,.6,1)'}));
-    }
-    if(el){
-      const o=el.getBoundingClientRect(),r=dlg.getBoundingClientRect();
-      const c0=v=>Math.max(0,v),t=c0(o.top-r.top),rt=c0(r.right-o.right),b=c0(r.bottom-o.bottom),l=c0(o.left-r.left),rad=parseFloat(getComputedStyle(el).borderRadius)||14;
-      a=dlg.animate([{clipPath:insetCP(0,0,0,0,22),offset:0},{clipPath:insetCP(0,0,0,0,22),offset:.22},{clipPath:insetCP(t,rt,b,l,rad)}],{duration:420,easing:'cubic-bezier(.5,0,.2,1)',fill:'forwards'});
-    }else a=dlg.animate([{transform:'none',opacity:1},{transform:'scale(.94)',opacity:0}],{duration:240,fill:'forwards'});
-  }
+  else a=dlg.animate([{opacity:1,transform:'none'},{opacity:0,transform:'translateY(10px) scale(.98)'}],{duration:240,easing:'cubic-bezier(.4,0,.8,.4)',fill:'forwards'});
   closeAnims.push(a);
-  try{closeAnims.push(dlg.animate([{opacity:1},{opacity:0}],{duration:how==='down'?260:420,pseudoElement:'::backdrop',fill:'forwards'}));}catch(e){}
+  try{closeAnims.push(dlg.animate([{opacity:1},{opacity:0}],{duration:how==='down'?260:240,pseudoElement:'::backdrop',fill:'forwards'}));}catch(e){}
   a.onfinish=finish;a.oncancel=finish;
 }
 dlg.addEventListener('click',e=>{if(e.target===dlg)closeSheet();});
@@ -1367,7 +1349,6 @@ document.addEventListener('change',e=>{
 });
 $('#raceCard').addEventListener('click',e=>{setOrigin(e.currentTarget);openRace(e.currentTarget.dataset.race||'main');});
 $('#raceList').addEventListener('click',e=>{setOrigin(e.currentTarget);openRaces();});
-$('#raceBand').addEventListener('click',e=>{setOrigin(e.currentTarget);openRaces();});
 $('#raceAdd').addEventListener('click',e=>{setOrigin(e.currentTarget);openRace('new');});
 $('#fab').addEventListener('click',e=>{setOrigin(e.currentTarget);openQuick();});
 $('#btnStats').addEventListener('click',e=>{setOrigin(e.currentTarget);openStats();});
@@ -1517,6 +1498,37 @@ document.addEventListener('touchend',e=>{
 // refresh the countdown if the app stays open past midnight
 let lastDay=iso(today());
 setInterval(()=>{const k=iso(today());if(k!==lastDay){lastDay=k;render();}},60000);
+/* ---------- retour d'interaction : micro-animation + son de touche ---------- */
+const SND_KEY='prepa-sound';
+let soundOn=false;try{soundOn=localStorage.getItem(SND_KEY)==='1';}catch(e){}
+function paintSound(){const r=$('#rowSound');if(r)r.setAttribute('aria-checked',String(soundOn));}
+let actx=null,nbuf=null;
+function tick(){
+  try{
+    actx=actx||new (window.AudioContext||window.webkitAudioContext)();
+    if(actx.state==='suspended')actx.resume();
+    const t=actx.currentTime,sr=actx.sampleRate;
+    if(!nbuf){nbuf=actx.createBuffer(1,Math.floor(sr*.06),sr);const d=nbuf.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/d.length,3);}
+    const n=actx.createBufferSource();n.buffer=nbuf;n.playbackRate.value=.9+Math.random()*.2;
+    const lp=actx.createBiquadFilter();lp.type='lowpass';lp.frequency.value=1500+Math.random()*400;lp.Q.value=.7;
+    const g=actx.createGain();g.gain.setValueAtTime(.34,t);g.gain.exponentialRampToValueAtTime(.001,t+.05);
+    n.connect(lp);lp.connect(g);g.connect(actx.destination);n.start(t);
+    const o=actx.createOscillator(),og=actx.createGain();o.type='sine';o.frequency.setValueAtTime(190,t);o.frequency.exponentialRampToValueAtTime(95,t+.05);
+    og.gain.setValueAtTime(.22,t);og.gain.exponentialRampToValueAtTime(.001,t+.07);o.connect(og);og.connect(actx.destination);o.start(t);o.stop(t+.08);
+  }catch(e){}
+}
+$('#rowSound').addEventListener('click',()=>{soundOn=!soundOn;try{localStorage.setItem(SND_KEY,soundOn?'1':'0');}catch(e){}paintSound();});
+paintSound();
+document.addEventListener('pointerdown',e=>{
+  const el=e.target.closest&&e.target.closest('button,[role=button],label[for],summary,.chip,.tile');
+  if(!el||el.disabled)return;
+  if(soundOn)tick();
+  if(reduce()||!el.animate)return;
+  try{
+    el.animate([{scale:1},{scale:.93,offset:.28},{scale:1.025,offset:.65},{scale:1}],{duration:380,easing:'cubic-bezier(.3,.7,.3,1)'});
+    el.animate([{boxShadow:'0 0 0 0 color-mix(in srgb, var(--red) 60%, transparent)'},{boxShadow:'0 0 0 7px color-mix(in srgb, var(--red) 0%, transparent)'}],{duration:520,easing:'ease-out'});
+  }catch(err){}
+},{passive:true});
 let hiddenAt=0;
 function backToNow(){const k=iso(today());if(k!==lastDay||(hiddenAt&&Date.now()-hiddenAt>10*60*1000)){lastDay=k;cursor=today();}hiddenAt=0;}
 document.addEventListener('visibilitychange',()=>{if(document.hidden){hiddenAt=Date.now();return;}backToNow();render();});
