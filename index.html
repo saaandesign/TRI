@@ -181,6 +181,16 @@ textarea{resize:vertical;min-height:84px;line-height:1.4}
 .types label{display:flex;align-items:center;justify-content:center;gap:8px;padding:13px 6px;border:1px solid var(--line);border-radius:12px;cursor:pointer;font-family:var(--display);font-weight:700;font-size:11px;letter-spacing:.08em;color:var(--muted)}
 .types input:checked+label{border-color:var(--c,var(--text));color:var(--text);background:var(--hl)}
 .types input:focus-visible+label{outline:2px solid var(--text);outline-offset:2px}
+.wf{display:block;width:100%;text-align:left;background:var(--bg);border:1px solid var(--line);color:var(--text);font:inherit;font-size:16px;padding:12px;border-radius:10px;min-height:46px}
+.wf.ph{color:var(--muted)}
+.wf[aria-expanded=true]{border-color:var(--red)}
+.wheel{grid-column:1/-1;flex:0 0 100%;width:100%;box-sizing:border-box;margin-top:8px;border:1px solid var(--line);border-radius:14px;background:var(--bg);padding:8px 8px 10px}
+.wcols{position:relative;display:flex;gap:2px;height:200px;overflow:hidden;-webkit-mask-image:linear-gradient(transparent,#000 32%,#000 68%,transparent);mask-image:linear-gradient(transparent,#000 32%,#000 68%,transparent)}
+.wcol{flex:1;min-width:0;overflow-y:auto;scroll-snap-type:y mandatory;padding:80px 0;scrollbar-width:none;overscroll-behavior:contain;touch-action:pan-y}
+.wcol::-webkit-scrollbar{display:none}
+.wi{height:40px;display:flex;align-items:center;justify-content:center;scroll-snap-align:center;font-family:var(--display);font-weight:700;font-size:17px;color:var(--text);white-space:nowrap}
+.wband{position:absolute;left:0;right:0;top:80px;height:40px;border-top:1.5px solid var(--red);border-bottom:1.5px solid var(--red);pointer-events:none;background:color-mix(in srgb,var(--red) 7%,transparent)}
+.wfoot{display:flex;gap:10px;justify-content:flex-end;margin-top:8px}
 .rpe{display:grid;grid-template-columns:repeat(10,1fr);gap:4px;margin-top:8px}
 .rpe input{position:absolute;opacity:0;pointer-events:none}
 .rpe label{display:flex;align-items:center;justify-content:center;height:40px;border:1px solid var(--line);border-bottom:3px solid var(--c);border-radius:9px;cursor:pointer;font-family:var(--display);font-weight:700;font-size:13px;color:var(--muted);transition:background .2s,color .2s,transform .2s}
@@ -422,6 +432,7 @@ html.theme-anim,html.theme-anim *{transition:background-color .4s,color .4s,bord
 .rband:hover{border-color:var(--muted)}
 .rbands{display:flex;flex-direction:column;gap:6px}
 .rband b{font-family:var(--display);font-weight:700;font-size:10px;letter-spacing:.12em;color:var(--text)}
+.rband b.wk{font-weight:800;font-size:11px;letter-spacing:.06em;color:var(--red-text);border:1.5px solid var(--red);padding:3px 9px;border-radius:999px;white-space:nowrap}
 .rband span.n{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text)}
 .rl-sec{font-family:var(--display);font-weight:700;font-size:10px;letter-spacing:.14em;color:var(--muted);margin:18px 0 8px}
 .rl-row{display:flex;align-items:center;gap:14px;width:100%;text-align:left;padding:12px 4px;border-bottom:1px solid var(--line)}
@@ -661,7 +672,7 @@ function renderCount(){
   if(nx.length){
     band.hidden=false;
     band.innerHTML=nx.map((N,i)=>{const nr=parse(N.date),w=diff(mondayOf(today()),mondayOf(nr))/7;
-      return '<button class="rband" data-race="'+esc(N.id)+'"><b>'+(i===0?'ENSUITE':'À VENIR')+'</b><span>'+fmtDM(nr)+'</span><span class="n">'+esc(N.name)+'</span><span>'+(w>0?'S−'+w:'')+'</span></button>';}).join('');
+      return '<button class="rband" data-race="'+esc(N.id)+'"><b class="wk">'+(w>0?'S−'+w:'SEMAINE DE COURSE')+'</b><span>'+fmtDM(nr)+'</span><span class="n">'+esc(N.name)+'</span></button>';}).join('');
   }else band.hidden=true;
 }
 function openRaces(){
@@ -702,10 +713,10 @@ function realFields(type,s,pre){
   const sw=type==='swim';
   const kmv=s.akm?(sw?Math.round(s.akm*1000):s.akm):'';
   const kmp=s.km?(sw?Math.round(s.km*1000):s.km):'—';
-  return '<div class="row"><div class="field"><label for="'+pre+'km" class="rl-km">'+(sw?'DISTANCE (M)':'DISTANCE (KM)')+'</label><input type="text" inputmode="decimal" id="'+pre+'km" name="akm" value="'+esc(kmv)+'" placeholder="'+esc(kmp)+'"></div>'+
-    '<div class="field"><label for="'+pre+'min">DURÉE (MIN)</label><input type="text" inputmode="numeric" id="'+pre+'min" name="amin" value="'+esc(s.amin||'')+'" placeholder="'+esc(s.min||'—')+'"></div>'+
-    '<div class="field rw-bike"'+(type==='bike'?'':' hidden')+'><label for="'+pre+'pw">PUISSANCE (W)</label><input type="text" inputmode="numeric" id="'+pre+'pw" name="pw" value="'+esc(s.pw||'')+'" placeholder="—"></div>'+
-    '<div class="field rw-run"'+(type==='run'?'':' hidden')+'><label for="'+pre+'hr">FC MOYENNE (BPM)</label><input type="text" inputmode="numeric" id="'+pre+'hr" name="hr" value="'+esc(s.hr||'')+'" placeholder="—"></div></div>'+rpeHTML(s.rpe);
+  return '<div class="row"><div class="field"><label for="'+pre+'km" class="rl-km">'+(sw?'DISTANCE (M)':'DISTANCE (KM)')+'</label><input type="text" data-wheel="'+(sw?'m':'km')+'" data-def="'+esc(sw?Math.round((s.km||0)*1000):(s.km||''))+'" id="'+pre+'km" name="akm" value="'+esc(kmv)+'" placeholder="'+esc(kmp)+'"></div>'+
+    '<div class="field"><label for="'+pre+'min">DURÉE (MIN)</label><input type="text" data-wheel="dur" data-def="'+esc(s.min||'')+'" id="'+pre+'min" name="amin" value="'+esc(s.amin||'')+'" placeholder="'+esc(s.min||'—')+'"></div>'+
+    '<div class="field rw-bike"'+(type==='bike'?'':' hidden')+'><label for="'+pre+'pw">PUISSANCE (W)</label><input type="text" data-wheel="w" id="'+pre+'pw" name="pw" value="'+esc(s.pw||'')+'" placeholder="—"></div>'+
+    '<div class="field rw-run"'+(type==='run'?'':' hidden')+'><label for="'+pre+'hr">FC MOYENNE (BPM)</label><input type="text" data-wheel="hr" id="'+pre+'hr" name="hr" value="'+esc(s.hr||'')+'" placeholder="—"></div></div>'+rpeHTML(s.rpe);
 }
 const RPE_TXT=['','Très très facile','Très facile','Facile','Assez facile','Modéré','Soutenu','Difficile','Très difficile','Presque maximal','Maximal'];
 const rpeCol=n=>'hsl('+Math.round(135-(n-1)*14)+' 62% 46%)';
@@ -827,10 +838,67 @@ function selFor(el){
 }
 function setOrigin(el){originSel=el?selFor(el):null;originRect=el?el.getBoundingClientRect():null;originEl=el||null;}
 function abortClose(){closeAnims.forEach(a=>{a.oncancel=null;a.onfinish=null;try{a.cancel();}catch(e){}});closeAnims=[];closing=false;dlg.style.transform='';}
+/* ---------- roues de sélection (style réveil iPhone) ---------- */
+const WH_ITEM=40;
+const rng=(a,b,st)=>{const o=[];for(let i=a;i<=b;i+=(st||1))o.push(i);return o;};
+const WK={
+  date:{cols:()=>{const y=today().getFullYear();return [rng(1,31).map(n=>({v:n,t:String(n)})),MONTHS.map((m,i)=>({v:i,t:m})),rng(y-1,y+6).map(n=>({v:n,t:String(n)}))];},
+    dec:v=>{const d=/^\d{4}-\d{2}-\d{2}$/.test(v)?parse(v):today();return [d.getDate(),d.getMonth(),d.getFullYear()];},
+    enc:a=>{const dm=new Date(a[2],a[1]+1,0).getDate();return a[2]+'-'+pad(a[1]+1)+'-'+pad(Math.min(a[0],dm));},
+    show:v=>{if(!/^\d{4}-\d{2}-\d{2}$/.test(v))return'';const d=parse(v);return d.getDate()+' '+MONTHS[d.getMonth()]+' '+d.getFullYear();},def:()=>iso(today())},
+  km:{cols:()=>[rng(0,300).map(n=>({v:n,t:String(n)})),rng(0,9).map(n=>({v:n,t:','+n}))],
+    dec:v=>{const n=num(v)||0,i=Math.floor(n+1e-9);return [i,Math.min(9,Math.round((n-i)*10))];},
+    enc:a=>{const n=a[0]+a[1]/10;return n>0?String(n):'';},show:v=>num(v)?fmt1(num(v))+' km':'',unit:'km',def:'10'},
+  m:{cols:()=>[rng(0,6000,25).map(n=>({v:n,t:String(n)}))],dec:v=>[Math.round((num(v)||0)/25)*25],enc:a=>a[0]>0?String(a[0]):'',show:v=>num(v)?num(v)+' m':'',unit:'m',def:'1000'},
+  dur:{cols:()=>[rng(0,12).map(n=>({v:n,t:n+' h'})),rng(0,59).map(n=>({v:n,t:pad(n)+' min'}))],
+    dec:v=>{const t=Math.round(num(v)||0);return [Math.floor(t/60),t%60];},enc:a=>{const t=a[0]*60+a[1];return t>0?String(t):'';},show:v=>num(v)?fmtDur(num(v)):'',def:'60'},
+  chrono:{cols:()=>[rng(0,9).map(n=>({v:n,t:n+' h'})),rng(0,59).map(n=>({v:n,t:pad(n)+' min'})),rng(0,59).map(n=>({v:n,t:pad(n)+' s'}))],
+    dec:v=>{const t=parseChrono(v);return [Math.floor(t/3600),Math.floor(t%3600/60),t%60];},
+    enc:a=>a[0]*3600+a[1]*60+a[2]>0?(a[0]>0?a[0]+':'+pad(a[1])+':'+pad(a[2]):pad(a[1])+':'+pad(a[2])):'',show:v=>v||'',def:'45:00'},
+  w:{cols:()=>[rng(0,600,5).map(n=>({v:n,t:n+' W'}))],dec:v=>[Math.round((num(v)||0)/5)*5],enc:a=>a[0]>0?String(a[0]):'',show:v=>num(v)?Math.round(num(v))+' W':'',def:'200'},
+  hr:{cols:()=>[rng(40,220).map(n=>({v:n,t:n+' bpm'}))],dec:v=>[Math.min(220,Math.max(40,Math.round(num(v))||140))],enc:a=>String(a[0]),show:v=>num(v)?Math.round(num(v))+' bpm':'',def:'145'}
+};
+function wheelize(root){
+  root.querySelectorAll('input[data-wheel]').forEach(inp=>{
+    if(inp._wf)return;
+    const ph=inp.getAttribute('placeholder')||'—',btn=document.createElement('button');
+    btn.type='button';btn.className='wf';inp.type='hidden';inp.insertAdjacentElement('afterend',btn);
+    let panel=null;
+    const K=()=>WK[inp.dataset.wheel]||WK.km;
+    const refresh=()=>{const t=K().show(inp.value);btn.textContent=t||ph;btn.classList.toggle('ph',!t);};
+    const commit=v=>{if(inp.value===v)return;inp.value=v;refresh();inp.dispatchEvent(new Event('change',{bubbles:true}));};
+    const closeP=()=>{if(!panel)return;const p=panel;panel=null;btn.setAttribute('aria-expanded','false');
+      if(reduce()){p.remove();return;}p.animate([{opacity:1,transform:'none'},{opacity:0,transform:'translateY(-6px)'}],{duration:160,fill:'forwards'}).onfinish=()=>p.remove();};
+    const openP=()=>{
+      root.querySelectorAll('.wheel').forEach(w=>{if(w!==panel&&w._close)w._close();});
+      const k=K(),cols=k.cols(),src=inp.value||inp.dataset.def||k.def||'';
+      const cur=k.dec(src);
+      panel=document.createElement('div');panel.className='wheel';
+      panel.innerHTML='<div class="wcols">'+cols.map((c,ci)=>'<div class="wcol" data-c="'+ci+'" style="flex:'+(k===WK.date&&ci===1?2:1)+'">'+c.map(it=>'<div class="wi">'+esc(it.t)+'</div>').join('')+'</div>').join('')+'<i class="wband"></i></div><div class="wfoot"><button type="button" class="btn ghost" data-wclr="1">Effacer</button><button type="button" class="btn solid" data-wok="1">OK</button></div>';
+      (btn.closest('.row')||btn.closest('.dtrow')||btn.closest('.field')||btn.parentNode).appendChild(panel);btn.setAttribute('aria-expanded','true');
+      panel._close=closeP;
+      const cEls=Array.from(panel.querySelectorAll('.wcol'));
+      const read=()=>cEls.map((el,i)=>cols[i][Math.max(0,Math.min(cols[i].length-1,Math.round(el.scrollTop/WH_ITEM)))].v);
+      cEls.forEach((el,i)=>{
+        const idx=Math.max(0,cols[i].findIndex(it=>it.v===cur[i]));el.scrollTop=idx*WH_ITEM;
+        let tm;el.addEventListener('scroll',()=>{clearTimeout(tm);tm=setTimeout(()=>{if(panel)commit(k.enc(read()));},90);},{passive:true});
+      });
+      panel.addEventListener('click',e=>{
+        if(e.target.closest('[data-wclr]')){commit('');cEls.forEach(el=>el.scrollTo({top:0,behavior:'smooth'}));closeP();}
+        else if(e.target.closest('[data-wok]')){commit(k.enc(read()));closeP();}
+      });
+      if(!reduce())panel.animate([{opacity:0,transform:'translateY(-8px)'},{opacity:1,transform:'none'}],{duration:260,easing:'cubic-bezier(.16,1,.3,1)'});
+      setTimeout(()=>panel&&panel.scrollIntoView({block:'nearest',behavior:'smooth'}),60);
+    };
+    btn.addEventListener('click',()=>{if(panel)closeP();else openP();});
+    inp._wf={refresh};refresh();
+  });
+}
 function openSheet(html,cls){
   if(closing)abortClose();
   const first=!dlg.open;
   dlg.className=cls||'';dlg.innerHTML='<div class="sheet"><button class="xbtn" data-close="1" aria-label="Fermer">✕</button>'+html+'</div>';
+  wheelize(dlg);
   if(first){dlg.showModal();animateOpen();}
 }
 function animateOpen(){
@@ -910,9 +978,9 @@ function openSession(id,date,type){
    '<form id="sf" autocomplete="off">'+
    '<div class="field"><span class="lbl">DISCIPLINE</span>'+spCurHTML(typeOf(s.type))+'<div id="spmenu" hidden><div class="types list" id="typelist">'+sportListHTML(typeOf(s.type),'type')+'</div>'+spAddHTML+'</div></div>'+
    '<div class="field"><label for="f-title">TITRE</label><input type="text" id="f-title" name="title" value="'+esc(s.title)+'" placeholder="ex. Seuil 2×10\'"></div>'+
-   '<div class="row"><div class="field"><label for="f-km">DISTANCE (KM)</label><input type="text" inputmode="decimal" id="f-km" name="km" value="'+esc(s.km||'')+'" placeholder="—"></div>'+
-   '<div class="field"><label for="f-min">DURÉE (MIN)</label><input type="text" inputmode="numeric" id="f-min" name="min" value="'+esc(s.min||'')+'" placeholder="—"></div></div>'+
-   '<div class="opt dtrow" data-opt="dt" hidden><div class="field"><label for="f-date">DATE</label><input type="date" id="f-date" name="date" value="'+esc(s.date)+'" required></div>'+
+   '<div class="row"><div class="field"><label for="f-km">DISTANCE (KM)</label><input type="text" data-wheel="km" id="f-km" name="km" value="'+esc(s.km||'')+'" placeholder="—"></div>'+
+   '<div class="field"><label for="f-min">DURÉE (MIN)</label><input type="text" data-wheel="dur" id="f-min" name="min" value="'+esc(s.min||'')+'" placeholder="—"></div></div>'+
+   '<div class="opt dtrow" data-opt="dt" hidden><div class="field"><label for="f-date">DATE</label><input type="text" data-wheel="date" id="f-date" name="date" value="'+esc(s.date)+'" required></div>'+
    '<div class="field"><label for="f-when">HEURE</label><select id="f-when" name="when">'+WHEN.map(w=>'<option value="'+esc(w)+'"'+((s.when||'')===w?' selected':'')+'>'+(w?w.charAt(0).toUpperCase()+w.slice(1):'Non précisé')+'</option>').join('')+'</select></div></div>'+
    '<div class="field opt" data-opt="notes"'+(shown.notes?'':' hidden')+'><label for="f-notes">NOTES</label><textarea id="f-notes" name="notes" placeholder="Détail de la séance, ressenti…">'+esc(s.notes||'')+'</textarea></div>'+
    '<div class="field"><span class="lbl">STATUT</span><div class="types two"><input type="radio" name="done" id="d-off" value="off"'+(s.done?'':' checked')+'><label for="d-off">À FAIRE</label><input type="radio" name="done" id="d-on" value="on"'+(s.done?' checked':'')+'><label for="d-on">✓ FAIT</label></div></div>'+
@@ -928,6 +996,7 @@ function openSession(id,date,type){
     form.querySelector('.rw-bike').hidden=t!=='bike';
     form.querySelector('.rw-run').hidden=t!=='run';
     form.querySelector('.rl-km').textContent=sw?'DISTANCE (M)':'DISTANCE (KM)';
+    const ak=form.querySelector('[name=akm]');if(ak&&ak.dataset.wheel!==(sw?'m':'km')){ak.dataset.wheel=sw?'m':'km';ak.value='';ak.dataset.def='';if(ak._wf)ak._wf.refresh();}
   };
   form.addEventListener('click',e=>{const l=e.target.closest&&e.target.closest('label[data-rpe]');if(!l)return;const i=document.getElementById(l.getAttribute('for'));if(i&&i.checked){e.preventDefault();i.checked=false;i.dispatchEvent(new Event('change',{bubbles:true}));}});
   form.addEventListener('change',e=>{if(e.target&&e.target.name==='rpe'){}line();rpeTxt();sync();if(e.target&&e.target.name==='type'){const c=$('#spcur');if(c){c.outerHTML=spCurHTML(typeOf(e.target.value));$('#spmenu').hidden=true;}}});
@@ -960,11 +1029,11 @@ function openRace(id){
   const isMain=!isNew&&(main||R.id==='main');
   openSheet('<h2><small>'+(isNew?'NOUVELLE COURSE':'COURSE')+'</small>'+(isNew?'Ajouter':esc(R.name))+'</h2>'+
    '<form id="rf" autocomplete="off"><div class="field"><label for="r-name">NOM</label><input type="text" id="r-name" name="name" value="'+esc(R.name)+'" placeholder="ex. 10 km de Paris"></div>'+
-   '<div class="row"><div class="field"><label for="r-date">DATE</label><input type="date" id="r-date" name="date" value="'+esc(R.date)+'" required></div>'+
-   '<div class="field"><label for="r-km">DISTANCE (KM)</label><input type="text" inputmode="decimal" id="r-km" name="km" value="'+esc(R.km||'')+'"></div></div>'+
+   '<div class="row"><div class="field"><label for="r-date">DATE</label><input type="text" data-wheel="date" id="r-date" name="date" value="'+esc(R.date)+'" required></div>'+
+   '<div class="field"><label for="r-km">DISTANCE (KM)</label><input type="text" data-wheel="km" data-def="10" id="r-km" name="km" value="'+esc(R.km||'')+'"></div></div>'+
    '<div class="row"><div class="field"><label for="r-time">HORAIRE / LIEU</label><input type="text" id="r-time" name="time" value="'+esc(R.time||'')+'" placeholder="ex. départ 20h00"></div>'+
-   '<div class="field"><label for="r-goal">OBJECTIF</label><input type="text" id="r-goal" name="goal" value="'+esc(R.goal||'')+'" placeholder="ex. 47:00"></div></div>'+
-   '<div class="field"><label for="r-res">CHRONO (APRÈS LA COURSE)</label><input type="text" id="r-res" name="result" value="'+esc(R.result||'')+'" placeholder="ex. 47:12 ou 1:02:45"></div>'+
+   '<div class="field"><label for="r-goal">OBJECTIF</label><input type="text" data-wheel="chrono" data-def="47:00" id="r-goal" name="goal" value="'+esc(R.goal||'')+'" placeholder="ex. 47:00"></div></div>'+
+   '<div class="field"><label for="r-res">CHRONO (APRÈS LA COURSE)</label><input type="text" data-wheel="chrono" data-def="47:00" id="r-res" name="result" value="'+esc(R.result||'')+'" placeholder="ex. 47:12 ou 1:02:45"></div>'+
    '<div class="actions"><div class="grp"><button class="btn solid" type="submit">Enregistrer</button><button class="btn ghost" type="button" data-close="1">Annuler</button></div>'+(!isNew&&!isMain?'<button class="btn danger" type="button" data-delrace="'+esc(R.id)+'">Supprimer</button>':'')+'</div></form>');
   $('#rf').addEventListener('submit',e=>{
     e.preventDefault();const f=new FormData(e.target);
@@ -980,7 +1049,7 @@ function openRace(id){
 function openMenu(){
   openSheet('<h2><small>DONNÉES</small>Menu</h2>'+
    '<p class="hint">Tes modifications sont enregistrées <b>sur cet appareil</b> (navigateur). Pour passer du téléphone à l’ordinateur, exporte puis importe le fichier.</p>'+
-   '<div class="field"><label for="m-cap">PLAFOND DE COURSE À PIED PAR SEMAINE (KM)</label><input type="text" inputmode="decimal" id="m-cap" value="'+esc(capKm())+'"></div>'+
+   '<div class="field"><label for="m-cap">PLAFOND DE COURSE À PIED PAR SEMAINE (KM)</label><input type="text" data-wheel="km" data-def="34" id="m-cap" value="'+esc(capKm())+'"></div>'+
    '<div class="menu-list"><button class="btn" data-export="1">Exporter (sauvegarde .json)</button>'+
    '<button class="btn" data-import="1">Importer / fusionner un fichier</button>'+
    '<button class="btn danger" data-reset="1">Revenir au plan d’origine</button></div>'+
@@ -1486,7 +1555,7 @@ document.addEventListener('keydown',e=>{
 // glisser sur les côtés (hors cartes) : semaine précédente / suivante
 let ws=null;
 document.addEventListener('touchstart',e=>{
-  if(dlg.open||e.touches.length!==1||drag){ws=null;return;}
+  if(dlg.open||view!=='month'||e.touches.length!==1||drag){ws=null;return;}
   const t=e.target;if(t.closest&&t.closest('.sess,.fab,input,select,textarea,#toast,.drag-ghost')){ws=null;return;}
   ws={x:e.touches[0].clientX,y:e.touches[0].clientY};
 },{passive:true});
@@ -1502,33 +1571,36 @@ setInterval(()=>{const k=iso(today());if(k!==lastDay){lastDay=k;render();}},6000
 const SND_KEY='prepa-sound';
 let soundOn=false;try{soundOn=localStorage.getItem(SND_KEY)==='1';}catch(e){}
 function paintSound(){const r=$('#rowSound');if(r)r.setAttribute('aria-checked',String(soundOn));}
-let actx=null,nbuf=null;
-function tick(){
-  try{
-    actx=actx||new (window.AudioContext||window.webkitAudioContext)();
-    if(actx.state==='suspended')actx.resume();
-    const t=actx.currentTime,sr=actx.sampleRate;
-    if(!nbuf){nbuf=actx.createBuffer(1,Math.floor(sr*.06),sr);const d=nbuf.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/d.length,3);}
-    const n=actx.createBufferSource();n.buffer=nbuf;n.playbackRate.value=.9+Math.random()*.2;
-    const lp=actx.createBiquadFilter();lp.type='lowpass';lp.frequency.value=1500+Math.random()*400;lp.Q.value=.7;
-    const g=actx.createGain();g.gain.setValueAtTime(.34,t);g.gain.exponentialRampToValueAtTime(.001,t+.05);
-    n.connect(lp);lp.connect(g);g.connect(actx.destination);n.start(t);
-    const o=actx.createOscillator(),og=actx.createGain();o.type='sine';o.frequency.setValueAtTime(190,t);o.frequency.exponentialRampToValueAtTime(95,t+.05);
-    og.gain.setValueAtTime(.22,t);og.gain.exponentialRampToValueAtTime(.001,t+.07);o.connect(og);og.connect(actx.destination);o.start(t);o.stop(t+.08);
-  }catch(e){}
+let actx=null;
+function audio(){try{actx=actx||new (window.AudioContext||window.webkitAudioContext)();if(actx.state==='suspended')actx.resume();return actx;}catch(e){return null;}}
+function tone(c,t,f0,f1,dur,gain,type){
+  const o=c.createOscillator(),g=c.createGain();o.type=type||'sine';
+  o.frequency.setValueAtTime(f0,t);o.frequency.exponentialRampToValueAtTime(f1,t+dur);
+  g.gain.setValueAtTime(0.0001,t);g.gain.exponentialRampToValueAtTime(gain,t+.006);g.gain.exponentialRampToValueAtTime(.0001,t+dur);
+  o.connect(g);g.connect(c.destination);o.start(t);o.stop(t+dur+.02);
 }
-$('#rowSound').addEventListener('click',()=>{soundOn=!soundOn;try{localStorage.setItem(SND_KEY,soundOn?'1':'0');}catch(e){}paintSound();});
+function play(kind){
+  const c=audio();if(!c)return;const t=c.currentTime+.005;
+  if(kind==='open'){tone(c,t,784,760,.11,.3);tone(c,t,1568,1500,.08,.07);tone(c,t+.075,1047,1020,.16,.3);tone(c,t+.075,2094,2000,.1,.06);}
+  else if(kind==='close'){tone(c,t,300,215,.15,.34);tone(c,t,600,430,.07,.07);}
+  else{tone(c,t,640,590,.1,.28);tone(c,t,1280,1180,.05,.06);}
+}
+$('#rowSound').addEventListener('click',()=>{soundOn=!soundOn;try{localStorage.setItem(SND_KEY,soundOn?'1':'0');}catch(e){}paintSound();if(soundOn)play('tap');});
 paintSound();
-document.addEventListener('pointerdown',e=>{
+document.addEventListener('pointerdown',()=>{if(soundOn)audio();},{passive:true,capture:true});   // débloque le son dès le premier toucher
+document.addEventListener('click',e=>{
   const el=e.target.closest&&e.target.closest('button,[role=button],label[for],summary,.chip,.tile');
-  if(!el||el.disabled)return;
-  if(soundOn)tick();
-  if(reduce()||!el.animate)return;
+  const bd=e.target===dlg;
+  if(!el&&!bd)return;
+  if(el&&el.id==='rowSound')return;
+  const was=dlg.open,isClose=bd||(el&&el.closest('[data-close]'));
+  if(soundOn)setTimeout(()=>play(isClose?'close':(!was&&dlg.open?'open':'tap')),0);
+  if(reduce()||!el||!el.animate||el.disabled)return;
   try{
     el.animate([{scale:1},{scale:.93,offset:.28},{scale:1.025,offset:.65},{scale:1}],{duration:380,easing:'cubic-bezier(.3,.7,.3,1)'});
     el.animate([{boxShadow:'0 0 0 0 color-mix(in srgb, var(--red) 60%, transparent)'},{boxShadow:'0 0 0 7px color-mix(in srgb, var(--red) 0%, transparent)'}],{duration:520,easing:'ease-out'});
   }catch(err){}
-},{passive:true});
+},true);
 let hiddenAt=0;
 function backToNow(){const k=iso(today());if(k!==lastDay||(hiddenAt&&Date.now()-hiddenAt>10*60*1000)){lastDay=k;cursor=today();}hiddenAt=0;}
 document.addEventListener('visibilitychange',()=>{if(document.hidden){hiddenAt=Date.now();return;}backToNow();render();});
