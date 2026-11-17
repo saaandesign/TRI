@@ -126,10 +126,11 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
 .sw[data-dir]::before{opacity:1}
 .sw[data-dir="r"]::before{justify-content:flex-start}
 .sw[data-dir="l"]::before{justify-content:flex-end}
-.sw[data-tone="todo"]::before{background:#d9822b}
+.sw[data-tone="todo"]::before{background:#d63a3a}
 .sess{box-shadow:var(--card-shadow);display:block;width:100%;height:132px;overflow:hidden;text-align:left;padding:13px 14px 12px 18px;background:var(--panel);border-radius:var(--r);position:relative;touch-action:pan-y;transition:transform .2s,opacity .25s}
 .sess::before{content:'';position:absolute;inset:0;pointer-events:none;border-radius:inherit;
-  background:linear-gradient(90deg,color-mix(in srgb,var(--c) 26%,transparent),transparent 58%),linear-gradient(180deg,var(--c),color-mix(in srgb,var(--c) 10%,transparent)) left/3px 100% no-repeat}
+  background:linear-gradient(270deg,color-mix(in srgb,var(--c) 34%,transparent),transparent 56%)}
+.sess.done::before{display:none}
 .sess>*{position:relative}
 .sess .name,.sess .sub,.sess .real{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
 .sess .dot{position:relative}
@@ -1136,11 +1137,15 @@ function dpace(a,b){
   const d=Math.round((a-b)*60);if(d===0)return'<span class="dl">=</span>';
   return '<span class="dl '+(d>0?'up':'dn')+'">'+(d>0?'▲ +':'▼ −')+Math.abs(d)+' s/km</span>';
 }
+function gdefs(ks){
+  return '<defs>'+ks.map(k=>{const c=TYPES[k].color;return '<linearGradient id="sg-'+k+'" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:'+c+'"/><stop offset="1" style="stop-color:'+c+';stop-opacity:.3"/></linearGradient>'+
+    '<linearGradient id="sgd-'+k+'" x1="0" y1="0" x2="1" y2="1"><stop offset="0" style="stop-color:'+c+'"/><stop offset="1" style="stop-color:'+c+';stop-opacity:.38"/></linearGradient>';}).join('')+'</defs>';
+}
 function donut(parts,total,size,sw){
   const r=(size-sw)/2,C=2*Math.PI*r,c=size/2;let off=0;
-  let h='<svg viewBox="0 0 '+size+' '+size+'" class="donut" aria-hidden="true"><circle cx="'+c+'" cy="'+c+'" r="'+r+'" fill="none" stroke-width="'+sw+'" style="stroke:var(--line)"/>';
+  let h='<svg viewBox="0 0 '+size+' '+size+'" class="donut" aria-hidden="true">'+gdefs(parts.map(p=>p.k).filter(Boolean))+'<circle cx="'+c+'" cy="'+c+'" r="'+r+'" fill="none" stroke-width="'+sw+'" style="stroke:var(--line)"/>';
   parts.forEach(p=>{if(!(p.v>0)||!(total>0))return;const len=Math.min(C,C*p.v/total);
-    h+='<circle cx="'+c+'" cy="'+c+'" r="'+r+'" fill="none" stroke-width="'+sw+'" style="stroke:'+p.c+'" stroke-dasharray="'+len.toFixed(2)+' '+(C-len).toFixed(2)+'" stroke-dashoffset="'+(-off).toFixed(2)+'" transform="rotate(-90 '+c+' '+c+')"/>';off+=len;});
+    h+='<circle cx="'+c+'" cy="'+c+'" r="'+r+'" fill="none" stroke-width="'+sw+'" '+(p.k?'stroke="url(#sgd-'+p.k+')"':'style="stroke:'+p.c+'"')+(parts.length===1?' stroke-linecap="round"':'')+' stroke-dasharray="'+len.toFixed(2)+' '+(C-len).toFixed(2)+'" stroke-dashoffset="'+(-off).toFixed(2)+'" transform="rotate(-90 '+c+' '+c+')"/>';off+=len;});
   return h+'</svg>';
 }
 function relWeek(mon){
@@ -1155,11 +1160,11 @@ function weekRange(){
 }
 function statsRing(cur,pr,ks){
   const tot=cur.all.min;
-  const parts=ks.map(k=>({v:cur[k].min,c:TYPES[k].color}));
+  const parts=ks.map(k=>({v:cur[k].min,c:TYPES[k].color,k:k}));
   const share=ks.map(k=>'<div class="r"><i class="dot" style="--c:'+TYPES[k].color+'"></i><div>'+TYPES[k].name+'<small>'+(cur[k].km?fmtKm(cur[k].km)+' · ':'')+cur[k].n+' séance'+(cur[k].n>1?'s':'')+'</small></div><div class="v">'+(fmtDur(cur[k].min)||'—')+'<small> '+(tot?Math.round(cur[k].min/tot*100):0)+' %</small></div></div>').join('');
   const rings=ks.map(k=>{
     const x=cur[k],pc=x.min?Math.min(100,Math.round(x.dmin/x.min*100)):0;
-    return '<div class="rcard"><div class="t"><i class="dot" style="--c:'+TYPES[k].color+'"></i>'+TYPES[k].label+'</div><div class="donutwrap">'+donut([{v:pc,c:TYPES[k].color}],100,96,11)+'<div class="dc"><b style="font-size:18px">'+(x.min?pc+' %':'—')+'</b></div></div><div class="d">fait '+(fmtDur(x.dmin)||'0')+'<br>prévu '+(fmtDur(x.min)||'0')+'</div></div>';
+    return '<div class="rcard"><div class="t"><i class="dot" style="--c:'+TYPES[k].color+'"></i>'+TYPES[k].label+'</div><div class="donutwrap">'+donut([{v:pc,c:TYPES[k].color,k:k}],100,96,11)+'<div class="dc"><b style="font-size:18px">'+(x.min?pc+' %':'—')+'</b></div></div><div class="d">fait '+(fmtDur(x.dmin)||'0')+'<br>prévu '+(fmtDur(x.min)||'0')+'</div></div>';
   }).join('');
   const all=cur.all,pcAll=all.min?Math.round(all.dmin/all.min*100):0;
   return '<div class="stsplit"><div class="donutwrap">'+donut(parts,tot,200,26)+'<div class="dc"><b>'+(fmtDur(tot)||'0')+'</b><span>prévu cette semaine</span></div></div><div class="lg">'+share+
@@ -1174,15 +1179,15 @@ function statsBar(ks){
   const step=stMetric==='n'?1:(stMetric==='km'?10:60);
   max=Math.ceil(max/step)*step;if(stMetric==='n'&&max<4)max=4;
   const Wd=640,H=280,L=46,B=34,T=14,cw=(Wd-L-10)/W,bw=Math.min(46,cw*.62),ph=H-B-T;
-  let h='<svg viewBox="0 0 '+Wd+' '+H+'" class="chart" role="img" aria-label="Graphique par semaine">';
+  let h='<svg viewBox="0 0 '+Wd+' '+H+'" class="chart" role="img" aria-label="Graphique par semaine">'+gdefs(ks);
   for(let g=0;g<=4;g++){const v=max*g/4,y=T+ph-ph*g/4;h+='<line x1="'+L+'" x2="'+(Wd-6)+'" y1="'+y+'" y2="'+y+'" style="stroke:var(--line)" stroke-width="1"/><text x="'+(L-8)+'" y="'+(y+3)+'" text-anchor="end">'+(stMetric==='min'?Math.round(v/60*10)/10+' h':(stMetric==='km'?Math.round(v)+' km':Math.round(v*10)/10))+'</text>';}
   data.forEach((d,i)=>{
     const x=L+i*cw+(cw-bw)/2;let yb=T+ph;const sel=iso(d.m)===iso(stW);
     ks.forEach(k=>{
       const pv=M.get(d.t[k],false),dv=M.get(d.t[k],true);if(!(pv>0))return;
       const hp=ph*pv/max,hd=ph*Math.min(dv,pv)/max;
-      h+='<rect x="'+x+'" y="'+(yb-hp)+'" width="'+bw+'" height="'+hp+'" style="fill:'+TYPES[k].color+'" opacity=".3" data-stw="'+iso(d.m)+'"/>'+
-         '<rect x="'+x+'" y="'+(yb-hd)+'" width="'+bw+'" height="'+hd+'" style="fill:'+TYPES[k].color+'" data-stw="'+iso(d.m)+'"/>';
+      h+='<rect x="'+x+'" y="'+(yb-hp)+'" width="'+bw+'" height="'+hp+'" rx="5" fill="url(#sg-'+k+')" opacity=".28" data-stw="'+iso(d.m)+'"/>'+
+         '<rect x="'+x+'" y="'+(yb-hd)+'" width="'+bw+'" height="'+hd+'" rx="5" fill="url(#sg-'+k+')" data-stw="'+iso(d.m)+'"/>';
       yb-=hp;
     });
     h+='<rect x="'+(L+i*cw)+'" y="'+T+'" width="'+cw+'" height="'+ph+'" fill="transparent" data-stw="'+iso(d.m)+'"/>';
