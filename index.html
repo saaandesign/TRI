@@ -20,7 +20,7 @@
 @font-face{font-family:'Roboto';font-style:normal;font-display:swap;font-weight:100 900;src:url(fonts/roboto-latin-wght-normal.woff2) format('woff2-variations'),url(fonts/roboto-latin-wght-normal.woff2) format('woff2')}
 :root,:root[data-theme="dark"]{
   --bg:#171719; --panel:#212124; --panel2:#2b2b2f; --line:#36363a; --text:#f6f6f7; --muted:#8b8b92; --faint:#62626a;
-  --red:#e13232; --run:#4b2eff; --bike:#5df9c0; --swim:#d7e8fa; --gym:#8a93a8; --race:#e13232;
+  --red:#e13232; --run:#9b5cff; --bike:#aaff00; --swim:#00f5ff; --gym:#ffb020; --race:#e13232;
   --red-text:#ff6a6a; --danger:#ff8a8a; --danger-line:#7a2f2f; --alert-line:#b8452f; --alert-text:#ffd0c8; --warn-text:#ff8a7a;
   --up:#ffb15c; --dn:#7cc4ff; --warn:#ff9f43; --warn-hi:#ffb870; --warn-bg:rgba(255,159,67,.08); --ok:#4cd08a; --ok-bg:rgba(76,208,138,.14);
   --panel-done:rgba(40,40,44,.6); --hl:rgba(255,255,255,.07); --backdrop:rgba(0,0,0,.72); --scheme:dark; --card-shadow:none;
@@ -34,7 +34,7 @@
 }
 :root[data-theme="light"]{
   --bg:#f7f7f8; --panel:#ffffff; --panel2:#efeff1; --line:#dedee2; --text:#1b1b1d; --muted:#66666c; --faint:#9c9ca3;
-  --run:#3b1eff; --bike:#0fcf9a; --swim:#6fa8e6; --gym:#2a2f3c;
+  --run:#7a35e6; --bike:#6c9c00; --swim:#00a3b8; --gym:#d98200;
   --red-text:#c42626; --danger:#c42626; --danger-line:#e3b5b5; --alert-line:#e6a496; --alert-text:#8a2a1c; --warn-text:#c0392b;
   --up:#b4690e; --dn:#1c6fb8; --warn:#d9780f; --warn-hi:#b4600a; --warn-bg:rgba(217,120,15,.1); --ok:#1f9d5a; --ok-bg:rgba(31,157,90,.12);
   --panel-done:#f0f0f2; --hl:rgba(27,27,29,.07); --backdrop:rgba(20,20,24,.45); --scheme:light; --card-shadow:0 1px 2px rgba(27,27,29,.06),0 0 0 1px var(--line);
@@ -109,15 +109,18 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
 
 /* ---------- semaine ---------- */
 .week{display:grid;grid-template-columns:var(--cols,repeat(7,minmax(0,1fr)));gap:10px;margin-bottom:40px}
-.day{display:flex;flex-direction:column;gap:8px;min-width:0;border-radius:var(--r)}
+.day{display:flex;flex-direction:column;gap:8px;min-width:0;border-radius:var(--r);align-self:start;border:1px solid var(--line);padding:8px}
+.day .dh{border-color:transparent;padding:4px 4px 2px}
 .dh{display:block;width:100%;padding:9px 10px 7px;border:1px solid var(--line);border-radius:12px}
 .dh .dn{font-family:var(--display);font-weight:700;font-size:11px;letter-spacing:.1em;color:var(--muted)}
 .dh .dw{font-family:var(--display);font-weight:800;font-size:clamp(18px,2vw,28px);margin-top:4px}
 .dh:hover .dw{text-decoration:underline;text-underline-offset:5px;text-decoration-thickness:2px}
 .dh .hb{font-family:var(--display);font-weight:700;font-size:9px;letter-spacing:.12em;color:var(--faint);margin-top:6px}
-.day.today{align-self:start;border:1px solid var(--red);padding:8px;background:color-mix(in srgb,var(--red) 5%,transparent)}
+.day.today{border-color:var(--red);background:color-mix(in srgb,var(--red) 5%,transparent)}
 .day.today .dh{background:transparent;color:var(--text);border-color:transparent;padding:4px 4px 2px}
 .day.today .dh .dn,.day.today .dh .hb{color:var(--red-text)}
+.cdpill{display:flex;width:max-content;max-width:100%;align-items:center;gap:8px;margin:12px 0 0;font-family:var(--display);font-weight:700;font-size:11px;letter-spacing:.1em;border:1px solid var(--red);color:var(--red-text);padding:5px 12px;border-radius:999px;text-transform:uppercase}
+.cdpill b{color:var(--text)}
 .day.past .dw{color:var(--faint)}
 :root[data-theme="light"] .day.past .dw{color:var(--muted)}
 .dcol{display:flex;flex-direction:column;gap:8px;flex:1;min-height:170px}
@@ -127,6 +130,7 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
 .sw[data-dir]::before{opacity:1}
 .sw[data-dir="r"]::before{justify-content:flex-start}
 .sw[data-dir="l"]::before{justify-content:flex-end}
+.kj{font-family:'Hiragino Mincho ProN','Noto Serif CJK JP','Yu Mincho',serif;font-weight:700;margin-right:3px}
 .sw[data-tone="todo"]::before{background:#d63a3a}
 .sess{box-shadow:var(--card-shadow);display:block;width:100%;height:132px;overflow:hidden;text-align:left;padding:13px 14px 12px 18px;background:var(--panel);border-radius:var(--r);position:relative;touch-action:pan-y;transition:transform .2s,opacity .25s}
 .sess::before{content:'';position:absolute;inset:0;pointer-events:none;border-radius:inherit;
@@ -204,7 +208,13 @@ textarea{resize:vertical;min-height:84px;line-height:1.4}
 .types input:focus-visible+label{outline:2px solid var(--text);outline-offset:2px}
 .wf{display:block;width:100%;text-align:left;background:var(--bg);border:1px solid var(--line);color:var(--text);font:inherit;font-size:16px;padding:12px;border-radius:10px;min-height:46px}
 .wf.ph{color:var(--muted)}
-.wf[aria-expanded=true]{border-color:var(--red)}
+.wf[aria-expanded=true]{border-color:var(--wc,var(--red))}
+.wcols::before{content:'';position:absolute;left:6px;right:6px;top:80px;height:40px;border-radius:10px;background:color-mix(in srgb,var(--wc,var(--red)) 20%,transparent);border:1px solid color-mix(in srgb,var(--wc,var(--red)) 65%,transparent);pointer-events:none;z-index:1}
+#rtri:not([hidden]){display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}
+.rchips{display:flex;flex-wrap:wrap;gap:8px}
+.rchips button{font-family:var(--display);font-weight:700;font-size:12px;letter-spacing:.08em;padding:10px 14px;border-radius:999px;border:1px solid var(--line);color:var(--muted);background:transparent}
+.rchips button[aria-pressed=true]{border-color:var(--wc);color:var(--text);background:color-mix(in srgb,var(--wc) 22%,transparent)}
+input[type=date]{width:100%;box-sizing:border-box;background:var(--bg);border:1px solid var(--line);color:var(--text);font:inherit;font-size:16px;padding:12px;border-radius:10px;min-height:46px;color-scheme:dark light}
 .wheel{grid-column:1/-1;flex:0 0 100%;width:100%;box-sizing:border-box;margin-top:8px;border:1px solid var(--line);border-radius:14px;background:var(--bg);padding:8px 8px 10px}
 .wcols{position:relative;display:flex;gap:2px;height:200px;overflow:hidden;-webkit-mask-image:linear-gradient(transparent,#000 32%,#000 68%,transparent);mask-image:linear-gradient(transparent,#000 32%,#000 68%,transparent)}
 .wcol{flex:1;min-width:0;overflow-y:auto;scroll-snap-type:y mandatory;padding:80px 0;scrollbar-width:none;overscroll-behavior:contain;touch-action:pan-y}
@@ -300,7 +310,7 @@ table.stab{border-collapse:collapse;width:100%;font-size:13px;white-space:nowrap
 .st{border:1.5px solid var(--warn);color:var(--warn);background:var(--warn-bg)}
 .st:hover{border-color:var(--warn-hi);color:var(--warn-hi)}
 .st.on{border-color:var(--ok);color:var(--ok);background:var(--ok-bg)}
-.sess.done{opacity:1;background:var(--panel-done);box-shadow:inset 0 0 0 1.5px var(--ok)}
+.sess.done{opacity:1;background:var(--panel-done);box-shadow:none}
 .day.past .sess:not(.done) .tag,.day.past .sess:not(.done) .name,.day.past .sess:not(.done) .big,.day.past .sess:not(.done) .sub{opacity:.42}
 .day.past .sess:not(.done){background:var(--panel-done)}
 .sess.done .tag,.sess.done .name,.sess.done .big,.sess.done .sub{opacity:.42}
@@ -580,7 +590,7 @@ const TYPES={
 let KEYS=Object.keys(TYPES);
 const BASE=['run','bike','swim','gym'];
 const optional=k=>k==='gym'||!BASE.includes(k);
-const SPORT_COLORS=['#ffd166','#ff7a59','#b28dff','#00d4ff','#9be564','#ff8fb1'];
+const SPORT_COLORS=['#ff4fa3','#ff7a59','#5c8bff','#7cf0b0','#ffd166','#c9c9d6'];
 const DOW=['LUN','MAR','MER','JEU','VEN','SAM','DIM'];
 const DOWL=['Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi','Dimanche'];
 const MONTHS=['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
@@ -672,9 +682,10 @@ const sessionsOn=k=>state.sessions.filter(s=>s.date===k).sort((a,b)=>(WHEN_ORDER
 const typeOf=t=>TYPES[t]?t:'run';
 
 /* ---------- courses ---------- */
+const raceSess=id=>state.sessions.find(x=>x.raceId===id);
 function allRaces(){
   const S=state.settings;
-  return [{id:'main',name:S.raceName,date:S.raceDate,km:S.raceKm,time:S.raceTime,goal:S.raceGoal,result:S.raceResult||''}].concat((state.races||[]).filter(r=>r&&/^\d{4}-\d{2}-\d{2}$/.test(r.date||'')));
+  return [{id:'main',name:S.raceName,date:S.raceDate,km:S.raceKm,time:S.raceTime,goal:S.raceGoal,result:S.raceResult||'',sport:S.raceSport,fmt:S.raceFmt,tri:S.raceTri}].concat((state.races||[]).filter(r=>r&&/^\d{4}-\d{2}-\d{2}$/.test(r.date||'')));
 }
 const raceAt=k=>allRaces().filter(r=>r.date===k);
 function upcomingRaces(){const t=iso(today());return allRaces().filter(r=>r.date>=t).sort((a,b)=>a.date<b.date?-1:(a.date>b.date?1:0));}
@@ -690,15 +701,15 @@ function parseChrono(t){
   if(!m.length||m.some(x=>!isFinite(x)))return 0;
   return m.length===3?m[0]*3600+m[1]*60+m[2]:(m.length===2?m[0]*60+m[1]:m[0]*60);
 }
-function racePace(R){const sec=parseChrono(R.result),km=num(R.km);return sec>0&&km>0?fmtPace(sec/60/km)+' /km':'';}
-function racePill(R){return isPast(R)?'<span class="pill ok">'+(R.result?esc(R.result):'EFFECTUÉE')+'</span>':'<span class="pill glo">À VENIR</span>';}
+function racePace(R){if(R.sport&&R.sport!=='run')return '';const sec=parseChrono(R.result),km=num(R.km);return sec>0&&km>0?fmtPace(sec/60/km)+' /km':'';}
+function racePill(R){return isPast(R)?'<span class="pill ok">'+(R.result?esc(R.result):'EFFECTUÉE')+'</span>':'';}
 function renderCount(){
   const R=nextRace(),r=parse(R.date),d=diff(today(),r),up=upcomingRaces();
   let chip;
   if(d>0){const w=diff(mondayOf(today()),mondayOf(r))/7;chip=w>0?'S−'+w:'SEMAINE DE COURSE';}
   else if(d===0)chip='J-0';else chip='FIN';
   $('#raceCard').innerHTML='<span class="k"><b class="wk">'+chip+'</b>'+esc(DOW[(r.getDay()+6)%7])+' '+fmtDM(r)+racePill(R)+'</span><div class="n">'+esc(R.name)+'</div><div class="m">'+
-    [R.km?fmtKm(num(R.km)):'',R.time?esc(R.time):'',R.goal?'Objectif '+esc(R.goal):'',isPast(R)?racePace(R):''].filter(Boolean).join(' · ')+'</div>';
+    [raceDist(R),R.time?esc(R.time):'',R.goal?'Objectif '+esc(R.goal):'',isPast(R)?racePace(R):''].filter(Boolean).join(' · ')+'</div>';
   $('#raceCard').dataset.race=R.id;
   const band=$('#raceBand'),nx=up.filter(x=>x.id!==R.id);
   if(nx.length){
@@ -714,7 +725,7 @@ function openRaces(){
     const d=parse(R.date),w=isUp?diff(mondayOf(today()),mondayOf(d))/7:0;
     return '<button class="rl-row" data-race="'+esc(R.id)+'"><span class="rl-d">'+fmtDM(d)+'<small>'+d.getFullYear()+'</small></span><span class="rl-i"><div class="rl-n">'+esc(R.name)+'</div><div class="rl-m">'+
       [R.km?fmtKm(num(R.km)):'',R.goal&&isUp?'Objectif '+esc(R.goal):'',R.time&&isUp?esc(R.time):''].filter(Boolean).join(' · ')+'</div></span>'+
-      (isUp?'<span class="pill">À VENIR'+(w>0?' · S−'+w:'')+'</span>':'<span class="rl-t">'+(R.result?esc(R.result):'<span class="pill">SANS CHRONO</span>')+(R.result&&racePace(R)?'<small>'+racePace(R)+'</small>':'')+'</span>')+'</button>';
+      (isUp?'<span class="pill">'+(w>0?'S−'+w:'SEMAINE DE COURSE')+'</span>':'<span class="rl-t">'+(R.result?esc(R.result):'<span class="pill">SANS CHRONO</span>')+(R.result&&racePace(R)?'<small>'+racePace(R)+'</small>':'')+'</span>')+'</button>';
   };
   openSheet('<h2><small>COURSES</small>Calendrier des courses</h2>'+
     '<div class="rl-sec">À VENIR · '+up.length+'</div>'+(up.length?up.map(x=>row(x,true)).join(''):'<div class="rl-empty">Aucune course prévue.</div>')+
@@ -803,18 +814,19 @@ function sessHTML(s){
   const sub=[s.when?s.when.charAt(0).toUpperCase()+s.when.slice(1):'',(s.km&&s.min)?fmtDur(num(s.min)):''].filter(Boolean).join(' · ');
   return '<div class="sw"><button class="sess'+(s.done?' done':'')+'" data-sess="'+esc(s.id)+'" style="--c:'+T.color+'">'+
     '<span class="srow"><span class="tag"><i class="dot'+(s.done?'':' plan')+'" data-toggle="'+esc(s.id)+'" role="button" aria-label="'+(s.done?'Retirer fait':'Marquer fait')+'" style="--c:'+T.color+'"></i>'+T.label+'</span>'+
-    (s.done?'<span class="st on">FAIT</span>':'')+'</span>'+
+    (s.done?'<span class="st on"><span class="kj">済</span> FAIT</span>':'')+'</span>'+
     '<span class="name">'+esc(s.title||T.name)+'</span>'+(big?'<span class="big">'+esc(big)+'</span>':'')+(s.done&&realLine(s)?'<span class="real">'+esc(realLine(s))+'</span>':(sub?'<span class="sub">'+esc(sub)+'</span>':''))+'</button></div>';
 }
 function raceBlock(R){
   return '<button class="race" data-race="'+esc(R.id)+'"><span class="k">COURSE'+racePill(R)+'</span><div class="n">'+esc(R.name)+'</div><div class="m">'+
-    [R.km?fmtKm(num(R.km)):'',R.time?esc(R.time):'',R.goal?esc(R.goal):''].filter(Boolean).join('<br>')+'</div></button>';
+    [raceDist(R),R.time?esc(R.time):'',R.goal?esc(R.goal):''].filter(Boolean).join('<br>')+'</div></button>';
 }
 function renderWeek(){
   const mon=mondayOf(cursor),sun=addDays(mon,6),t=today();
   const wr=diff(mondayOf(parse(nextRace().date)),mon);   // <0: weeks before race
   const rel=wr<0?'S−'+(-wr/7)+' AVANT LA COURSE':(wr===0?'SEMAINE DE COURSE':'APRÈS LA COURSE');
-  $('#title').innerHTML='<small>'+esc(rel)+'</small>'+fmtDM(mon)+' — '+fmtDM(sun);
+  let cd='';{const nr=nextRace(),dd=diff(t,parse(nr.date)),wk=diff(mon,mondayOf(parse(nr.date)));if(dd>=0&&wk<=14&&wk>=0)cd='<span class="cdpill"><b>'+(dd===0?'J-0':'J−'+dd)+'</b>'+esc(nr.name)+'</span>';}
+  $('#title').innerHTML='<small>'+esc(rel)+'</small>'+fmtDM(mon)+' — '+fmtDM(sun)+cd;
   const list=[];
   let h='';
   for(let i=0;i<7;i++){
@@ -822,7 +834,7 @@ function renderWeek(){
     list.push(...ss);
     const cls='day'+(diff(t,d)===0?' today glo':'')+(diff(t,d)<0?' past':'');
     h+='<div class="'+cls+'" data-date="'+k+'" style="--d:'+i+'"><button class="dh" data-day="'+k+'" aria-label="Ouvrir '+DOWL[i]+' '+fmtDM(d)+'"><div class="dn">'+fmtDM(d)+'</div><div class="dw">'+DOW[i]+'</div>'+'</button>'+
-      '<div class="dcol">'+raceAt(k).map(raceBlock).join('')+ss.map(sessHTML).join('')+'</div></div>';
+      '<div class="dcol">'+raceAt(k).filter(R=>!raceSess(R.id)).map(raceBlock).join('')+ss.map(sessHTML).join('')+'</div></div>';
   }
   $('#sum').innerHTML=sumHTML(totals(list),false);
   $('#alerts').innerHTML=alertHTML(alertsFor(mon));
@@ -894,6 +906,7 @@ const WK={
 function wheelize(root){
   root.querySelectorAll('input[data-wheel]').forEach(inp=>{
     if(inp._wf)return;
+    if(inp.dataset.wheel==='date'){inp.type='date';inp._wf=1;return;}
     const ph=inp.getAttribute('placeholder')||'—',btn=document.createElement('button');
     btn.type='button';btn.className='wf';inp.type='hidden';inp.insertAdjacentElement('afterend',btn);
     let panel=null;
@@ -931,7 +944,7 @@ function dlgGrad(color){
   let g=dlg.querySelector('.gbg');
   if(!g){g=document.createElement('div');g.className='gbg';g.innerHTML='<i></i><i></i><i></i>';dlg.insertBefore(g,dlg.firstChild);
     if(!reduce())g.querySelectorAll('i').forEach(roam);}
-  g.style.setProperty('--gc',color);
+  g.style.setProperty('--gc',color);dlg.style.setProperty('--wc',color);
 }
 function roam(b){
   const step=()=>{
@@ -1004,7 +1017,7 @@ function openDay(k,isToday){
   const ss=sessionsOn(k),rcs=raceAt(k),isRace=rcs.length>0;
   openSheet('<h2>'+(isToday?dayTitle(k).replace('<small>','<small>AUJOURD’HUI · '):dayTitle(k))+'</h2>'+
     (isRace?'<div class="list">'+rcs.map(R=>'<div class="li"><i class="dot" style="--c:var(--red)"></i><button class="tg" data-race="'+esc(R.id)+'"><b>'+esc(R.name)+'</b><span>Jour de course · modifier</span></button></div>').join('')+'</div>':'')+
-    (ss.length?'<div class="list">'+ss.map(s=>{const T=TYPES[typeOf(s.type)];return '<div class="li"'+(s.done?' style="opacity:.5"':'')+'><i class="dot" style="--c:'+T.color+'"></i><button class="tg" data-sess="'+esc(s.id)+'"><b>'+esc(s.title||T.name)+'</b><span>'+esc([T.label,fmtKm(num(s.km)),fmtDur(num(s.min))].filter(Boolean).join(' · '))+'</span></button><button class="st'+(s.done?' on':'')+'" data-toggle="'+esc(s.id)+'" data-keep="1">'+(s.done?'✓ FAIT':'À FAIRE')+'</button></div>';}).join('')+'</div>':(isRace?'':'<p class="empty">'+(isToday?'Repos aujourd’hui, rien de prévu.':'Rien de prévu ce jour-là.')+'</p>'))+
+    (ss.length?'<div class="list">'+ss.map(s=>{const T=TYPES[typeOf(s.type)];return '<div class="li"'+(s.done?' style="opacity:.5"':'')+'><i class="dot" style="--c:'+T.color+'"></i><button class="tg" data-sess="'+esc(s.id)+'"><b>'+esc(s.title||T.name)+'</b><span>'+esc([T.label,fmtKm(num(s.km)),fmtDur(num(s.min))].filter(Boolean).join(' · '))+'</span></button><button class="st'+(s.done?' on':'')+'" data-toggle="'+esc(s.id)+'" data-keep="1">'+(s.done?'済 FAIT':'À FAIRE')+'</button></div>';}).join('')+'</div>':(isRace?'':'<p class="empty">'+(isToday?'Repos aujourd’hui, rien de prévu.':'Rien de prévu ce jour-là.')+'</p>'))+
     '<div class="actions"><div class="grp"><button class="btn solid" data-add="'+k+'">+ Séance</button></div><button class="btn ghost" data-close="1">Fermer</button></div>');
 }
 
@@ -1032,7 +1045,8 @@ function openSession(id,date,type){
    '<div class="opt dtrow" data-opt="dt" hidden><div class="field"><label for="f-date">DATE</label><input type="text" data-wheel="date" id="f-date" name="date" value="'+esc(s.date)+'" required></div>'+
    '<div class="field"><label for="f-when">HEURE</label><select id="f-when" name="when">'+WHEN.map(w=>'<option value="'+esc(w)+'"'+((s.when||'')===w?' selected':'')+'>'+(w?w.charAt(0).toUpperCase()+w.slice(1):'Non précisé')+'</option>').join('')+'</select></div></div>'+
    '<div class="field opt" data-opt="notes"'+(shown.notes?'':' hidden')+'><label for="f-notes">NOTES</label><textarea id="f-notes" name="notes" placeholder="Détail de la séance, ressenti…">'+esc(s.notes||'')+'</textarea></div>'+
-   '<div class="field"><span class="lbl">STATUT</span><div class="types two"><input type="radio" name="done" id="d-off" value="off"'+(s.done?'':' checked')+'><label for="d-off" class="only-hid">Pas encore</label><input type="radio" name="done" id="d-on" value="on"'+(s.done?' checked':'')+'><label for="d-on">✓ FAIT</label></div></div>'+
+   '<div class="field"><span class="lbl">STATUT</span><div class="types two"><input type="radio" name="done" id="d-off" value="off"'+(s.done?'':' checked')+'><label for="d-off" class="only-hid">Pas encore</label><input type="radio" name="done" id="d-on" value="on"'+(s.done?' checked':'')+'><label for="d-on">済 FAIT</label></div></div>'+
+   (s.raceId?'<div class="field" id="chbox"'+(s.done?'':' hidden')+'><label for="f-chrono">CHRONO DE LA COURSE</label><input type="text" id="f-chrono" name="chrono" value="'+esc(raceById(s.raceId).result||'')+'" placeholder="ex. 47:12 ou 1:02:45"></div>':'')+
    '<div id="realbox"'+(s.done?'':' hidden')+'><div class="field" style="margin-bottom:-6px"><span class="lbl">RÉALISÉ</span></div>'+realFields(typeOf(s.type),s,'f-a')+'</div>'+
    '<div class="actions"><div class="grp"><button class="btn solid" type="submit">Enregistrer</button><button class="btn ghost" type="button" data-close="1">Annuler</button></div>'+(ex?'<button class="btn danger" type="button" data-del="'+esc(ex.id)+'">Supprimer</button>':'')+'</div></form>');
   dlg.querySelector('.sheet').classList.add('hasdots');
@@ -1042,7 +1056,7 @@ function openSession(id,date,type){
   const rpeTxt=()=>{const v=num(new FormData(form).get('rpe'));const t=$('#rpet');if(t)t.textContent=v?v+' · '+RPE_TXT[v]:'Touche un chiffre · touche-le encore pour effacer';};
   const sync=()=>{
     const t=curType(),sw=t==='swim';try{const T0=TYPES[t];if(T0)dlgGrad(T0.color);}catch(e){}
-    $('#realbox').hidden=new FormData(form).get('done')!=='on';
+    $('#realbox').hidden=new FormData(form).get('done')!=='on';{const cb=$('#chbox');if(cb)cb.hidden=$('#realbox').hidden;}
     form.querySelector('.rw-bike').hidden=t!=='bike';
     form.querySelector('.rw-run').hidden=t!=='run';
     form.querySelector('.rl-km').textContent=sw?'DISTANCE (M)':'DISTANCE (KM)';
@@ -1058,6 +1072,7 @@ function openSession(id,date,type){
     const rec=Object.assign({id:ex?ex.id:uid(),date:f.get('date')||s.date,type:ty,title:String(f.get('title')||'').trim(),
       km:num(f.get('km')),min:num(f.get('min')),when:WHEN.includes(f.get('when'))?f.get('when'):'',notes:String(f.get('notes')||'').trim(),done:f.get('done')==='on'},readReal(f,ty));
     if(ex)Object.assign(ex,rec,{edited:true});else state.sessions.push(rec);
+    if(ex&&ex.raceId&&f.get('chrono')!=null){const v=String(f.get('chrono')).trim();if(ex.raceId==='main')state.settings.raceResult=v;else{const rr=state.races.find(r=>r.id===ex.raceId);if(rr)rr.result=v;}}
     save();cursor=parse(rec.date);closeSheet();render();appear(rec.id);
   });
   setTimeout(()=>{const f=$('#f-title');if(f&&!ex&&!f.value)f.focus();},30);
@@ -1074,24 +1089,63 @@ function openQuick(){
     '<div class="field"><span class="lbl">DISCIPLINE</span><div class="tiles list">'+tiles+'</div>'+spAddHTML+'</div>'+
     '<div class="actions"><span></span><button class="btn ghost" data-close="1">Fermer</button></div>');
 }
+const RFMT={run:[['5 km',5],['10 km',10],['Semi',21.1],['Marathon',42.2],['Trail',0]],tri:[['Sprint',[.75,20,5]],['Olympique',[1.5,40,10]],['70.3',[1.9,90,21.1]],['Ironman',[3.8,180,42.2]]]};
+const RSP=[['run','CAP'],['bike','VÉLO'],['tri','TRIATHLON']];
+const raceById=id=>allRaces().find(r=>r.id===id)||{};
+const rKey=sp=>sp==='bike'?'bike':'run';
+function raceDist(R){
+  if(R.sport==='tri'&&R.tri){const t=R.tri;return (R.fmt?R.fmt+' · ':'')+[t.s,t.b,t.r].map(v=>v?String(v).replace('.',','):'–').join(' / ')+' km';}
+  return R.km?fmtKm(num(R.km)):'';
+}
+function syncRaceSess(R){
+  if(!R||!R.id||!R.date)return;
+  const sp=R.sport||'run',notes=[R.fmt,sp==='tri'?'':'',R.goal?'Objectif '+R.goal:''].filter(Boolean).join(' · ');
+  const rec={date:R.date,type:rKey(sp),title:R.name||'Course',km:sp==='tri'?'':(num(R.km)||''),notes:notes};
+  const x=raceSess(R.id);
+  if(x)Object.assign(x,rec);else state.sessions.push(Object.assign({id:uid(),raceId:R.id,min:'',when:'',done:false},rec));
+}
 function openRace(id){
   const isNew=id==='new',main=!isNew&&(!id||id==='1'||id==='main');
   const R=isNew?{id:null,name:'',date:iso(addDays(mondayOf(cursor),5)),km:'',time:'',goal:'',result:''}:(main?allRaces()[0]:(state.races.find(r=>r.id===id)||allRaces()[0]));
   const isMain=!isNew&&(main||R.id==='main');
+  let sp=R.sport||'run',fm=R.fmt||'';
+  if(!R.fmt&&sp==='run'&&R.km){const m=RFMT.run.find(x=>x[1]&&Math.abs(x[1]-num(R.km))<.05);if(m)fm=m[0];}
+  const tr=R.tri||{s:'',b:'',r:''},fv=v=>v==null||v===''?'':String(v).replace('.',',');
   openSheet('<h2><small>'+(isNew?'NOUVELLE COURSE':'COURSE')+'</small>'+(isNew?'Ajouter':esc(R.name))+'</h2>'+
    '<form id="rf" autocomplete="off"><div class="field"><label for="r-name">NOM</label><input type="text" id="r-name" name="name" value="'+esc(R.name)+'" placeholder="ex. 10 km de Paris"></div>'+
-   '<div class="row"><div class="field"><label for="r-date">DATE</label><input type="text" data-wheel="date" id="r-date" name="date" value="'+esc(R.date)+'" required></div>'+
-   '<div class="field"><label for="r-km">DISTANCE (KM)</label><input type="text" data-wheel="km" data-def="10" id="r-km" name="km" value="'+esc(R.km||'')+'"></div></div>'+
-   '<div class="row"><div class="field"><label for="r-time">HORAIRE / LIEU</label><input type="text" id="r-time" name="time" value="'+esc(R.time||'')+'" placeholder="ex. départ 20h00"></div>'+
-   '<div class="field"><label for="r-goal">OBJECTIF</label><input type="text" data-wheel="chrono" data-def="47:00" id="r-goal" name="goal" value="'+esc(R.goal||'')+'" placeholder="ex. 47:00"></div></div>'+
-   '<div class="field"><label for="r-res">CHRONO (APRÈS LA COURSE)</label><input type="text" data-wheel="chrono" data-def="47:00" id="r-res" name="result" value="'+esc(R.result||'')+'" placeholder="ex. 47:12 ou 1:02:45"></div>'+
+   '<div class="field"><span class="lbl">SPORT</span><div class="rchips" id="rsp"></div></div>'+
+   '<div class="field" id="rfbox"><span class="lbl">FORMAT</span><div class="rchips" id="rfmt"></div></div>'+
+   '<div class="field" id="rkm"><label for="r-km" id="r-kml">DISTANCE (KM)</label><input type="text" inputmode="decimal" id="r-km" name="km" value="'+fv(R.km)+'" placeholder="ex. 10"></div>'+
+   '<div class="row" id="rtri"><div class="field"><label for="r-ts">NAT (KM)</label><input type="text" inputmode="decimal" id="r-ts" name="ts" value="'+fv(tr.s)+'"></div><div class="field"><label for="r-tb">VÉLO (KM)</label><input type="text" inputmode="decimal" id="r-tb" name="tb" value="'+fv(tr.b)+'"></div><div class="field"><label for="r-tr">CAP (KM)</label><input type="text" inputmode="decimal" id="r-tr" name="tr" value="'+fv(tr.r)+'"></div></div>'+
+   '<div class="row"><div class="field"><label for="r-date">DATE</label><input type="date" id="r-date" name="date" value="'+esc(R.date)+'" required></div>'+
+   '<div class="field"><label for="r-time">HORAIRE / LIEU</label><input type="text" id="r-time" name="time" value="'+esc(R.time||'')+'" placeholder="ex. départ 20h00"></div></div>'+
+   '<div class="field"><label for="r-goal">OBJECTIF</label><input type="text" id="r-goal" name="goal" value="'+esc(R.goal||'')+'" placeholder="ex. 47:00"></div>'+
    '<div class="actions"><div class="grp"><button class="btn solid" type="submit">Enregistrer</button><button class="btn ghost" type="button" data-close="1">Annuler</button></div>'+(!isNew&&!isMain?'<button class="btn danger" type="button" data-delrace="'+esc(R.id)+'">Supprimer</button>':'')+'</div></form>');
-  $('#rf').addEventListener('submit',e=>{
-    e.preventDefault();const f=new FormData(e.target);
-    const rec={name:String(f.get('name')||'').trim()||'Course',date:f.get('date')||R.date,km:num(f.get('km'))||'',time:String(f.get('time')||'').trim(),goal:String(f.get('goal')||'').trim(),result:String(f.get('result')||'').trim()};
-    if(isMain){state.settings.raceName=rec.name;state.settings.raceDate=rec.date;state.settings.raceKm=rec.km;state.settings.raceTime=rec.time;state.settings.raceGoal=rec.goal;state.settings.raceResult=rec.result;}
-    else if(isNew)state.races.push(Object.assign({id:'r-'+uid().slice(2)},rec));
-    else Object.assign(R,rec);
+  const form=$('#rf'),q=n=>form.elements[n];
+  const paint=()=>{
+    dlgGrad(TYPES[rKey(sp)].color);
+    $('#rsp').innerHTML=RSP.map(x=>'<button type="button" data-rsp="'+x[0]+'" aria-pressed="'+(sp===x[0])+'">'+x[1]+'</button>').join('');
+    const fl=RFMT[sp]||[];$('#rfbox').hidden=!fl.length;
+    $('#rfmt').innerHTML=fl.map(x=>'<button type="button" data-rfmt="'+esc(x[0])+'" aria-pressed="'+(fm===x[0])+'">'+esc(x[0].toUpperCase())+'</button>').join('');
+    $('#rkm').hidden=sp==='tri';$('#rtri').hidden=sp!=='tri';
+    $('#r-kml').textContent=sp==='bike'?'DISTANCE (KM)':'DISTANCE (KM) · MODIFIABLE';
+  };
+  form.addEventListener('click',e=>{
+    const a=e.target.closest&&e.target.closest('[data-rsp]'),b=e.target.closest&&e.target.closest('[data-rfmt]');
+    if(a){if(sp!==a.dataset.rsp){sp=a.dataset.rsp;fm='';}paint();return;}
+    if(b){fm=b.dataset.rfmt;const x=(RFMT[sp]||[]).find(y=>y[0]===fm);
+      if(x){if(sp==='tri'){q('ts').value=fv(x[1][0]);q('tb').value=fv(x[1][1]);q('tr').value=fv(x[1][2]);}else if(x[1])q('km').value=fv(x[1]);else{q('km').value='';setTimeout(()=>q('km').focus(),30);}}
+      paint();}
+  });
+  paint();
+  form.addEventListener('submit',e=>{
+    e.preventDefault();const f=new FormData(form);
+    const rec={name:String(f.get('name')||'').trim()||'Course',date:f.get('date')||R.date,sport:sp,fmt:fm,km:sp==='tri'?'':(num(f.get('km'))||''),tri:sp==='tri'?{s:num(f.get('ts'))||'',b:num(f.get('tb'))||'',r:num(f.get('tr'))||''}:null,time:String(f.get('time')||'').trim(),goal:String(f.get('goal')||'').trim()};
+    let saved;
+    if(isMain){const S=state.settings;S.raceName=rec.name;S.raceDate=rec.date;S.raceKm=rec.km;S.raceTime=rec.time;S.raceGoal=rec.goal;S.raceSport=sp;S.raceFmt=fm;S.raceTri=rec.tri;saved=allRaces()[0];}
+    else if(isNew){saved=Object.assign({id:'r-'+uid().slice(2),result:''},rec);state.races.push(saved);}
+    else{Object.assign(R,rec);saved=R;}
+    syncRaceSess(saved);
     save();closeSheet();render();
   });
   if(isNew)setTimeout(()=>{const x=$('#r-name');if(x)x.focus();},30);
@@ -1366,7 +1420,7 @@ document.addEventListener('pointermove',e=>{
       if(drag.swipe){
         const c=Math.min(0,Math.max(-130,dx)),w=drag.el.closest('.sw');
         drag.el.style.transform='translateX('+c+'px)';
-        if(w){if(c<-6){const was=drag.el.classList.contains('done');w.dataset.dir='l';w.dataset.rev=was?'↺ RETIRER':'✓ FAIT';w.dataset.tone=was?'todo':'done';}else delete w.dataset.dir;}
+        if(w){if(c<-6){const was=drag.el.classList.contains('done');w.dataset.dir='l';w.dataset.rev=was?'↺ RETIRER':'済 FAIT';w.dataset.tone=was?'todo':'done';}else delete w.dataset.dir;}
         return;
       }
       if(dist>10)dragCleanup();return;   // le doigt bouge avant l'appui long : c'est un défilement
@@ -1455,7 +1509,7 @@ document.addEventListener('click',e=>{
     return;}
   if(t.dataset.newrace){openRace('new');return;}
   if(t.dataset.race){openRace(t.dataset.race);return;}
-  if(t.dataset.delrace){if(confirm('Supprimer cette course ?')){state.races=state.races.filter(r=>r.id!==t.dataset.delrace);save();closeSheet();render();}return;}
+  if(t.dataset.delrace){if(confirm('Supprimer cette course ?')){state.races=state.races.filter(r=>r.id!==t.dataset.delrace);state.sessions=state.sessions.filter(x=>x.raceId!==t.dataset.delrace);save();closeSheet();render();}return;}
   if(t.dataset.day){openDay(t.dataset.day);return;}
   if(t.dataset.del){if(confirm('Supprimer cette séance ?')){state.sessions=state.sessions.filter(s=>s.id!==t.dataset.del);save();closeSheet();render();}return;}
   if(t.dataset.export){exportData();return;}
@@ -1660,6 +1714,7 @@ function backToNow(){const k=iso(today());if(k!==lastDay||(hiddenAt&&Date.now()-
 document.addEventListener('visibilitychange',()=>{if(document.hidden){hiddenAt=Date.now();return;}backToNow();render();});
 window.addEventListener('pageshow',e=>{if(e.persisted){backToNow();render();}});
 
+if(!state.settings.raceSessMig){allRaces().forEach(syncRaceSess);state.settings.raceSessMig=1;save();}
 render();
 if('serviceWorker' in navigator&&location.protocol.startsWith('http')){
   const had=!!navigator.serviceWorker.controller;let reloaded=false;
