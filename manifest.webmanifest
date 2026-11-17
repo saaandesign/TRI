@@ -1,11 +1,11 @@
 {
- "name": "Prépa — Corrida de Rambouillet",
- "short_name": "Prépa",
+ "name": "Dō",
+ "short_name": "Dō",
  "description": "Calendrier d'entraînement CAP, vélo, natation",
  "start_url": "./",
  "scope": "./",
  "display": "standalone",
- "background_color": "#171719",
+ "background_color": "#ffffff",
  "theme_color": "#171719",
  "lang": "fr",
  "icons": [

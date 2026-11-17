@@ -1,4 +1,4 @@
-# Prépa — calendrier d'entraînement
+# Dō — calendrier d'entraînement
 
 Appli web statique (aucune installation, aucun serveur) : calendrier semaine / mois, pastilles par discipline
 (CAP, vélo, natation, renfo), compteur de semaines et jours avant la course, dates et séances modifiables au clic.
