@@ -142,7 +142,14 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
 .sess{box-shadow:var(--card-shadow);display:block;width:100%;height:132px;overflow:hidden;text-align:left;padding:13px 14px 12px 18px;background:var(--panel);border-radius:var(--r);position:relative;touch-action:pan-y;transition:transform .45s cubic-bezier(.34,1.5,.64,1),opacity .25s}
 .sess::before{content:'';position:absolute;inset:0;pointer-events:none;border-radius:inherit;
   background:linear-gradient(270deg,color-mix(in srgb,var(--c) 30%,transparent),color-mix(in srgb,var(--c) 12%,transparent) 42%,transparent 80%)}
-.sess.done::before{display:none}
+.sess.done::before,.sess.skip::before{display:none}
+.sess.skip{background:var(--panel-done);filter:grayscale(.9);opacity:.6}
+.sess.skip::after{content:'';position:absolute;inset:0;pointer-events:none;border-radius:inherit;background:repeating-linear-gradient(135deg,transparent 0 8px,color-mix(in srgb,var(--text) 11%,transparent) 8px 9px)}
+.sess.skip .name,.sess.skip .big{text-decoration:line-through;text-decoration-thickness:1.5px}
+.stamp.sk::after{background:#9aa0ad;-webkit-mask-image:url(stamp-skip.png);mask-image:url(stamp-skip.png)}
+:root[data-theme="light"] .stamp.sk::after{background:#5b6070}
+.sw[data-tone="skip"]::before{background:#555a66}
+#d-sk+label{grid-column:1/-1}
 .sess>*{position:relative}
 .sess .desc{display:none}
 .sess .name,.sess .sub,.sess .real{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
@@ -341,6 +348,7 @@ table.stab{border-collapse:collapse;width:100%;font-size:13px;white-space:nowrap
 .sess.done .tag,.sess.done .name,.sess.done .big,.sess.done .sub{opacity:.42}
 .sess.done .real{opacity:.7}
 #d-off:checked+label{border-color:var(--warn);color:var(--warn);background:var(--warn-bg)}
+#d-sk:checked+label{border-color:var(--muted);color:var(--text);background:color-mix(in srgb,var(--muted) 22%,transparent)}
 #d-on:checked+label{border-color:var(--ok);color:var(--ok);background:var(--ok-bg)}
 input[type=date]{-webkit-appearance:none;appearance:none;display:block;min-height:46px;text-align:left}
 input[type=date]::-webkit-date-and-time-value{text-align:left}
@@ -802,7 +810,7 @@ function alertsFor(mon){
 const alertHTML=a=>a.map(x=>'<div class="alert">⚠ '+esc(x)+'</div>').join('');
 
 /* ---------- totals ---------- */
-function totals(list){
+function totals(list){list=list.filter(x=>!x.skip);
   const t={};KEYS.forEach(k=>t[k]={km:0,min:0,dkm:0,dmin:0,n:0,dn:0,hw:0,hm:0,pk:0,pm:0,hrw:0,hrm:0});
   list.forEach(s=>{const x=t[typeOf(s.type)];x.n++;x.km+=num(s.km)||0;x.min+=num(s.min)||0;
     if(s.done){const ak=num(s.akm)||num(s.km)||0,am=num(s.amin)||num(s.min)||0;
@@ -835,10 +843,10 @@ function sessHTML(s){
   const k=typeOf(s.type),T=TYPES[k];
   const big=s.km?fmtKm(num(s.km)):(s.min?fmtDur(num(s.min)):'');
   const sub=[s.when?s.when.charAt(0).toUpperCase()+s.when.slice(1):'',(s.km&&s.min)?fmtDur(num(s.min)):''].filter(Boolean).join(' · ');
-  return '<div class="swx"><div class="sw"><button class="sess'+(s.done?' done':'')+'" data-sess="'+esc(s.id)+'" style="--c:'+T.color+'">'+
+  return '<div class="swx"><div class="sw"><button class="sess'+(s.done?' done':'')+(s.skip?' skip':'')+'" data-sess="'+esc(s.id)+'" style="--c:'+T.color+'">'+
     '<span class="srow"><span class="tag"><i class="dot'+(s.done?'':' plan')+'" data-toggle="'+esc(s.id)+'" role="button" aria-label="'+(s.done?'Retirer fait':'Marquer fait')+'" style="--c:'+T.color+'"></i>'+T.label+'</span>'+
     ''+'</span>'+
-    '<span class="name">'+esc(s.title||T.name)+'</span>'+(big?'<span class="big">'+esc(big)+'</span>':'')+(s.done&&realLine(s)?'<span class="real">'+esc(realLine(s))+'</span>':(sub?'<span class="sub">'+esc(sub)+'</span>':''))+(s.notes?'<span class="desc">'+esc(s.notes)+'</span>':'')+'</button></div>'+(s.done?'<i class="stamp" aria-label="Fait"></i>':'')+'</div>';
+    '<span class="name">'+esc(s.title||T.name)+'</span>'+(big?'<span class="big">'+esc(big)+'</span>':'')+(s.done&&realLine(s)?'<span class="real">'+esc(realLine(s))+'</span>':(sub?'<span class="sub">'+esc(sub)+'</span>':''))+(s.notes?'<span class="desc">'+esc(s.notes)+'</span>':'')+'</button></div>'+(s.done?'<i class="stamp" aria-label="Fait"></i>':(s.skip?'<i class="stamp sk" aria-label="Non effectué"></i>':''))+'</div>';
 }
 function raceBlock(R){
   return '<button class="race" data-race="'+esc(R.id)+'"><span class="k">COURSE'+racePill(R)+'</span><div class="n">'+esc(R.name)+'</div><div class="m">'+
@@ -1083,7 +1091,7 @@ function openSession(id,date,type){
    '<div class="opt dtrow" data-opt="dt" hidden><div class="field"><label for="f-date">DATE</label><input type="text" data-wheel="date" id="f-date" name="date" value="'+esc(s.date)+'" required></div>'+
    '<div class="field"><label for="f-when">HEURE</label><select id="f-when" name="when">'+WHEN.map(w=>'<option value="'+esc(w)+'"'+((s.when||'')===w?' selected':'')+'>'+(w?w.charAt(0).toUpperCase()+w.slice(1):'Non précisé')+'</option>').join('')+'</select></div></div>'+
    '<div class="field opt" data-opt="notes"'+(shown.notes?'':' hidden')+'><label for="f-notes">NOTES</label><textarea id="f-notes" name="notes" placeholder="Détail de la séance, ressenti…">'+esc(s.notes||'')+'</textarea></div>'+
-   '<div class="field"><span class="lbl">STATUT</span><div class="types two"><input type="radio" name="done" id="d-off" value="off"'+(s.done?'':' checked')+'><label for="d-off" class="only-hid">Pas encore</label><input type="radio" name="done" id="d-on" value="on"'+(s.done?' checked':'')+'><label for="d-on">済 FAIT</label></div></div>'+
+   '<div class="field"><span class="lbl">STATUT</span><div class="types two"><input type="radio" name="done" id="d-off" value="off"'+((s.done||s.skip)?'':' checked')+'><label for="d-off" class="only-hid">Pas encore</label><input type="radio" name="done" id="d-on" value="on"'+(s.done?' checked':'')+'><label for="d-on">済 FAIT</label><input type="radio" name="done" id="d-sk" value="skip"'+(s.skip?' checked':'')+'><label for="d-sk">未 NON EFFECTUÉ</label></div></div>'+
    (s.raceId?'<div class="field" id="chbox"'+(s.done?'':' hidden')+'><label for="f-chrono">CHRONO DE LA COURSE</label><input type="text" id="f-chrono" name="chrono" value="'+esc(raceById(s.raceId).result||'')+'" placeholder="ex. 47:12 ou 1:02:45"></div>':'')+
    '<div id="realbox"'+(s.done?'':' hidden')+'><div class="field" style="margin-bottom:-6px"><span class="lbl">RÉALISÉ</span></div>'+realFields(typeOf(s.type),s,'f-a')+'</div>'+
    '<div class="actions"><div class="grp"><button class="btn solid" type="submit">Enregistrer</button><button class="btn ghost" type="button" data-close="1">Annuler</button></div>'+(ex?'<button class="btn danger" type="button" data-del="'+esc(ex.id)+'">Supprimer</button>':'')+'</div></form>');
@@ -1100,7 +1108,7 @@ function openSession(id,date,type){
     form.querySelector('.rl-km').textContent=sw?'DISTANCE (M)':'DISTANCE (KM)';
     const ak=form.querySelector('[name=akm]');if(ak&&ak.dataset.wheel!==(sw?'m':'km')){ak.dataset.wheel=sw?'m':'km';ak.value='';ak.dataset.def='';if(ak._wf)ak._wf.refresh();}
   };
-  form.addEventListener('click',e=>{const dl=e.target.closest&&e.target.closest('label[for=d-on]');if(dl){const on=document.getElementById('d-on');if(on&&on.checked){e.preventDefault();document.getElementById('d-off').checked=true;document.getElementById('d-off').dispatchEvent(new Event('change',{bubbles:true}));return;}}
+  form.addEventListener('click',e=>{const dl=e.target.closest&&e.target.closest('label[for=d-on],label[for=d-sk]');if(dl){const on=document.getElementById(dl.getAttribute('for'));if(on&&on.checked){e.preventDefault();document.getElementById('d-off').checked=true;document.getElementById('d-off').dispatchEvent(new Event('change',{bubbles:true}));return;}}
     const l=e.target.closest&&e.target.closest('label[data-rpe]');if(!l)return;const i=document.getElementById(l.getAttribute('for'));if(i&&i.checked){e.preventDefault();i.checked=false;i.dispatchEvent(new Event('change',{bubbles:true}));}});
   form.addEventListener('change',e=>{if(e.target&&e.target.name==='rpe'){}line();rpeTxt();sync();if(e.target&&e.target.name==='type'){const c=$('#spcur');if(c){c.outerHTML=spCurHTML(typeOf(e.target.value));$('#spmenu').hidden=true;}}});
   dlg._shown=shown;dlg._popHTML=pop;line();sync();
@@ -1108,7 +1116,7 @@ function openSession(id,date,type){
     e.preventDefault();
     const f=new FormData(form),ty=typeOf(f.get('type'));
     const rec=Object.assign({id:ex?ex.id:uid(),date:f.get('date')||s.date,type:ty,title:String(f.get('title')||'').trim(),
-      km:num(f.get('km')),min:num(f.get('min')),when:WHEN.includes(f.get('when'))?f.get('when'):'',notes:String(f.get('notes')||'').trim(),done:f.get('done')==='on'},readReal(f,ty));
+      km:num(f.get('km')),min:num(f.get('min')),when:WHEN.includes(f.get('when'))?f.get('when'):'',notes:String(f.get('notes')||'').trim(),done:f.get('done')==='on',skip:f.get('done')==='skip'},readReal(f,ty));
     if(ex)Object.assign(ex,rec,{edited:true});else state.sessions.push(rec);
     if(ex&&ex.raceId&&f.get('chrono')!=null){const v=String(f.get('chrono')).trim();if(ex.raceId==='main')state.settings.raceResult=v;else{const rr=state.races.find(r=>r.id===ex.raceId);if(rr)rr.result=v;}}
     save();cursor=parse(rec.date);closeSheet();render();appear(rec.id);
@@ -1399,11 +1407,17 @@ function slideView(n){
 }
 
 /* ---------- statut ---------- */
+function setSkip(id,val){
+  const s=state.sessions.find(x=>x.id===id);
+  if(!s||!!s.skip===val)return;
+  const wasDone=!!s.done;s.skip=val;if(val)s.done=false;save();render();popCard(id,val);
+  toast(val?'Séance non effectuée 未':'Statut retiré',()=>{s.skip=!val;s.done=wasDone;save();render();popCard(id,!val);});
+}
 function setDone(id,val){
   const s=state.sessions.find(x=>x.id===id);
   if(!s||!!s.done===val)return;
-  s.done=val;save();render();popCard(id,val);
-  toast(val?'Séance faite ✓':'Fait retiré',()=>{s.done=!val;save();render();popCard(id,!val);},val?{label:'RÉEL…',fn:()=>openActual(id)}:null);
+  const wasSkip=!!s.skip;s.done=val;if(val)s.skip=false;save();render();popCard(id,val);
+  toast(val?'Séance faite ✓':'Fait retiré',()=>{s.done=!val;s.skip=wasSkip;save();render();popCard(id,!val);},val?{label:'RÉEL…',fn:()=>openActual(id)}:null);
 }
 
 /* ---------- toast ---------- */
@@ -1461,11 +1475,11 @@ document.addEventListener('pointermove',e=>{
   if(!drag.active){
     if(drag.touch){
       const dx=drag.x-drag.sx,dy=drag.y-drag.sy;
-      if(!drag.swipe&&dx<-12&&-dx>Math.abs(dy)*1.4){drag.swipe=true;clearTimeout(drag.timer);drag.el.classList.add('swiping');}
+      if(!drag.swipe&&Math.abs(dx)>12&&Math.abs(dx)>Math.abs(dy)*1.4){drag.swipe=true;clearTimeout(drag.timer);drag.el.classList.add('swiping');}
       if(drag.swipe){
-        const c=Math.min(0,Math.max(-130,dx)),w=drag.el.closest('.sw');
+        const c=Math.min(130,Math.max(-130,dx)),w=drag.el.closest('.sw');
         drag.el.style.transform='translateX('+c+'px)';
-        if(w){if(c<-6){const was=drag.el.classList.contains('done');w.dataset.dir='l';w.dataset.rev=was?'↺ RETIRER':'済 FAIT';w.dataset.tone=was?'todo':'done';}else delete w.dataset.dir;}
+        if(w){if(c<-6){const was=drag.el.classList.contains('done');w.dataset.dir='l';w.dataset.rev=was?'↺ RETIRER':'済 FAIT';w.dataset.tone=was?'todo':'done';}else if(c>6){const sk=drag.el.classList.contains('skip');w.dataset.dir='r';w.dataset.rev=sk?'↺ RETIRER':'未 NON EFFECTUÉ';w.dataset.tone=sk?'todo':'skip';}else delete w.dataset.dir;}
         return;
       }
       if(dist>10)dragCleanup();return;   // le doigt bouge avant l'appui long : c'est un défilement
@@ -1482,6 +1496,7 @@ function endDrag(cancel){
     const dx=drag.x-drag.sx,id=drag.id;
     dragCleanup();blockClickUntil=performance.now()+400;
     if(!cancel&&dx<=-72){const x=state.sessions.find(v=>v.id===id);if(x)setDone(id,!x.done);}
+    else if(!cancel&&dx>=72){const x=state.sessions.find(v=>v.id===id);if(x)setSkip(id,!x.skip);}
     return;
   }
   const was=drag.active,id=drag.id,target=drag.target;
