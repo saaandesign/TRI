@@ -312,19 +312,20 @@ table.stab{border-collapse:collapse;width:100%;font-size:13px;white-space:nowrap
 .cpsum{background:var(--bg);border:1px solid var(--line);border-radius:var(--r);padding:14px 16px;margin-top:16px;font-size:14px;line-height:1.6}
 .cpsum b{font-weight:500}
 .dd{display:none}
+.dpanel{display:none}
 .laybtn{display:none}.laybtn svg{width:19px;height:19px}
 :root{--cs:minmax(0,2.1fr);--cn:minmax(0,1fr)}
 @media (max-width:860px){
   .laybtn{display:grid}.laybtn[hidden]{display:none}
-  body.lay-cols .week{display:grid;gap:5px;--cs:minmax(0,5fr);--cn:minmax(0,1fr);margin-inline:-8px;align-items:stretch}
-  body.lay-cols .day{margin:0;padding:6px;align-self:stretch;min-height:min(54vh,430px)}
-  body.lay-cols .day:not(.sel){padding:0;border-radius:18px;overflow:hidden}
-  body.lay-cols .day:not(.sel) .dcol{display:none}
-  body.lay-cols .day:not(.sel) .dh{height:100%;display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:14px 0}
-  body.lay-cols .day:not(.sel) .dn{display:none}
-  body.lay-cols .day:not(.sel) .dw{writing-mode:vertical-rl;transform:rotate(180deg);margin:0;font-size:15px;letter-spacing:.14em}
-  body.lay-cols .day:not(.sel) .dd{display:flex;flex-direction:column;gap:6px}
-  body.lay-cols .day.sel .dw{font-size:20px}
+  body.lay-cols .week{display:grid;gap:5px;--cs:minmax(0,1.1fr);--cn:minmax(0,1fr);margin-bottom:12px}
+  body.lay-cols .day{margin:0;padding:0;align-self:stretch;min-height:150px;border-radius:18px;overflow:hidden}
+  body.lay-cols .day .dcol{display:none}
+  body.lay-cols .day .dh{height:100%;width:100%;display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:14px 0}
+  body.lay-cols .day .dn{display:none}
+  body.lay-cols .day .dw{writing-mode:vertical-rl;transform:rotate(180deg);margin:0;font-size:14px;letter-spacing:.12em}
+  body.lay-cols .day .dd{display:flex;flex-direction:column;gap:6px}
+  body.lay-cols .day.sel:not(.today){border-color:var(--text)}
+  body.lay-cols .dpanel{display:flex;flex-direction:column;gap:8px;margin:0 0 26px;padding-top:30px}
 }
 @media (max-width:860px){.wkfoot{margin-top:0;justify-content:stretch}.wkfoot .btn{flex:1;text-align:center}}
 
@@ -842,10 +843,15 @@ function raceBlock(R){
   return '<button class="race" data-race="'+esc(R.id)+'"><span class="k">COURSE'+racePill(R)+'</span><div class="n">'+esc(R.name)+'</div><div class="m">'+
     [raceDist(R),R.time?esc(R.time):'',R.goal?esc(R.goal):''].filter(Boolean).join('<br>')+'</div></button>';
 }
+const dayHTML=k=>raceAt(k).filter(R=>!raceSess(R.id)).map(raceBlock).join('')+sessionsOn(k).map(sessHTML).join('');
 function applySel(first){
   const wk=document.querySelector('.week');if(!wk)return;
   const days=Array.from(wk.querySelectorAll('.day')),tk=iso(today());
   const sel=selDay&&days.some(d=>d.dataset.date===selDay)?selDay:(days.some(d=>d.dataset.date===tk)?tk:null);
+  const pn=document.querySelector('.dpanel');
+  if(pn){const mob=matchMedia('(max-width:860px)').matches&&document.body.classList.contains('lay-cols');
+    if(mob&&sel&&pn.dataset.k!==sel){pn.dataset.k=sel;pn.innerHTML=dayHTML(sel)||'<div class="muted">Rien de prévu.</div>';if(!first)pn.animate([{opacity:0,transform:'translateY(8px)'},{opacity:1,transform:'none'}],{duration:380,easing:'cubic-bezier(.3,.7,.3,1)'});}
+    else if(!mob){pn.dataset.k='';pn.innerHTML='';}}
   if(first)wk.style.transition='none';
   days.forEach(d=>{const on=d.dataset.date===sel;d.classList.toggle('sel',on);const w=d.querySelector('.dw');if(w)w.textContent=(on||d.classList.contains('today'))?w.dataset.l:w.dataset.s;});
   wk.style.setProperty('--cols',days.map(d=>d.dataset.date===sel?'var(--cs)':'var(--cn)').join(' '));
@@ -869,7 +875,7 @@ function renderWeek(){
   $('#sum').innerHTML=sumHTML(totals(list),false);
   $('#alerts').innerHTML=alertHTML(alertsFor(mon));
   const enter=enterNext;enterNext=false;
-  $('#view').innerHTML='<div class="week'+(enter?' enter':'')+'">'+h+'</div><div class="wkfoot"><button class="btn glo soft" data-clearweek="1">Clear</button><button class="btn" data-copy="1">Préparer la semaine suivante</button></div>';
+  $('#view').innerHTML='<div class="week'+(enter?' enter':'')+'">'+h+'</div><div class="dpanel"></div><div class="wkfoot"><button class="btn glo soft" data-clearweek="1">Clear</button><button class="btn" data-copy="1">Préparer la semaine suivante</button></div>';
   applySel(true);
 }
 
@@ -1570,7 +1576,7 @@ $('#raceAdd').addEventListener('click',e=>{setOrigin(e.currentTarget);openRace('
 $('#fab').addEventListener('click',e=>{setOrigin(e.currentTarget);openQuick();});
 let layCols=true;try{layCols=localStorage.getItem('prepa-layout')!=='list';}catch(e){}
 const paintLay=()=>document.body.classList.toggle('lay-cols',layCols);paintLay();
-$('#btnLay').addEventListener('click',()=>{layCols=!layCols;try{localStorage.setItem('prepa-layout',layCols?'cols':'list');}catch(e){}paintLay();});
+$('#btnLay').addEventListener('click',()=>{layCols=!layCols;try{localStorage.setItem('prepa-layout',layCols?'cols':'list');}catch(e){}paintLay();const pn=document.querySelector('.dpanel');if(pn)pn.dataset.k='';applySel();});
 $('#btnStats').addEventListener('click',e=>{setOrigin(e.currentTarget);openStats();});
 function applyTheme(t,anim){
   const root=document.documentElement;
