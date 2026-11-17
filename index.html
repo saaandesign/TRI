@@ -143,11 +143,15 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
 .sess::before{content:'';position:absolute;inset:0;pointer-events:none;border-radius:inherit;
   background:linear-gradient(270deg,color-mix(in srgb,var(--c) 30%,transparent),color-mix(in srgb,var(--c) 12%,transparent) 42%,transparent 80%)}
 .sess.done::before,.sess.skip::before{display:none}
-.sess.skip{background:var(--panel-done);filter:grayscale(.9);opacity:.6}
+.sess.skip{background:var(--panel-done)}
+.sess.skip .name,.sess.skip .big,.sess.skip .sub,.sess.skip .tag{opacity:.55}
+.sess.skip .tag{opacity:1}
+.sess.skip .tag>*{opacity:.6}
 .sess.skip::after{content:'';position:absolute;inset:0;pointer-events:none;border-radius:inherit;background:repeating-linear-gradient(135deg,transparent 0 8px,color-mix(in srgb,var(--text) 11%,transparent) 8px 9px)}
-.sess.skip .name,.sess.skip .big{text-decoration:line-through;text-decoration-thickness:1.5px}
-.stamp.sk::after{background:#9aa0ad;-webkit-mask-image:url(stamp-skip.png);mask-image:url(stamp-skip.png)}
-:root[data-theme="light"] .stamp.sk::after{background:#5b6070}
+.sess .tag{border:1.5px solid transparent;border-radius:999px;padding:3px 10px 3px 6px;margin-left:-6px;transition:border-color .4s}
+.sess.done .tag{border-color:var(--ok)}
+.sess.skip .tag{border-color:#e0443a}
+.stamp.sk::after{-webkit-mask-image:url(stamp-skip.png);mask-image:url(stamp-skip.png)}
 .sw[data-tone="skip"]::before{background:#555a66}
 #d-sk+label{grid-column:1/-1}
 .sess>*{position:relative}
