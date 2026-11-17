@@ -122,8 +122,14 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
 .cdpill b{color:var(--text)}
 .day.past .dw{color:var(--faint)}
 :root[data-theme="light"] .day.past .dw{color:var(--muted)}
-.dcol{display:flex;flex-direction:column;gap:8px;flex:1;min-height:170px}
+.dcol{display:flex;flex-direction:column;gap:8px;flex:1;min-height:170px;padding-top:34px;margin-top:-22px}
 
+.swx{position:relative}
+.stamp{position:absolute;right:6px;top:-30px;width:90px;aspect-ratio:503/353;z-index:4;pointer-events:none;transform:rotate(-8deg);filter:drop-shadow(0 6px 7px rgba(0,0,0,.5))}
+:root[data-theme="light"] .stamp{filter:drop-shadow(0 6px 7px rgba(0,0,0,.28))}
+.stamp::before{content:'';position:absolute;left:0;top:16.4%;width:53.7%;aspect-ratio:1;border-radius:50%;background:#84f542}
+.stamp::after{content:'';position:absolute;right:-2.8%;top:-4%;width:75.8%;aspect-ratio:1;background:var(--text);-webkit-mask:url(stamp.png) center/contain no-repeat;mask:url(stamp.png) center/contain no-repeat}
+.sw[data-dir] ~ .stamp{opacity:.35}
 .sw{position:relative;border-radius:var(--r);overflow:hidden}
 .sw::before{content:attr(data-rev);position:absolute;inset:0;display:flex;align-items:center;padding:0 20px;font-family:var(--display);font-weight:800;font-size:13px;letter-spacing:.14em;background:#2f9e68;color:#fff;opacity:0}
 .sw[data-dir]::before{opacity:1}
@@ -827,10 +833,10 @@ function sessHTML(s){
   const k=typeOf(s.type),T=TYPES[k];
   const big=s.km?fmtKm(num(s.km)):(s.min?fmtDur(num(s.min)):'');
   const sub=[s.when?s.when.charAt(0).toUpperCase()+s.when.slice(1):'',(s.km&&s.min)?fmtDur(num(s.min)):''].filter(Boolean).join(' · ');
-  return '<div class="sw"><button class="sess'+(s.done?' done':'')+'" data-sess="'+esc(s.id)+'" style="--c:'+T.color+'">'+
+  return '<div class="swx"><div class="sw"><button class="sess'+(s.done?' done':'')+'" data-sess="'+esc(s.id)+'" style="--c:'+T.color+'">'+
     '<span class="srow"><span class="tag"><i class="dot'+(s.done?'':' plan')+'" data-toggle="'+esc(s.id)+'" role="button" aria-label="'+(s.done?'Retirer fait':'Marquer fait')+'" style="--c:'+T.color+'"></i>'+T.label+'</span>'+
-    (s.done?'<span class="st on hk" aria-label="Fait">済</span>':'')+'</span>'+
-    '<span class="name">'+esc(s.title||T.name)+'</span>'+(big?'<span class="big">'+esc(big)+'</span>':'')+(s.done&&realLine(s)?'<span class="real">'+esc(realLine(s))+'</span>':(sub?'<span class="sub">'+esc(sub)+'</span>':''))+(s.notes?'<span class="desc">'+esc(s.notes)+'</span>':'')+'</button></div>';
+    ''+'</span>'+
+    '<span class="name">'+esc(s.title||T.name)+'</span>'+(big?'<span class="big">'+esc(big)+'</span>':'')+(s.done&&realLine(s)?'<span class="real">'+esc(realLine(s))+'</span>':(sub?'<span class="sub">'+esc(sub)+'</span>':''))+(s.notes?'<span class="desc">'+esc(s.notes)+'</span>':'')+'</button></div>'+(s.done?'<i class="stamp" aria-label="Fait"></i>':'')+'</div>';
 }
 function raceBlock(R){
   return '<button class="race" data-race="'+esc(R.id)+'"><span class="k">COURSE'+racePill(R)+'</span><div class="n">'+esc(R.name)+'</div><div class="m">'+
@@ -1369,7 +1375,8 @@ function popCard(id,done){
   if(reduce())return;const el=cardEl(id);if(!el)return;
   el.animate([{transform:'scale(.95)'},{transform:'scale(1.03)',offset:.55},{transform:'scale(1)'}],{duration:440,easing:'cubic-bezier(.2,.9,.3,1.2)'});
   el.querySelectorAll('.tag,.name,.big,.sub').forEach(n=>n.animate([{opacity:done?1:.42},{opacity:done?.42:1}],{duration:480,easing:'ease-out'}));
-  const st=el.querySelector('.st');if(st)st.animate([{transform:'scale(.55)'},{transform:'scale(1.22)',offset:.6},{transform:'scale(1)'}],{duration:500,easing:'cubic-bezier(.2,.9,.3,1)'});
+  const swx=el.closest('.swx'),st=swx&&swx.querySelector('.stamp');
+  if(st&&!reduce())st.animate([{transform:'rotate(-22deg) scale(2.6)',opacity:0,filter:'drop-shadow(0 26px 22px rgba(0,0,0,.15))'},{transform:'rotate(-8deg) scale(.88)',opacity:1,offset:.5,filter:'drop-shadow(0 1px 2px rgba(0,0,0,.65))'},{transform:'rotate(-8deg) scale(1.07)',offset:.74},{transform:'rotate(-8deg) scale(1)'}],{duration:680,easing:'cubic-bezier(.3,.7,.3,1)'});
 }
 function appear(id){
   if(reduce())return;const el=cardEl(id);if(!el)return;
