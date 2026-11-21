@@ -814,6 +814,14 @@ function alertsFor(mon){
 const alertHTML=a=>a.map(x=>'<div class="alert">⚠ '+esc(x)+'</div>').join('');
 
 /* ---------- totals ---------- */
+let _goals=null;
+function planGoals(){
+  if(_goals)return _goals;const g={};
+  SEED.sessions.forEach(x=>{const m=iso(mondayOf(parse(x.date))),t=typeOf(x.type);g[m]=g[m]||{};const o=g[m][t]=g[m][t]||{km:0,min:0,n:0};o.km+=num(x.km)||0;o.min+=num(x.min)||0;o.n++;});
+  return(_goals=g);
+}
+function goalOf(mon,k){const m=iso(mon),ov=(state.settings.goals||{})[m];if(ov&&ov[k])return ov[k];const b=planGoals()[m];return b?(b[k]||{km:0,min:0,n:0}):null;}
+function applyGoals(t,mon){KEYS.forEach(k=>{const g=goalOf(mon,k);if(g){t[k].km=g.km||0;t[k].min=g.min||0;t[k].n=Math.max(g.n||0,t[k].dn);t[k].goal=true;}});}
 function totals(list){list=list.filter(x=>!x.skip);
   const t={};KEYS.forEach(k=>t[k]={km:0,min:0,dkm:0,dmin:0,n:0,dn:0,hw:0,hm:0,pk:0,pm:0,hrw:0,hrm:0});
   list.forEach(s=>{const x=t[typeOf(s.type)];x.n++;x.km+=num(s.km)||0;x.min+=num(s.min)||0;
@@ -830,7 +838,8 @@ function sumHTML(t,showGym){
   return ks.map(k=>{
     const x=t[k],T=TYPES[k];
     const main=x.km?fmtKm(x.km):(x.min?fmtDur(x.min):'—');
-    const det=[x.km&&x.min?fmtDur(x.min):'',x.n?'fait '+(x.dkm?fmtKm(x.dkm):fmtDur(x.dmin)||x.dn+'/'+x.n):''].filter(Boolean).join(' · ');
+    const useKm=!!x.km,dn=useKm?x.dkm:x.dmin,gl=useKm?x.km:x.min,fm=v=>useKm?fmtKm(Math.round(v*10)/10):fmtDur(Math.round(v));
+    const rest=gl-dn,det=x.goal?[dn?'fait '+fm(dn):'rien de fait',gl?(rest>0.05?'reste '+fm(rest):(rest<-0.05?'+'+fm(-rest):'atteint')):''].filter(Boolean).join(' · '):[x.km&&x.min?fmtDur(x.min):'',x.n?'fait '+(x.dkm?fmtKm(x.dkm):fmtDur(x.dmin)||x.dn+'/'+x.n):''].filter(Boolean).join(' · ');
     return '<div data-sumadd="'+k+'" role="button" tabindex="0"><div class="t"><i class="dot" style="--c:'+T.color+'"></i>'+T.label+'</div><div class="v">'+main+'</div><div class="d">'+(det||'&nbsp;')+'</div></div>';
   }).join('');
 }
@@ -885,10 +894,11 @@ function renderWeek(){
     h+='<div class="'+cls+'" data-date="'+k+'" style="--d:'+i+'"><button class="dh" data-dsel="'+k+'" aria-label="Ouvrir '+DOWL[i]+' '+fmtDM(d)+'"><div class="dn">'+fmtDM(d)+'</div><div class="dw" data-s="'+DOW[i]+'" data-l="'+DOWL[i].toUpperCase()+'">'+DOW[i]+'</div><span class="dd">'+ss.map(x=>'<i class="dot'+(x.done?'':' plan')+'" style="--c:'+TYPES[typeOf(x.type)].color+'"></i>').join('')+'</span></button>'+
       '<div class="dcol">'+raceAt(k).filter(R=>!raceSess(R.id)).map(raceBlock).join('')+ss.map(sessHTML).join('')+'</div></div>';
   }
-  $('#sum').innerHTML=sumHTML(totals(list),false);
+  const tw=totals(list);applyGoals(tw,mon);
+  $('#sum').innerHTML=sumHTML(tw,false);
   $('#alerts').innerHTML=alertHTML(alertsFor(mon));
   const enter=enterNext;enterNext=false;
-  $('#view').innerHTML='<div class="week'+(enter?' enter':'')+'">'+h+'</div><div class="dpanel"></div><div class="wkfoot"><button class="btn glo soft" data-clearweek="1">Clear</button><button class="btn" data-copy="1">Préparer la semaine suivante</button></div>';
+  $('#view').innerHTML='<div class="week'+(enter?' enter':'')+'">'+h+'</div><div class="dpanel"></div><div class="wkfoot"><button class="btn" data-goals="1">Objectifs</button><button class="btn glo soft" data-clearweek="1">Clear</button><button class="btn" data-copy="1">Préparer la semaine suivante</button></div>';
   applySel(true);
 }
 
@@ -1160,6 +1170,17 @@ function syncRaceSess(R){
   const x=raceSess(R.id);
   if(x)Object.assign(x,rec);else state.sessions.push(Object.assign({id:'rs-'+R.id,raceId:R.id,min:'',when:'',done:false},rec));
 }
+function openGoals(){
+  const mon=mondayOf(cursor),m=iso(mon),ks=KEYS.filter(k=>!optional(k)||goalOf(mon,k)||true);
+  const rows=ks.map(k=>{const g=goalOf(mon,k)||{km:0,min:0},T=TYPES[k];
+    return '<div class="field"><span class="lbl"><i class="dot" style="--c:'+T.color+'"></i> '+T.label+'</span><div class="row"><div class="field"><label for="g-'+k+'-km">KM</label><input type="text" inputmode="decimal" id="g-'+k+'-km" name="'+k+'-km" value="'+(g.km?String(g.km).replace('.',','):'')+'" placeholder="—"></div><div class="field"><label for="g-'+k+'-min">MINUTES</label><input type="text" inputmode="numeric" id="g-'+k+'-min" name="'+k+'-min" value="'+(g.min?Math.round(g.min):'')+'" placeholder="—"></div></div></div>';}).join('');
+  openSheet('<h2><small>SEMAINE DU '+fmtDM(mon)+'</small>Objectifs</h2><p class="syncnote">Ces objectifs suivent ton plan. Tu peux les ajuster pour cette semaine : le fait se calcule tout seul avec toutes tes séances.</p><form id="gf" autocomplete="off">'+rows+
+   '<div class="actions"><div class="grp"><button class="btn solid" type="submit">Enregistrer</button><button class="btn ghost" type="button" data-close="1">Annuler</button></div><button class="btn danger" type="button" id="g-reset">Revenir au plan</button></div></form>');
+  $('#gf').addEventListener('submit',e=>{e.preventDefault();const f=new FormData(e.target),ov={};
+    ks.forEach(k=>{const km=num(f.get(k+'-km'))||0,mi=num(f.get(k+'-min'))||0,b=goalOf(mon,k)||{n:0};ov[k]={km:km,min:mi,n:b.n||0};});
+    state.settings.goals=Object.assign({},state.settings.goals||{});state.settings.goals[m]=ov;save();closeSheet();render();});
+  $('#g-reset').addEventListener('click',()=>{const g=Object.assign({},state.settings.goals||{});delete g[m];state.settings.goals=g;save();closeSheet();render();});
+}
 function openRace(id){
   const isNew=id==='new',main=!isNew&&(!id||id==='1'||id==='main');
   const R=isNew?{id:null,name:'',date:iso(addDays(mondayOf(cursor),5)),km:'',time:'',goal:'',result:''}:(main?allRaces()[0]:(state.races.find(r=>r.id===id)||allRaces()[0]));
@@ -1240,7 +1261,7 @@ let stW=null,stTab='ring',stMetric='min';
 const METRICS={min:{label:'Durée',get:(x,d)=>d?x.dmin:x.min,fmt:v=>fmtDur(v)||'0'},km:{label:'Distance',get:(x,d)=>d?x.dkm:x.km,fmt:v=>(fmtKm(v)||'0 km')},n:{label:'Séances',get:(x,d)=>d?x.dn:x.n,fmt:v=>String(v)}};
 function wk(mon){
   const list=[];for(let i=0;i<7;i++)list.push(...sessionsOn(iso(addDays(mon,i))));
-  const t=totals(list),all={km:0,min:0,dkm:0,dmin:0,n:0,dn:0,hw:0,hm:0,pk:0,pm:0,hrw:0,hrm:0};
+  const t=totals(list);applyGoals(t,mon);const all={km:0,min:0,dkm:0,dmin:0,n:0,dn:0,hw:0,hm:0,pk:0,pm:0,hrw:0,hrm:0};
   KEYS.forEach(k=>{for(const f in all)all[f]+=t[k][f];});t.all=all;t.run.pace=t.run.pk?t.run.pm/t.run.pk:0;t.bike.pw=t.bike.hm?t.bike.hw/t.bike.hm:0;t.run.hr=t.run.hrm?t.run.hrw/t.run.hrm:0;return t;
 }
 function dlt(a,b){
@@ -1536,8 +1557,9 @@ document.addEventListener('click',e=>{
     if(sh[k]&&k==='notes'){const inp=o&&o.querySelector('textarea');if(inp)setTimeout(()=>inp.focus(),30);}
     return;
   }
-  if(!dlg.open&&(t.dataset.sess||t.dataset.add||t.dataset.day||t.dataset.race||t.dataset.copy))setOrigin(t);
+  if(!dlg.open&&(t.dataset.goals||t.dataset.sess||t.dataset.add||t.dataset.day||t.dataset.race||t.dataset.copy))setOrigin(t);
   if(t.dataset.copy){openCopy();return;}
+  if(t.dataset.goals){openGoals();return;}
   if(t.dataset.cpf){cpF=Number(t.dataset.cpf);renderCopy();return;}
   if(t.dataset.cpm){cpMode=t.dataset.cpm;renderCopy();return;}
   if(t.dataset.cpgo){applyCopy();return;}
@@ -1667,7 +1689,7 @@ function openSync(){
   const c=syncCfg(),on=!!c.token;
   openSheet('<h2><small>SYNCHRONISATION</small>Entre appareils</h2>'+
    '<p class="syncnote">Tes données sont enregistrées <b>sur chaque appareil</b>. Pour les retrouver partout, l’app peut les déposer dans un <b>Gist GitHub privé</b> à toi, puis les fusionner à chaque ouverture et à chaque appui sur ⟳.</p>'+
-   (on?'<p class="syncnote" style="margin-top:12px">✓ Synchronisation active'+(c.last?' · dernière : '+new Date(c.last).toLocaleString('fr-FR',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}):'')+(c.err?'<br>⚠ Dernier échec : '+esc(c.err):'')+'<br>Version de l’app : v29</p>':
+   (on?'<p class="syncnote" style="margin-top:12px">✓ Synchronisation active'+(c.last?' · dernière : '+new Date(c.last).toLocaleString('fr-FR',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}):'')+(c.err?'<br>⚠ Dernier échec : '+esc(c.err):'')+'<br>Version de l’app : v30</p>':
    '<ol class="syncnote" style="margin:12px 0 0 18px"><li><a href="https://github.com/settings/tokens/new?scopes=gist&description=Prepa%20sync" target="_blank" rel="noopener">Crée un jeton GitHub (classic)</a> avec la seule case « gist », puis copie-le.</li><li>Colle-le ci-dessous, sur chaque appareil. Le jeton reste uniquement dans cet appareil.</li></ol>')+
    '<form id="syf" autocomplete="off"><div class="field"><label for="sy-t">JETON GITHUB</label><input type="password" id="sy-t" placeholder="'+(on?'•••••••• (déjà enregistré)':'ghp_…')+'" autocomplete="off"></div>'+
    '<div class="actions"><div class="grp"><button class="btn solid" type="submit">'+(on?'Synchroniser':'Activer')+'</button><button class="btn ghost" type="button" data-close="1">Fermer</button></div>'+(on?'<button class="btn danger" type="button" data-syoff="1">Désactiver</button>':'')+'</div></form>');
