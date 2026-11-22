@@ -859,7 +859,7 @@ function sessHTML(s){
   return '<div class="swx"><div class="sw"><button class="sess'+(s.done?' done':'')+(s.skip?' skip':'')+'" data-sess="'+esc(s.id)+'" style="--c:'+T.color+'">'+
     '<span class="srow"><span class="tag"><i class="dot'+(s.done?'':' plan')+'" data-toggle="'+esc(s.id)+'" role="button" aria-label="'+(s.done?'Retirer fait':'Marquer fait')+'" style="--c:'+T.color+'"></i>'+T.label+'</span>'+
     ''+'</span>'+
-    '<span class="name">'+esc(s.title||T.name)+'</span>'+(big?'<span class="big">'+esc(big)+'</span>':'')+(s.done&&realLine(s)?'<span class="real">'+esc(realLine(s))+'</span>':(sub?'<span class="sub">'+esc(sub)+'</span>':''))+(s.notes?'<span class="desc">'+esc(s.notes)+'</span>':'')+'</button></div>'+(s.done?'<i class="stamp" aria-label="Fait"></i>':(s.skip?'<i class="stamp sk" aria-label="Non effectué"></i>':''))+'</div>';
+    '<span class="name">'+esc(s.title||T.name)+'</span>'+(big?'<span class="big">'+esc(big)+'</span>':'')+(s.done&&realLine(s)?'<span class="real">'+esc(realLine(s))+'</span>':(sub?'<span class="sub">'+esc(sub)+'</span>':''))+(s.notes?'<span class="desc">'+esc(s.notes)+'</span>':'')+'</button></div>'+(s.done?'<i class="stamp" aria-label="Fait"></i>':'')+'</div>';
 }
 function raceBlock(R){
   return '<button class="race" data-race="'+esc(R.id)+'"><span class="k">COURSE'+racePill(R)+'</span><div class="n">'+esc(R.name)+'</div><div class="m">'+
@@ -1297,23 +1297,23 @@ function weekRange(){
   a=a||b;const out=[];for(let d=a;d<=b&&out.length<80;d=addDays(d,7))out.push(d);return out;
 }
 function statsRing(cur,pr,ks){
-  const tot=cur.all.min;
-  const parts=ks.map(k=>({v:cur[k].min,c:TYPES[k].color,k:k}));
-  const share=ks.map(k=>'<div class="r"><i class="dot" style="--c:'+TYPES[k].color+'"></i><div>'+TYPES[k].name+'<small>'+(cur[k].km?fmtKm(cur[k].km)+' · ':'')+cur[k].n+' séance'+(cur[k].n>1?'s':'')+'</small></div><div class="v">'+(fmtDur(cur[k].min)||'—')+'<small> '+(tot?Math.round(cur[k].min/tot*100):0)+' %</small></div></div>').join('');
+  const tot=cur.all.dmin;
+  const parts=ks.map(k=>({v:cur[k].dmin,c:TYPES[k].color,k:k}));
+  const share=ks.map(k=>'<div class="r"><i class="dot" style="--c:'+TYPES[k].color+'"></i><div>'+TYPES[k].name+'<small>'+(cur[k].dkm?fmtKm(cur[k].dkm)+' · ':'')+cur[k].dn+' séance'+(cur[k].dn>1?'s':'')+'</small></div><div class="v">'+(fmtDur(cur[k].dmin)||'—')+'<small> '+(tot?Math.round(cur[k].dmin/tot*100):0)+' %</small></div></div>').join('');
   const rings=ks.map(k=>{
     const x=cur[k],pc=x.min?Math.min(100,Math.round(x.dmin/x.min*100)):0;
-    return '<div class="rcard"><div class="t"><i class="dot" style="--c:'+TYPES[k].color+'"></i>'+TYPES[k].label+'</div><div class="donutwrap">'+donut([{v:pc,c:TYPES[k].color,k:k}],100,96,11)+'<div class="dc"><b style="font-size:18px">'+(x.min?pc+' %':'—')+'</b></div></div><div class="d">fait '+(fmtDur(x.dmin)||'0')+'<br>prévu '+(fmtDur(x.min)||'0')+'</div></div>';
+    return '<div class="rcard"><div class="t"><i class="dot" style="--c:'+TYPES[k].color+'"></i>'+TYPES[k].label+'</div><div class="donutwrap">'+donut([{v:pc,c:TYPES[k].color,k:k}],100,96,11)+'<div class="dc"><b style="font-size:18px">'+(x.min?pc+' %':'—')+'</b></div></div><div class="d">fait '+(fmtDur(x.dmin)||'0')+'<br>objectif '+(fmtDur(x.min)||'0')+'</div></div>';
   }).join('');
   const all=cur.all,pcAll=all.min?Math.round(all.dmin/all.min*100):0;
-  return '<div class="stsplit"><div class="donutwrap">'+donut(parts,tot,200,26)+'<div class="dc"><b>'+(fmtDur(tot)||'0')+'</b><span>prévu cette semaine</span></div></div><div class="lg">'+share+
-    '<div class="r"><span></span><div>Total<small>vs semaine précédente '+dlt(tot,pr.all.min)+'</small></div><div class="v">'+(fmtDur(tot)||'0')+'</div></div></div></div>'+
-    '<div class="stt">RÉALISÉ SUR LE PRÉVU · '+pcAll+' % AU TOTAL</div><div class="rings">'+rings+'</div>';
+  return '<div class="stsplit"><div class="donutwrap">'+donut(parts,tot,200,26)+'<div class="dc"><b>'+(fmtDur(tot)||'0')+'</b><span>fait cette semaine</span></div></div><div class="lg">'+share+
+    '<div class="r"><span></span><div>Total<small>vs semaine précédente '+dlt(tot,pr.all.dmin)+'</small></div><div class="v">'+(fmtDur(tot)||'0')+'</div></div></div></div>'+
+    '<div class="stt">RÉALISÉ SUR L’OBJECTIF · '+pcAll+' % AU TOTAL</div><div class="rings">'+rings+'</div>';
 }
 function statsBar(ks){
   const M=METRICS[stMetric],W=8,weeks=[];
   for(let i=-4;i<W-4;i++)weeks.push(addDays(stW,7*i));
-  const data=weeks.map(m=>{const t=wk(m);return {m,t,tot:ks.reduce((a,k)=>a+M.get(t[k],false),0)};});
-  let max=Math.max(...data.map(d=>d.tot),0.0001);
+  const data=weeks.map(m=>{const t=wk(m);return {m,t,tot:ks.reduce((a,k)=>a+M.get(t[k],true),0),pl:ks.reduce((a,k)=>a+M.get(t[k],false),0)};});
+  let max=Math.max(...data.map(d=>Math.max(d.tot,d.pl)),0.0001);
   const step=stMetric==='n'?1:(stMetric==='km'?10:60);
   max=Math.ceil(max/step)*step;if(stMetric==='n'&&max<4)max=4;
   const Wd=640,H=280,L=46,B=34,T=14,cw=(Wd-L-10)/W,bw=Math.min(46,cw*.62),ph=H-B-T;
@@ -1322,12 +1322,12 @@ function statsBar(ks){
   data.forEach((d,i)=>{
     const x=L+i*cw+(cw-bw)/2;let yb=T+ph;const sel=iso(d.m)===iso(stW);
     ks.forEach(k=>{
-      const pv=M.get(d.t[k],false),dv=M.get(d.t[k],true);if(!(pv>0))return;
-      const hp=ph*pv/max,hd=ph*Math.min(dv,pv)/max;
-      h+='<rect x="'+x+'" y="'+(yb-hp)+'" width="'+bw+'" height="'+hp+'" rx="5" fill="url(#sg-'+k+')" opacity=".28" data-stw="'+iso(d.m)+'"/>'+
-         '<rect x="'+x+'" y="'+(yb-hd)+'" width="'+bw+'" height="'+hd+'" rx="5" fill="url(#sg-'+k+')" data-stw="'+iso(d.m)+'"/>';
-      yb-=hp;
+      const dv=M.get(d.t[k],true);if(!(dv>0))return;
+      const hd=ph*dv/max;
+      h+='<rect x="'+x+'" y="'+(yb-hd)+'" width="'+bw+'" height="'+hd+'" rx="5" fill="url(#sg-'+k+')" data-stw="'+iso(d.m)+'"/>';
+      yb-=hd;
     });
+    if(d.pl>0){const yp=T+ph-ph*d.pl/max;h+='<line x1="'+(x-5)+'" x2="'+(x+bw+5)+'" y1="'+yp+'" y2="'+yp+'" stroke-dasharray="3 3" stroke-width="1.5" style="stroke:var(--text);opacity:.5"/>';}
     h+='<rect x="'+(L+i*cw)+'" y="'+T+'" width="'+cw+'" height="'+ph+'" fill="transparent" data-stw="'+iso(d.m)+'"/>';
     h+='<text x="'+(x+bw/2)+'" y="'+(H-14)+'" text-anchor="middle" class="'+(sel?'sel':'')+'">'+fmtDM(d.m)+'</text>';
     if(sel)h+='<rect x="'+x+'" y="'+(H-8)+'" width="'+bw+'" height="3" fill="#e13232"/>';
@@ -1335,22 +1335,22 @@ function statsBar(ks){
   });
   h+='</svg>';
   const seg='<div class="seg" role="group" aria-label="Mesure">'+Object.keys(METRICS).map(m=>'<button data-stm="'+m+'" aria-pressed="'+(m===stMetric)+'">'+METRICS[m].label+'</button>').join('')+'</div>';
-  const lgd='<div class="legend" style="padding:12px 0 0">'+ks.map(k=>'<span><i class="dot" style="--c:'+TYPES[k].color+'"></i>'+TYPES[k].name+'</span>').join('')+'<span style="margin-left:auto">plein = fait · clair = prévu</span></div>';
+  const lgd='<div class="legend" style="padding:12px 0 0">'+ks.map(k=>'<span><i class="dot" style="--c:'+TYPES[k].color+'"></i>'+TYPES[k].name+'</span>').join('')+'<span style="margin-left:auto">plein = fait · pointillé = objectif</span></div>';
   return seg+h+lgd+'<p class="hint">Touche une barre pour afficher la semaine correspondante.</p>';
 }
 function statsTab(cur,pr,ks){
   const mc=(k,x,y)=>{const a=k==='all'?x.all:x[k],b=k==='all'?y.all:y[k];return a;};
   const row=(label,key)=>{const a=key==='all'?cur.all:cur[key],b=key==='all'?pr.all:pr[key];
-    return '<tr><td>'+label+'</td><td class="mut">'+(fmtDur(b.min)||'—')+(b.km?'<br><small>'+fmtKm(b.km)+'</small>':'')+'</td><td>'+(fmtDur(a.min)||'—')+(a.km?'<br><small>'+fmtKm(a.km)+'</small>':'')+'</td><td>'+dlt(a.min,b.min)+'</td></tr>';};
+    return '<tr><td>'+label+'</td><td class="mut">'+(fmtDur(b.dmin)||'—')+(b.dkm?'<br><small>'+fmtKm(b.dkm)+'</small>':'')+'</td><td>'+(fmtDur(a.dmin)||'—')+(a.dkm?'<br><small>'+fmtKm(a.dkm)+'</small>':'')+'</td><td>'+dlt(a.dmin,b.dmin)+'</td></tr>';};
   const cmp='<div class="stt">COMPARAISON AVEC LA SEMAINE PRÉCÉDENTE</div><div class="tw"><table class="stab cmp"><thead><tr><th>Discipline</th><th>'+fmtDM(addDays(stW,-7))+'</th><th>'+fmtDM(stW)+'</th><th>Écart</th></tr></thead><tbody>'+
     ks.map(k=>row(TYPES[k].name,k)).join('')+row('<b>Total</b>','all')+
     '<tr><td>Allure CAP</td><td class="mut">'+(pr.run.pace?fmtPace(pr.run.pace)+'/km':'—')+'</td><td>'+(cur.run.pace?fmtPace(cur.run.pace)+'/km':'—')+'</td><td>'+dpace(cur.run.pace,pr.run.pace)+'</td></tr>'+
     '<tr><td>Puissance vélo</td><td class="mut">'+(pr.bike.pw?Math.round(pr.bike.pw)+' W':'—')+'</td><td>'+(cur.bike.pw?Math.round(cur.bike.pw)+' W':'—')+'</td><td>'+(cur.bike.pw&&pr.bike.pw?'<span class="dl">'+(Math.round(cur.bike.pw-pr.bike.pw)>0?'+':'')+Math.round(cur.bike.pw-pr.bike.pw)+' W</span>':'<span class="dl">—</span>')+'</td></tr>'+
     '<tr><td>FC moyenne CAP</td><td class="mut">'+(pr.run.hr?Math.round(pr.run.hr)+' bpm':'—')+'</td><td>'+(cur.run.hr?Math.round(cur.run.hr)+' bpm':'—')+'</td><td>'+(cur.run.hr&&pr.run.hr?'<span class="dl">'+(Math.round(cur.run.hr-pr.run.hr)>0?'+':'')+Math.round(cur.run.hr-pr.run.hr)+' bpm</span>':'<span class="dl">—</span>')+'</td></tr>'+
-    '<tr><td>Séances</td><td class="mut">'+pr.all.n+'</td><td>'+cur.all.n+'</td><td>'+dlt(cur.all.n,pr.all.n)+'</td></tr></tbody></table></div>';
+    '<tr><td>Séances</td><td class="mut">'+pr.all.dn+'</td><td>'+cur.all.dn+'</td><td>'+dlt(cur.all.dn,pr.all.dn)+'</td></tr></tbody></table></div>';
   const ws=weekRange();let prevMin=null;
-  const rows=ws.map(m=>{const t=wk(m),a=t.all;const r='<tr data-stw="'+iso(m)+'"'+(iso(m)===iso(stW)?' class="sel"':'')+'><td>'+fmtDM(m)+' <span class="mut">'+esc(relWeek(m))+'</span></td><td'+(alertsFor(m).length?' class="warn" title="Dépasse la limite"':'')+'>'+(alertsFor(m).length?'⚠ ':'')+(t.run.km?fmtKm(t.run.km):'—')+'</td><td class="mut">'+(t.run.pace?fmtPace(t.run.pace):'—')+'</td><td class="mut">'+(t.bike.pw?Math.round(t.bike.pw):'—')+'</td><td>'+(fmtDur(t.bike.min)||'—')+'</td><td>'+(fmtDur(t.swim.min)||'—')+'</td><td><b>'+(fmtDur(a.min)||'—')+'</b></td><td>'+(a.min?Math.round(a.dmin/a.min*100)+' %':'—')+'</td><td>'+(prevMin===null?'<span class="dl">—</span>':dlt(a.min,prevMin))+'</td></tr>';prevMin=a.min;return r;}).join('');
-  const all='<div class="stt">TOUTES LES SEMAINES</div><div class="tw"><table class="stab"><thead><tr><th>Semaine</th><th>CAP</th><th>Allure</th><th>Watts</th><th>Vélo</th><th>Nat</th><th>Total</th><th>Fait</th><th>Écart</th></tr></thead><tbody>'+rows+'</tbody></table></div><p class="hint">Touche une ligne pour la comparer. « Fait » = temps réalisé sur le temps prévu.</p>';
+  const rows=ws.map(m=>{const t=wk(m),a=t.all;const r='<tr data-stw="'+iso(m)+'"'+(iso(m)===iso(stW)?' class="sel"':'')+'><td>'+fmtDM(m)+' <span class="mut">'+esc(relWeek(m))+'</span></td><td'+(alertsFor(m).length?' class="warn" title="Dépasse la limite"':'')+'>'+(alertsFor(m).length?'⚠ ':'')+(t.run.dkm?fmtKm(t.run.dkm):'—')+'</td><td class="mut">'+(t.run.pace?fmtPace(t.run.pace):'—')+'</td><td class="mut">'+(t.bike.pw?Math.round(t.bike.pw):'—')+'</td><td>'+(fmtDur(t.bike.dmin)||'—')+'</td><td>'+(fmtDur(t.swim.dmin)||'—')+'</td><td><b>'+(fmtDur(a.dmin)||'—')+'</b></td><td>'+(a.min?Math.round(a.dmin/a.min*100)+' %':'—')+'</td><td>'+(prevMin===null?'<span class="dl">—</span>':dlt(a.dmin,prevMin))+'</td></tr>';prevMin=a.dmin;return r;}).join('');
+  const all='<div class="stt">TOUTES LES SEMAINES</div><div class="tw"><table class="stab"><thead><tr><th>Semaine</th><th>CAP</th><th>Allure</th><th>Watts</th><th>Vélo</th><th>Nat</th><th>Total</th><th>Fait</th><th>Écart</th></tr></thead><tbody>'+rows+'</tbody></table></div><p class="hint">Touche une ligne pour la comparer. « Fait » = temps réalisé sur l’objectif de la semaine.</p>';
   return cmp+all;
 }
 function renderStats(){
@@ -1689,7 +1689,7 @@ function openSync(){
   const c=syncCfg(),on=!!c.token;
   openSheet('<h2><small>SYNCHRONISATION</small>Entre appareils</h2>'+
    '<p class="syncnote">Tes données sont enregistrées <b>sur chaque appareil</b>. Pour les retrouver partout, l’app peut les déposer dans un <b>Gist GitHub privé</b> à toi, puis les fusionner à chaque ouverture et à chaque appui sur ⟳.</p>'+
-   (on?'<p class="syncnote" style="margin-top:12px">✓ Synchronisation active'+(c.last?' · dernière : '+new Date(c.last).toLocaleString('fr-FR',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}):'')+(c.err?'<br>⚠ Dernier échec : '+esc(c.err):'')+'<br>Version de l’app : v30</p>':
+   (on?'<p class="syncnote" style="margin-top:12px">✓ Synchronisation active'+(c.last?' · dernière : '+new Date(c.last).toLocaleString('fr-FR',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}):'')+(c.err?'<br>⚠ Dernier échec : '+esc(c.err):'')+'<br>Version de l’app : v31</p>':
    '<ol class="syncnote" style="margin:12px 0 0 18px"><li><a href="https://github.com/settings/tokens/new?scopes=gist&description=Prepa%20sync" target="_blank" rel="noopener">Crée un jeton GitHub (classic)</a> avec la seule case « gist », puis copie-le.</li><li>Colle-le ci-dessous, sur chaque appareil. Le jeton reste uniquement dans cet appareil.</li></ol>')+
    '<form id="syf" autocomplete="off"><div class="field"><label for="sy-t">JETON GITHUB</label><input type="password" id="sy-t" placeholder="'+(on?'•••••••• (déjà enregistré)':'ghp_…')+'" autocomplete="off"></div>'+
    '<div class="actions"><div class="grp"><button class="btn solid" type="submit">'+(on?'Synchroniser':'Activer')+'</button><button class="btn ghost" type="button" data-close="1">Fermer</button></div>'+(on?'<button class="btn danger" type="button" data-syoff="1">Désactiver</button>':'')+'</div></form>');
